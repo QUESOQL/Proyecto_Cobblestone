@@ -9,4 +9,4 @@ Foto de los aviones creados en la clase
 
 ![Foto de la sesión 1](./image.png)
 
----image.png
+---
