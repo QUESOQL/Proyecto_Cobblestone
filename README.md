@@ -8,10 +8,10 @@
 ---
 
 ### 👥 Integrantes
-* [Nombre Integrante 1] - 
-* [Nombre Integrante 2] - 
+* Fernando Alarcón -  Ingeniería Civil Industrial
+* Diego Ayala - Ingeniería Civil Electrónica
 * Víctor Santana,21841343-9,Ingeniería Civil en Computación e Informática.
-* [Nombre Integrante 4] - 
+* Luciano Torretti - Ingeniería Civil en Computación e Informática
 
 ---
 
