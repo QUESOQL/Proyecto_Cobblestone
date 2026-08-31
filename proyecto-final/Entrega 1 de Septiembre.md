@@ -14,7 +14,7 @@ De acuerdo con las pautas de la evaluación, esta primera entrega se enfoca **ex
 
 ## 📄 Archivos de la Presentación
 
-* 📊 **[Descargar / Ver Presentación PDF](./Presentación - Proyecto de arquitectura - Diapositivas modernas, colores marrón y negro (2).pdf)** *(Recomendado para visualización en GitHub)*
+* 📊 **[Descargar / Ver Presentación PDF](./PresentaciónProblematica.pdf)** *(Recomendado para visualización en GitHub)*
 * 📌 **[Descargar Presentación Editable PPTX](./Presentacion_01_Problematica.pptx)**
 
 ---
