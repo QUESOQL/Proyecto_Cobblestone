@@ -19,7 +19,7 @@ De acuerdo con las pautas de la evaluación, esta primera entrega se enfoca **ex
 
 ---
 
-## 🔍 Nota para la Evaluación del Repositorio
+## 🔍 Github
 Este repositorio contiene la trazabilidad completa del trabajo realizado por el equipo:
 
 * 📝 **[Bitácora de Sesiones](../sesiones):** Registro detallado de las actividades realizadas en aula.
