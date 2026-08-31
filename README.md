@@ -8,10 +8,10 @@
 ---
 
 ### 👥 Integrantes
-* [Nombre Integrante 1] - [Rol / GitHub]
-* [Nombre Integrante 2] - [Rol / GitHub]
+* [Nombre Integrante 1] - 
+* [Nombre Integrante 2] - 
 * Víctor Santana,21841343-9,Ingeniería Civil en Computación e Informática.
-* [Nombre Integrante 4] - [Rol / GitHub]
+* [Nombre Integrante 4] - 
 
 ---
 
