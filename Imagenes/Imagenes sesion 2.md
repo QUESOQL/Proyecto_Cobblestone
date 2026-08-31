@@ -9,5 +9,5 @@
 ---
 
 ### 2. Mapa Conceptual de la Problemática
-![Mapa Conceptual](./sesion2_mapa_conceptual.jpg)
+![Mapa Conceptual](./imagen_2026-08-31_133158162.png)
 *Análisis conceptual elaborado a mano por el equipo para identificar el problema central (gestión e ingreso de usuarios), actores involucrados, causas, contexto y consecuencias.*
