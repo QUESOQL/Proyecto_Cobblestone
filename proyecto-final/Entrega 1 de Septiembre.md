@@ -12,10 +12,9 @@ De acuerdo con las pautas de la evaluación, esta primera entrega se enfoca **ex
 
 ---
 
-## 📄 Archivos de la Presentación
+## 📄 Archivo de la Presentación
 
-* 📊 **[Descargar / Ver Presentación PDF](./PresentaciónProblematica.pdf)** *(Recomendado para visualización en GitHub)*
-* 📌 **[Descargar Presentación Editable PPTX](./Presentacion_01_Problematica.pptx)**
+* 📊 **[Descargar / Ver Presentación PDF](./PresentaciónProblematica.pdf)** 
 
 ---
 
