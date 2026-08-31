@@ -3,7 +3,7 @@
 ---
 
 ### 1. Desafío Seleccionado: Edificios Inteligentes (Hub Providencia)
-![Ficha del Desafío](./sesion2_desafio.jpg)
+![Ficha del Desafío](./imagen_2026-08-31_133029821.png)
 *Ficha oficial del Desafío 01 entregada por la cátedra, donde se detallan la pregunta orientadora, contexto, objetivo, producto mínimo esperado y criterios de éxito.*
 
 ---
