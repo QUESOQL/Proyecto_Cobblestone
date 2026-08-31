@@ -34,6 +34,15 @@ Tras el reajuste de secciones en el curso, el **Equipo 4 (Cobblestone)** quedó 
 * **R (Relevante):** Resuelve la falta de información actual para la planificación de espacios y seguridad.
 * **T (Temporal):** Fecha límite de entrega del prototipo final para el cierre del semestre.
 
+### 🎯 Objetivos SMART Individuales
+
+Para asegurar el cumplimiento de la meta grupal, cada integrante ha definido su propio **Objetivo SMART Individual** alineado con su rol y responsabilidades en el proyecto:
+
+* 👤 **Fernando Alarcón:** Levantar el flujo actual de ingreso y entrevistar a 3 encargados del Hub Providencia antes del **12 de septiembre**, entregando una matriz de cuellos de botella.
+* 👤 **Diego Ayala:** Evaluar tres tecnologías de captura rápida antes del **22 de septiembre**, garantizando que el hardware opere con un tiempo de respuesta inferior a 7 segundos.
+* 👤 **Víctor Santana:** Diseñar la arquitectura relacional de la base de datos y desarrollar la API de registro antes del **6 de octubre**.
+* 👤 **Luciano Torretti:** Desarrollar la interfaz de selección de espacios y la visualización de indicadores antes del **20 de octubre**.
+
 ---
 
 ### 3. Mapa Conceptual de la Problemática
