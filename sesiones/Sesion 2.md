@@ -8,7 +8,7 @@
 
 ## 🎯 Objetivos de la Sesión
 1. Consolidar de forma definitiva la nómina del equipo y seleccionar el proyecto a desarrollar durante el semestre.
-2. Definir el **Objetivo SMART** del equipo alineado con los requerimientos del desafío.
+2. Definir el **Objetivo SMART** del equipo alineado con los requerimientos del desafío y tambien los objetivos SMART individuales de cada integrante
 3. Elaborar un **Mapa Conceptual del Problema** para descomponer el contexto, causas, actores e impactos.
 4. Crear los Valores del equipo y sus Normas.
 5. Organizar el trabajo para la preparación de la primera presentación (PPT).
