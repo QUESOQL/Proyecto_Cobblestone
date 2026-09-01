@@ -3,7 +3,7 @@
 ---
 
 ### 1. Exposición de la Problemática
-![Presentación en clases](./sesion3_presentacion.jpg)
+![Presentación en clases](./imagen.png)
 *Presentación oficial frente al curso y al profesor, exponiendo el diagnóstico, los actores y las causas del problema de gestión en el Hub Providencia.*
 
 ---
