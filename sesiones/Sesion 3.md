@@ -1,4 +1,4 @@
-# 📝 Bitácora Sesión 3: Presentación de Problemáticas y Definición de Incertidumbres
+# 📝 Sesión 3: Presentación de Problemáticas y Definición de Incertidumbres
 
 **Fecha:** 1 de septiembre 
 
