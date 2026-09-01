@@ -9,5 +9,5 @@
 ---
 
 ### 2. Papelógrafo: Certezas, Incertidumbres y Preguntas Orientadoras
-![Actividad del papelógrafo](./sesion3_papelografo.jpg)
+![Actividad del papelógrafo](./imagen_2026-09-01_172807415.png)
 *Dinámica de mapeo para identificar lo que sabemos y no sabemos del problema, junto con las 4 preguntas orientadoras definidas por el equipo antes de la salida a terreno.*
