@@ -1,4 +1,4 @@
-# 📝 Bitácora Sesión 4: Estado del Arte y Benchmarking
+# 📝 Bitácora Sesión 4: Estado del Arte, Benchmarking y Propuesta
 
 **Fecha:** Martes 22 de septiembre
 
@@ -39,3 +39,22 @@ Con ambas matrices estructuradas, el equipo discutió y resolvió las preguntas 
     El atributo más importante es seguridad.
 *   **¿Dónde hay oportunidades para mejorar o innovar en su propia propuesta?**
     N/A aún.
+
+## 6. Ficha de Caracterización de Usuarios y Propuesta
+Al finalizar la sesión, completamos la ficha técnica del Desafío 01 de Edificios Inteligentes, definiendo la base de nuestro prototipo[cite: 8]:
+
+*   **Propuesta en una frase:** Un sistema de caracterización del usuario rápido y seguro para el hub providencia, usando credenciales digitales y código QR en otro caso[cite: 8].
+*   **Bosquejo del Prototipo:** Se esquematizó la interacción del usuario mediante un smartphone conectándose a un dispositivo con cámara, sensor NFC y luces LED (verde y rojo) indicadoras de acceso[cite: 8].
+
+**Arquitectura Mínima:**
+*   **Entradas:** ID por persona[cite: 8].
+*   **Procesamiento:** NFC o QR[cite: 8].
+*   **Salidas:** LED Rojo o Verde[cite: 8].
+*   **Datos / Conectividad:** Internet a base de datos[cite: 8].
+
+**Definiciones Clave de la Solución:**
+*   **Información a registrar:** Nombre, RUT, Ocupación, Motivo de visita, Teléfono y Correo[cite: 8].
+*   **Enrolamiento inicial:** Mediante una App que da la opción de usar NFC o QR[cite: 8].
+*   **Eventos que registra el sistema:** Ingreso, salida y/o espacio utilizado[cite: 8].
+*   **Datos para visualización en Dashboard:** Nombre, motivo y hora de entrada y salida[cite: 8].
+*   **Próximo Test (Siguiente paso):** Simular la aplicación móvil, más que nada el frontend (lo que ve el usuario)[cite: 8].
