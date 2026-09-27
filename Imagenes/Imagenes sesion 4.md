@@ -5,7 +5,7 @@ En esta carpeta se documenta la evidencia visual del trabajo físico e ideación
 ## 1. Primer Boceto: Estado del Arte
 Fotografía de la primera versión de la tabla del Estado del Arte, donde comenzamos a identificar las soluciones existentes.
 
-![Primera tabla del Estado del Arte](nombre-de-tu-foto-1.jpg)
+![Primera tabla del Estado del Arte](./imagen_2026-09-27_190236909.png)
 
 ## 2. Tabla de Benchmark
 Fotografía de la tabla de Benchmark inicial para comparar los procesos y el desempeño de los sistemas analizados.
