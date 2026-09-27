@@ -25,4 +25,4 @@ Fotografía con las respuestas desarrolladas por el equipo a las tres preguntas 
 ## 5. Ficha del Desafío 01 (Caracterización y Prototipo)
 Fotografía de la ficha técnica completada, que incluye nuestra propuesta en una frase, el bosquejo físico del prototipo de hardware/software, la arquitectura mínima y los próximos pasos.
 
-![Ficha del Desafío 1](nombre-de-tu-foto-5.jpg)
+![Ficha del Desafío 1](./imagen_2026-09-27_185529895.png)
