@@ -15,7 +15,7 @@ Fotografía de la tabla de Benchmark inicial para comparar los procesos y el des
 ## 3. Matrices Detalladas (Estado del Arte y Atributos)
 Fotografía del trabajo consolidado con las dos tablas completas y más detalladas: el cruce de las tres soluciones (Credenciales Móviles, Biometría, QR) con sus respectivos atributos de servicio (Rapidez, Seguridad, Accesibilidad).
 
-![Tablas detalladas de Estado del Arte y Atributos](Imagenes/imagen_2026-09-27_185303037.png)
+![Tablas detalladas de Estado del Arte y Atributos](./imagen_2026-09-27_185303037.png)
 
 ## 4. Análisis Comparativo
 Fotografía con las respuestas desarrolladas por el equipo a las tres preguntas analíticas basadas en el cruce de las matrices anteriores.
