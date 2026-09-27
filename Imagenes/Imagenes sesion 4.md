@@ -20,7 +20,7 @@ Fotografía del trabajo consolidado con las dos tablas completas y más detallad
 ## 4. Análisis Comparativo
 Fotografía con las respuestas desarrolladas por el equipo a las tres preguntas analíticas basadas en el cruce de las matrices anteriores.
 
-![Respuestas a las preguntas de análisis](nombre-de-tu-foto-4.jpg)
+![Respuestas a las preguntas de análisis](./imagen_2026-09-27_185733217.png)
 
 ## 5. Ficha del Desafío 01 (Caracterización y Prototipo)
 Fotografía de la ficha técnica completada, que incluye nuestra propuesta en una frase, el bosquejo físico del prototipo de hardware/software, la arquitectura mínima y los próximos pasos.
