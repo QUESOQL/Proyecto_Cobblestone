@@ -10,7 +10,7 @@ Fotografía de la primera versión de la tabla del Estado del Arte, donde comenz
 ## 2. Tabla de Benchmark
 Fotografía de la tabla de Benchmark inicial para comparar los procesos y el desempeño de los sistemas analizados.
 
-![Tabla de Benchmark](nombre-de-tu-foto-2.jpg)
+![Tabla de Benchmark](./imagen_2026-09-27_190448910.png)
 
 ## 3. Matrices Detalladas (Estado del Arte y Atributos)
 Fotografía del trabajo consolidado con las dos tablas completas y más detalladas: el cruce de las tres soluciones (Credenciales Móviles, Biometría, QR) con sus respectivos atributos de servicio (Rapidez, Seguridad, Accesibilidad).
