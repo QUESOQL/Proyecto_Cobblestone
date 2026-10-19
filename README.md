@@ -4,7 +4,7 @@
 * **Equipo:** Equipo 04 — Cobblestone  
 * **Desafío:** 01 — Edificios Inteligentes: Caracterización de usuarios del Hub Providencia  
 * **Contraparte:** Hub Providencia (Cowork y Empleo)  
-* **Estado actual:** En desarrollo (Fase de diagnóstico y diseño de prototipo)  
+* **Estado actual:** En desarrollo (Fase de diseño y modelado de la solución - Entrega 2)  
 
 ---
 
@@ -14,6 +14,12 @@ Este proyecto aborda la ineficiencia en el registro de acceso y la falta de info
 Actualmente, el ingreso depende de formularios con código QR estático que exigen al usuario digitar manualmente sus datos en cada visita, o de controles manuales que no generan un historial estructurado. Esto genera fricción para los visitantes frecuentes y produce "ceguera de datos" para la administración, impidiendo conocer el flujo real de personas, las frecuencias y la ocupación de espacios. 
 
 **Objetivo:** Desarrollar un sistema de caracterización rápida y control de acceso mediante credenciales digitales (NFC/QR) e interfaces ágiles, apoyado por un dashboard que genere métricas de uso reales para optimizar la toma de decisiones del municipio.
+
+---
+
+## 🛠️ Avance Destacado de la Solución (Entrega 2)
+Puedes revisar el detalle de la arquitectura técnica, esquemáticos del prototipo y la propuesta para el pitch de avance en el siguiente documento:
+* 🚀 **[Desarrollo de la Solución y Pitch de Avance](./proyecto-final/Desarrollo%20de%20solución.md)**
 
 ---
 
@@ -85,7 +91,7 @@ El proyecto impacta directamente a:
 | Fase | Descripción / Actividad | Fechas Clave | Estado |
 | :--- | :--- | :--- | :--- |
 | **Fase 1: Descubrimiento** | Levantamiento de requerimientos, visita a terreno y entrevistas en el Hub. | 31 Ago – 12 Sep | 🟢 Completado |
-| **Fase 2: Prototipado** | Diseño de arquitectura de base de datos, matrices comparativas y wireframes. | 13 Sep – 06 Oct | 🟡 En Desarrollo |
+| **Fase 2: Prototipado** | Diseño de arquitectura de base de datos, matrices comparativas, wireframes y modelado. | 13 Sep – 06 Oct | 🟡 En Desarrollo |
 | **Fase 3: Desarrollo** | Programación del sistema de registro de acceso (NFC/QR) e integración con API. | 07 Oct – 01 Dic | ⚪ Pendiente |
 | **Fase 4: Entrega Final** | Exposición en Feria Capstone y validación final en instalaciones del Hub. | 02 Dic – 08 Dic | ⚪ Pendiente |
 
@@ -95,10 +101,12 @@ El proyecto impacta directamente a:
 
 En la carpeta [`/sesiones`](./sesiones) se encuentra el registro detallado de cada clase y salida a terreno:
 
-* 📄 **[Sesión 01: Identidad del Equipo y Definición del Desafío](./sesiones/Sesion1.md)** — Definición del nombre (Cobblestone), valores, normas y primer acercamiento al problema.
-* 📄 **[Sesión 02: Objetivos SMART y Compromisos](./sesiones/Sesion2.md)** — Formulación del objetivo grupal y las metas individuales de cada integrante.
-* 📄 **[Sesión 03: Presentación, Certezas y Salida a Terreno](./sesiones/Sesion3.md)** — Presentación del problema, papelógrafo de certezas/incertidumbres y levantamiento en terreno (Mapa de Empatía en Hub Providencia).
-* 📄 **[Sesión 04: Estado del Arte, Benchmarking y Propuesta](./sesiones/Sesion4.md)** — Análisis comparativo de soluciones (NFC, Biometría, QR), matriz de atributos y arquitectura mínima del prototipo.
+* 📄 **[Sesión 01: Identidad del Equipo y Definición del Desafío](./sesiones/sesion-01.md)** — Definición del nombre (Cobblestone), valores, normas y primer acercamiento al problema.
+* 📄 **[Sesión 02: Objetivos SMART y Compromisos](./sesiones/sesion-02.md)** — Formulación del objetivo grupal y las metas individuales de cada integrante.
+* 📄 **[Sesión 03: Presentación, Certezas y Salida a Terreno](./sesiones/sesion-03.md)** — Presentación del problema, papelógrafo de certezas/incertidumbres y levantamiento en terreno (Mapa de Empatía en Hub Providencia).
+* 📄 **[Sesión 04: Estado del Arte, Benchmarking y Propuesta](./sesiones/sesion-04.md)** — Análisis comparativo de soluciones (NFC, Biometría, QR), matriz de atributos y arquitectura mínima del prototipo.
+* 📄 **[Sesión 05: Coordinación de Entrega 2 y Contingencia](./sesiones/sesion-05.md)** — Definición de lineamientos para la Entrega 2 y plan de acción frente al paro universitario.
+* 📄 **[Sesión 06: Reconocimiento de Terreno y Validación del Entorno](./sesiones/sesion-06.md)** — Visita técnica al Hub Providencia durante el paro para evaluar puntos de acceso, iluminación y flujos de usuarios.
 
 ---
 
@@ -109,15 +117,10 @@ En la carpeta [`/sesiones`](./sesiones) se encuentra el registro detallado de ca
 | **28-08-2026** | Centrar el Hito 1 exclusivamente en la problemática y diagnóstico del Hub. | Exigencia de la pauta de evaluación del profesor (comprender el problema antes de proponer solución). |
 | **02-09-2026** | Ejecutar observación no participante y entrevistas presenciales en el Hub. | Necesidad de responder las 4 preguntas orientadoras del papelógrafo de la Sesión 3. |
 | **22-09-2026** | Priorizar **Seguridad y Rapidez** sobre la Biometría compleja en la matriz de atributos. | Resultados de la matriz comparativa (Estado del Arte) donde la combinación NFC + QR demostró mejor equilibrio técnico. |
+| **06-10-2026** | Realizar visita técnica en terreno durante el contexto de paro. | Necesidad de validar in situ la iluminación y disposición de enchufes/accesos para la ubicación del terminal físico. |
 
 ---
 
 ## 🚀 Próximo Hito
-* **Objetivo:** Simular y desarrollar el prototipo funcional de la aplicación móvil (Frontend) para la validación de usuarios y la selección de espacios.
-* **Criterio de éxito:** Subir al repositorio los wireframes finales y la interfaz gráfica lista para pruebas de interacción humano-máquina.
-
----
-
-## 📄 Uso y Licencia
-*[Proyecto desarrollado en el marco de la asignatura Proyecto Capstone Intermedio 2026 - Universidad Mayor. Prohibida la reproducción total o parcial sin autorización del equipo o de la contraparte Hub Providencia.]*
-
+* **Objetivo:** Presentar el Pitch de Avance y consolidar los diagramas conceptuales, wireframes del Frontend y modelo de datos para la **Entrega 2**.
+* **Criterio de éxito:** Subir al repositorio la documentación de la solución y los prototipos de interfaz gráfica listos para revisión.
