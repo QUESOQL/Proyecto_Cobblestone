@@ -101,12 +101,12 @@ El proyecto impacta directamente a:
 
 En la carpeta [`/sesiones`](./sesiones) se encuentra el registro detallado de cada clase y salida a terreno:
 
-* 📄 **[Sesión 01: Identidad del Equipo y Definición del Desafío](./sesiones/sesion-01.md)** — Definición del nombre (Cobblestone), valores, normas y primer acercamiento al problema.
-* 📄 **[Sesión 02: Objetivos SMART y Compromisos](./sesiones/sesion-02.md)** — Formulación del objetivo grupal y las metas individuales de cada integrante.
-* 📄 **[Sesión 03: Presentación, Certezas y Salida a Terreno](./sesiones/sesion-03.md)** — Presentación del problema, papelógrafo de certezas/incertidumbres y levantamiento en terreno (Mapa de Empatía en Hub Providencia).
-* 📄 **[Sesión 04: Estado del Arte, Benchmarking y Propuesta](./sesiones/sesion-04.md)** — Análisis comparativo de soluciones (NFC, Biometría, QR), matriz de atributos y arquitectura mínima del prototipo.
-* 📄 **[Sesión 05: Coordinación de Entrega 2 y Contingencia](./sesiones/sesion-05.md)** — Definición de lineamientos para la Entrega 2 y plan de acción frente al paro universitario.
-* 📄 **[Sesión 06: Reconocimiento de Terreno y Validación del Entorno](./sesiones/sesion-06.md)** — Visita técnica al Hub Providencia durante el paro para evaluar puntos de acceso, iluminación y flujos de usuarios.
+* 📄 **[Sesión 01: Identidad del Equipo y Definición del Desafío](./sesiones/Sesion1.md)** — Definición del nombre (Cobblestone), valores, normas y primer acercamiento al problema.
+* 📄 **[Sesión 02: Objetivos SMART y Compromisos](./sesiones/Sesion2.md)** — Formulación del objetivo grupal y las metas individuales de cada integrante.
+* 📄 **[Sesión 03: Presentación, Certezas y Salida a Terreno](./sesiones/Sesion3.md)** — Presentación del problema, papelógrafo de certezas/incertidumbres y levantamiento en terreno (Mapa de Empatía en Hub Providencia).
+* 📄 **[Sesión 04: Estado del Arte, Benchmarking y Propuesta](./sesiones/Sesion4.md)** — Análisis comparativo de soluciones (NFC, Biometría, QR), matriz de atributos y arquitectura mínima del prototipo.
+* 📄 **[Sesión 05: Coordinación de Entrega 2 y Contingencia](./sesiones/Sesion5.md)** — Definición de lineamientos para la Entrega 2 y plan de acción frente al paro universitario.
+* 📄 **[Sesión 06: Visita Técnica Coordinada al Hub Providencia](./sesiones/Sesion6.md)** — Salida a terreno organizada por el profesor para toda la sección durante el paro, enfocada en evaluar accesos, iluminación y flujos en ambos edificios.
 
 ---
 
@@ -117,7 +117,7 @@ En la carpeta [`/sesiones`](./sesiones) se encuentra el registro detallado de ca
 | **28-08-2026** | Centrar el Hito 1 exclusivamente en la problemática y diagnóstico del Hub. | Exigencia de la pauta de evaluación del profesor (comprender el problema antes de proponer solución). |
 | **02-09-2026** | Ejecutar observación no participante y entrevistas presenciales en el Hub. | Necesidad de responder las 4 preguntas orientadoras del papelógrafo de la Sesión 3. |
 | **22-09-2026** | Priorizar **Seguridad y Rapidez** sobre la Biometría compleja en la matriz de atributos. | Resultados de la matriz comparativa (Estado del Arte) donde la combinación NFC + QR demostró mejor equilibrio técnico. |
-| **06-10-2026** | Realizar visita técnica en terreno durante el contexto de paro. | Necesidad de validar in situ la iluminación y disposición de enchufes/accesos para la ubicación del terminal físico. |
+| **06-10-2026** | Participar en la visita en terreno coordinada por el profesor para toda la sección. | Validar in situ las condiciones físicas de acceso, iluminación y conectividad para el prototipo técnico. |
 
 ---
 
