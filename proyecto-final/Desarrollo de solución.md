@@ -3,15 +3,15 @@
 **Asignatura:** Proyecto Capstone Intermedio  
 **Equipo 04:** Cobblestone (Fernando Alarcón, Diego Ayala, Víctor Santana, Luciano Torretti)  
 **Desafío:** 01 — Edificios Inteligentes: Caracterización de Usuarios del Hub Providencia  
-**Enfoque:** Preparación para la **Entrega 2 (Solución y Desarrollo)**
+**Enfoque:** Preparación para la **Entrega 2 (Solución y Desarrollo Conceptual)**
 
 ---
 
 ## 📌 1. ¿En qué estamos? (Punto de la Propuesta)
 
-Tras completar la fase de diagnóstico (salida a terreno en los edificios de Cowork y Empleo del Hub Providencia) y elaborar el **Estado del Arte y Benchmarking**, hemos definido y cerrado el diseño conceptual de nuestra solución.
+Tras completar la fase de diagnóstico (salida a terreno en los edificios de Cowork y Empleo del Hub Providencia) y elaborar el **Estado del Arte y Benchmarking**, hemos definido y cerrado la propuesta conceptual de nuestra solución.
 
-Pasamos formalmente de la definición de la problemática al **desarrollo técnico de la propuesta**.
+A una semana de la **Entrega 2**, nos encontramos pasando formalmente de la definición del problema al **diseño y modelado de la solución**.
 
 ---
 
@@ -26,27 +26,26 @@ Proponemos un **sistema integrado de caracterización rápida y control de acces
 
 ---
 
-## 🚀 3. Avances Concretos y Trabajo Actual
+## 🚀 3. Avances Concretos y Trabajo Actual (Enfoque Entrega 2)
 
-De cara a la **Entrega 2**, el equipo se encuentra trabajando en los siguientes frentes:
+De cara a la **Entrega 2** que se presenta la próxima semana, el equipo está priorizando los entregables conceptuales, de diseño y arquitectura de la solución:
 
-1. **Arquitectura Mínima Cerrada:**
+1. **Definición de la Arquitectura Mínima:**
    * **Entradas:** ID por persona mediante Smartphone[cite: 8].
-   * **Procesamiento:** Validación mediante servidor/API con tecnología NFC o QR[cite: 8].
-   * **Salidas:** Indicadores LED de estado (Verde/Rojo) y actualización del dashboard[cite: 8].
-   * **Conectividad:** Envío de eventos vía Wi-Fi/Internet hacia la base de datos centralizada[cite: 8].
+   * **Procesamiento:** Mapeo del flujo de validación mediante NFC o QR[cite: 8].
+   * **Salidas:** Definición de la lógica para indicadores LED (Verde/Rojo) y alertas de estado[cite: 8].
+   * **Conectividad:** Modelo de transmisión de eventos vía Wi-Fi/Internet hacia la base de datos[cite: 8].
 
-2. **Desarrollo del Frontend (Próximo Test):**
-   * Estamos diseñando y simulando la interfaz de la **aplicación móvil** para validar la experiencia de usuario (UI/UX) al momento de enrolarse y seleccionar espacios[cite: 8].
+2. **Diseño y Simulación del Frontend:**
+   * Creación de los wireframes/prototipos de pantalla para simular la **aplicación móvil** (lo que ve el usuario al enrolarse y seleccionar espacios) para validar la experiencia UI/UX antes de programar[cite: 8].
 
-3. **Estructuración de Hardware y Backend:**
-   * Definición de lógica en microcontrolador (ESP32) para tiempos de respuesta menores a 7 segundos.
-   * Modelado de la base de datos relacional para la captura de variables clave (Nombre, Motivo, Hora de entrada y salida)[cite: 8].
+3. **Modelado de Datos:**
+   * Estructuración del esquema de la base de datos relacional para capturar las variables clave solicitadas por la contraparte (Nombre, Motivo, Hora de entrada y salida)[cite: 8].
 
 ---
 
-## 🎯 4. Lo que falta para la Entrega 2
+## 🎯 4. Lo que falta para completar la Entrega 2 (Próxima semana)
 
-* Conectar la interfaz simulada (Frontend) con la API de registro.
-* Montar el circuito del prototipo de hardware (Sensor NFC + LED + ESP32).
-* Realizar pruebas de integración para validar la velocidad de lectura del sistema en menos de 7 segundos.
+* **Finalizar prototipo visual:** Consolidar los bocetos interactivos/wireframes de la aplicación móvil (Frontend).
+* **Documentar diagramas:** Diagrama de bloques de la arquitectura técnica y diagrama de flujo del usuario al ingresar.
+* **Ajustar el Pitch:** Ensayar la presentación breve de la solución para responder al feedback del profesor en la entrega.
