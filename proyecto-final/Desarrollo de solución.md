@@ -24,11 +24,6 @@ Proponemos un **sistema integrado de caracterización rápida y control de acces
 * **Dispositivo físico (Hardware de captura):** Terminal en puerta equipado con sensor NFC, cámara, pantalla de previsualización e indicadores LED (verde para acceso validado, rojo para denegado)[cite: 8].
 * **Base de Datos y Dashboard Administrativo:** Registro en tiempo real de entradas, salidas y ocupación de espacios para entregar métricas concretas a la Municipalidad[cite: 8].
 
-### 🛠️ Esquemático del Prototipo
-
-![Esquemático y Arquitectura del Prototipo](Imagenes/Solucion.png)
-*Esquema del dispositivo físico, interacción del smartphone con el sensor NFC/Cámara y arquitectura mínima del sistema.*
-
 ---
 
 ## 🚀 3. Avances Concretos y Trabajo Actual
