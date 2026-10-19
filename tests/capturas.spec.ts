@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { expectNoHorizontalScroll, freshStart } from "./helpers";
 
 /** Recorre cada pantalla a 390, 768 y 1440 px: sin scroll lateral, sin errores de consola. */
-const ROUTES = ["/", "/registro", "/reservar", "/inicio", "/recepcion", "/admin"];
+const ROUTES = ["/", "/avance", "/registro", "/reservar", "/inicio", "/recepcion", "/admin"];
 const WIDTHS = [390, 768, 1440];
 
 for (const route of ROUTES) {

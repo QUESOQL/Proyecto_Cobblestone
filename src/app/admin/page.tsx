@@ -211,9 +211,9 @@ export default function AdminPage() {
           ))}
         </section>
 
-        <div className="mt-6 grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_384px]">
+        <div className="mt-6 grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_384px]">
           {/* Gráfico principal */}
-          <section aria-labelledby="occ-title" className="rounded-card border border-border bg-surface p-5">
+          <section aria-labelledby="occ-title" className="min-w-0 rounded-card border border-border bg-surface p-5">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <h2 id="occ-title" className="text-[18px] font-semibold">
@@ -255,7 +255,7 @@ export default function AdminPage() {
           </section>
 
           {/* Riel: quiénes vienen + incidencias */}
-          <div className="flex flex-col gap-6">
+          <div className="flex min-w-0 flex-col gap-6">
             <section aria-labelledby="seg-title" className="rounded-card border border-border bg-surface p-5">
               <div className="flex items-baseline justify-between">
                 <h2 id="seg-title" className="text-[16px] font-semibold">
@@ -316,8 +316,8 @@ export default function AdminPage() {
         </div>
 
         {/* Semana y horas punta, a igual ancho */}
-        <div className="mt-6 grid gap-6 lg:grid-cols-2">
-          <section aria-labelledby="week-title" className="rounded-card border border-border bg-surface p-5">
+        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <section aria-labelledby="week-title" className="min-w-0 rounded-card border border-border bg-surface p-5">
             <h2 id="week-title" className="text-[16px] font-semibold">
               Entradas por día
             </h2>
@@ -328,7 +328,7 @@ export default function AdminPage() {
               <BarChart bars={weekBars} height={180} ariaLabel="Entradas por día, últimos 7 días" />
             </div>
           </section>
-          <section aria-labelledby="peak-title" className="rounded-card border border-border bg-surface p-5">
+          <section aria-labelledby="peak-title" className="min-w-0 rounded-card border border-border bg-surface p-5">
             <h2 id="peak-title" className="text-[16px] font-semibold">
               Horas punta
             </h2>
