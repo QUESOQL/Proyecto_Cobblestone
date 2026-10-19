@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AforoON — Prototipo de frontend
 
-## Getting Started
+Sistema de acceso, reservas con control de aforo y dashboard para el **Hub Providencia** (Los Jesuitas 881). Parte del Proyecto Capstone Intermedio 2026 del **Equipo Cobblestone**.
 
-First, run the development server:
+Reemplaza el QR estático con formulario que hoy se llena en cada visita por un **enrolamiento único**, una **credencial NFC con QR dinámico** y un **terminal en la puerta** con LED verde o rojo. La administración recibe métricas reales de ocupación y caracterización de usuarios.
+
+## Pantallas
+
+| Ruta | Pantalla | Quién la usa | Qué hace |
+| --- | --- | --- | --- |
+| `/` | Landing | Público | Presenta AforoON. Incluye una comparación en vivo entre el formulario de hoy y la puerta con AforoON. |
+| `/avance` | Avance del prototipo | Equipo | Índice de las cinco pantallas para presentar. |
+| `/registro` | Enrolamiento único y credencial | Socio, teléfono | Cuenta, datos con RUT validado, consentimiento (Ley 21.719), credencial NFC y QR dinámico que cambia cada 30 s. |
+| `/reservar` | Selección de espacio y bloque | Socio, teléfono | Día, zona, espacio y bloque con su aforo. Bloquea bloques llenos o pasados, superposiciones y más de 3 reservas activas. |
+| `/inicio` | Inicio del socio | Socio, teléfono | Próxima reserva, ocupación del Hub en este momento, charlas con inscripción y capacitadores. |
+| `/recepcion` | Terminal de acceso | Recepción, tablet | Lectura NFC o QR, LED, tiempo de validación contra la meta de 7 s, excepciones, entradas y salidas, modo sin conexión. |
+| `/admin` | Dashboard de ocupación | Administración, computador | Entradas, ocupación por bloque y zona, no-show, horas punta, perfiles de usuario, charlas y exportación CSV. |
+
+Las pantallas comparten la misma sesión, guardada en el navegador: lo que reservas en el teléfono aparece en el terminal y en el dashboard. El botón "Borrar mi cuenta" o "Reiniciar demo" deja todo en blanco.
+
+## Cómo correrlo
+
+Requiere Node 20 o superior.
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abre http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Pruebas
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Pruebas end-to-end con Playwright. Usan el Chrome instalado en el equipo; no descargan navegadores.
 
-## Learn More
+```bash
+npm run test:e2e
+```
 
-To learn more about Next.js, take a look at the following resources:
+Cubren el flujo de cada pantalla y revisan cada ruta a 390, 768 y 1440 px, sin scroll lateral ni errores de consola. Las capturas quedan en `tests/screenshots/`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Diseño
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Sistema de diseño en Figma:** [AforoON — Sistema de diseño](https://www.figma.com/design/NK1PirX0HLADYyv9tvmqcj). Tiene variables de color y espaciado con su sintaxis CSS, estilos de texto DM Sans y una lámina de fundamentos.
+- **Pantallas de app:** estilo *accent-ladder* (taste skill) con el azul de HUB Providencia. El azul pleno solo va en lo ocupado y en la acción principal; sus tintes forman las pistas de aforo.
+- **Landing:** dirección *The sentence is the layout*. En el nombre AforoON, la segunda O es la foto real de la puerta del Edificio Cowork.
+- **Movimiento:** curvas y duraciones de Emil Kowalski (ease-out fuerte, hojas con curva *drawer*, botones que se hunden al presionar) y respeto por `prefers-reduced-motion`.
+- **Revisión:** taste skill (`lint.mjs` e `inspect.mjs`) e Impeccable (`audit` y detector).
 
-## Deploy on Vercel
+## Estructura
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+src/app/           una carpeta por pantalla (page.tsx)
+src/components/    ui.tsx (marca, botones, pista de aforo, hoja inferior), charts.tsx, landing/
+src/lib/data.ts    catálogo real del Hub y datos de ejemplo deterministas
+src/lib/store.ts   estado compartido y reglas de aforo (Sección 8 del Master Plan)
+public/hub/        fotos del Hub tomadas por el equipo en la salida a terreno
+tests/             pruebas Playwright y capturas
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Antes de producción
+
+- **Datos de ejemplo:** los socios, las reservas, las charlas y los capacitadores son datos de ejemplo generados en `src/lib/data.ts`. Se reemplazan por la API real (base de datos y registro de Víctor).
+- **Reglas de aforo:** en el prototipo corren en el navegador. En producción la garantía contra la sobreventa debe estar en PostgreSQL (`SELECT … FOR UPDATE` sobre la tabla contadora).
+- **Hardware de la puerta:** la lectura NFC y QR del terminal está simulada. Falta conectarla al hardware (ESP32 con sensor NFC y LED).
+- **Inicio de sesión:** el ingreso con Google o Apple está simulado.

@@ -85,6 +85,17 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+p,
+dd,
+li {
+  text-wrap: pretty;
+}
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
 .num {
   font-variant-numeric: tabular-nums;
 }

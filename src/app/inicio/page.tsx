@@ -114,7 +114,7 @@ export default function InicioPage() {
             <p className="num mt-3 text-[22px] font-medium leading-[28px]">{blockLabel(next.block)}</p>
             <p className="text-[13px] text-muted">{formatDay(next.day, "long")}</p>
             <div className="mt-4 flex gap-2">
-              <Link href="/registro" className="press flex h-10 flex-1 items-center justify-center gap-2 rounded-control bg-primary text-[14px] font-medium text-white">
+              <Link href="/registro" className="press flex h-11 flex-1 items-center justify-center gap-2 rounded-control bg-primary text-[14px] font-medium text-white">
                 <Nfc size={17} aria-hidden="true" /> Cómo entrar
               </Link>
               <Button
@@ -194,7 +194,7 @@ export default function InicioPage() {
                     setTimeout(() => setToast(null), 3000);
                   }}
                   className={cx(
-                    "press h-9 flex-none self-center rounded-full px-3.5 text-[13px] font-medium",
+                    "press h-11 flex-none self-center rounded-full px-4 text-[13px] font-medium",
                     isIn ? "bg-accent-soft text-accent-ink" : "border border-control",
                     left <= 0 && !isIn && "border-transparent bg-raised text-muted",
                   )}
@@ -239,7 +239,7 @@ export default function InicioPage() {
                 {slot ? (
                   <Link
                     href={`/reservar?zona=salas&unidad=entrevistas&dia=${slot.day}`}
-                    className="press mt-3 flex h-10 items-center justify-between rounded-control bg-raised px-3 text-[13px]"
+                    className="press mt-3 flex h-11 items-center justify-between border-t border-rule pt-1 text-[13px]"
                   >
                     <span>
                       {formatDay(slot.day)} <span className="num">{blockById(slot.block).start}</span>
@@ -247,7 +247,7 @@ export default function InicioPage() {
                     <span className="font-medium text-accent-ink">Agendar</span>
                   </Link>
                 ) : (
-                  <p className="mt-3 flex h-10 items-center rounded-control bg-raised px-3 text-[13px] text-muted">Sin horas esta semana</p>
+                  <p className="mt-3 flex h-11 items-center border-t border-rule pt-1 text-[13px] text-muted">Sin horas esta semana</p>
                 )}
               </article>
             );

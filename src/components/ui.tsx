@@ -95,7 +95,7 @@ export function Button({ variant = "secondary", size = "md", className, ...rest 
       {...rest}
       className={cx(
         "press inline-flex items-center justify-center gap-2 rounded-control font-medium disabled:cursor-not-allowed",
-        size === "lg" ? "h-12 px-5 text-[15px]" : "h-9 px-3.5 text-[14px]",
+        size === "lg" ? "h-12 px-5 text-[15px]" : "h-11 px-4 text-[14px] lg:h-9 lg:px-3.5",
         variant === "primary" && "bg-primary text-white disabled:bg-[#9aa0a6]",
         variant === "accent" && "bg-accent text-white disabled:bg-[#9aa0a6]",
         variant === "secondary" && "border border-control bg-surface text-text disabled:text-muted",

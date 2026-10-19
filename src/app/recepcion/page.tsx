@@ -134,7 +134,7 @@ export default function RecepcionPage() {
               onClick={() => s.setOffline(!state.offline)}
               aria-pressed={state.offline}
               className={cx(
-                "press flex h-9 items-center gap-2 rounded-full px-3.5 text-[13px] font-medium",
+                "press flex h-11 items-center gap-2 rounded-full px-4 text-[13px] font-medium",
                 state.offline ? "bg-[var(--pill-warning-bg)] text-[var(--pill-warning-ink)]" : "bg-[var(--pill-positive-bg)] text-[var(--pill-positive-ink)]",
               )}
             >
@@ -162,7 +162,7 @@ export default function RecepcionPage() {
                         setResult(null);
                       }}
                       className={cx(
-                        "press h-8 rounded-[5px] px-4 text-[13px] capitalize",
+                        "press h-11 rounded-[5px] px-5 text-[14px] capitalize",
                         mode === m ? "bg-surface font-medium shadow-[0_1px_2px_rgba(0,0,0,0.06)]" : "text-muted",
                       )}
                     >
@@ -195,10 +195,10 @@ export default function RecepcionPage() {
                       <p className="text-[12px] text-muted">{p.segment}</p>
                     </div>
                     <div className="flex flex-none gap-2">
-                      <Button aria-label={`Acercar NFC de ${p.name}`} onClick={() => scan(p, "nfc")} disabled={!!reading}>
+                      <Button aria-label={`Acercar NFC de ${p.name}`} onClick={() => scan(p, "nfc")} disabled={!!reading} className="!h-11 !px-4">
                         <Nfc size={16} aria-hidden="true" /> <span className="hidden sm:inline">NFC</span>
                       </Button>
-                      <Button aria-label={`Leer QR de ${p.name}`} onClick={() => scan(p, "qr")} disabled={!!reading}>
+                      <Button aria-label={`Leer QR de ${p.name}`} onClick={() => scan(p, "qr")} disabled={!!reading} className="!h-11 !px-4">
                         <QrCode size={16} aria-hidden="true" /> <span className="hidden sm:inline">QR</span>
                       </Button>
                     </div>
@@ -245,7 +245,7 @@ export default function RecepcionPage() {
                   Registro de accesos
                 </h2>
                 {state.events.length > 0 && (
-                  <button onClick={s.reset} className="press flex h-8 items-center gap-1 rounded-control px-2 text-[12px] text-muted">
+                  <button onClick={s.reset} className="press flex h-11 items-center gap-1 rounded-control px-2 text-[12px] text-muted">
                     <RotateCcw size={13} aria-hidden="true" /> Reiniciar demo
                   </button>
                 )}

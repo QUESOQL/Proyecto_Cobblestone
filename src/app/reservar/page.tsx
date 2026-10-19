@@ -181,7 +181,7 @@ function Reservar() {
             aria-selected={zone === b.id}
             onClick={() => pickZone(b.id)}
             className={cx(
-              "press h-10 rounded-control text-[13px]",
+              "press h-11 rounded-control text-[13px]",
               zone === b.id ? "bg-surface font-medium text-text shadow-[0_1px_2px_rgba(0,0,0,0.06)]" : "text-muted",
             )}
           >
