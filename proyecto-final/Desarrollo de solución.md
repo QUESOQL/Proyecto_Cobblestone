@@ -26,7 +26,7 @@ Proponemos un **sistema integrado de caracterización rápida y control de acces
 
 ### 🛠️ Esquemático del Prototipo
 
-![Esquemático y Arquitectura del Prototipo](./Solucion.png)
+![Esquemático y Arquitectura del Prototipo](Imagenes/Solucion.png)
 *Esquema del dispositivo físico, interacción del smartphone con el sensor NFC/Cámara y arquitectura mínima del sistema.*
 
 ---
