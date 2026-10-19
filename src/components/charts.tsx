@@ -26,7 +26,7 @@ function niceStep(max: number, ticks = 4) {
   return step * pow;
 }
 
-const FILL = { now: "var(--accent)", future: "var(--accent-track)", muted: "#c7cbd1" } as const;
+const FILL = { now: "var(--accent)", future: "var(--accent-track)", muted: "var(--inactive-soft)" } as const;
 
 export function BarChart({
   bars,
@@ -73,7 +73,7 @@ export function BarChart({
       <svg viewBox={`0 0 ${W} ${height}`} width={W} height={height} role="img" aria-label={ariaLabel} className="block max-w-full overflow-visible">
         {ticks.map((t) => (
           <g key={t}>
-            <line x1={padL} x2={W - padR} y1={y(t)} y2={y(t)} stroke={t === 0 ? "#9aa0a6" : "var(--border)"} strokeWidth={1} vectorEffect="non-scaling-stroke" />
+            <line x1={padL} x2={W - padR} y1={y(t)} y2={y(t)} stroke={t === 0 ? "var(--inactive)" : "var(--border)"} strokeWidth={1} vectorEffect="non-scaling-stroke" />
             <text x={padL - 8} y={y(t)} dy="0.32em" textAnchor="end" fontSize="11" fill="var(--muted)" className="num">
               {Number.isInteger(t) ? t : t.toFixed(1)}
             </text>
@@ -138,7 +138,7 @@ export function BarList({ rows, total }: { rows: { label: string; value: number;
             </span>
           </div>
           <div className="mt-1.5 h-[3px] w-full">
-            <div className="h-full rounded-full" style={{ width: `${(r.value / max) * 88}%`, background: i === 0 ? "var(--text)" : "#c7cbd1" }} />
+            <div className="h-full rounded-full" style={{ width: `${(r.value / max) * 88}%`, background: i === 0 ? "var(--text)" : "var(--inactive-soft)" }} />
           </div>
         </li>
       ))}

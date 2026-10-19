@@ -428,7 +428,7 @@ function Sidebar({ className }: { className?: string }) {
             key={href}
             href={href}
             aria-current={active ? "page" : undefined}
-            className={cx("press flex h-8 items-center gap-2.5 rounded-[8px] px-2.5 text-[14px] mb-0.5", active ? "bg-[#e9ecf0] text-text" : "text-muted hover-raise")}
+            className={cx("press flex h-8 items-center gap-2.5 rounded-[8px] px-2.5 text-[14px] mb-0.5", active ? "bg-[var(--raised)] text-text" : "text-muted hover-raise")}
           >
             <Icon size={16} strokeWidth={1.6} className={active ? "text-accent" : undefined} aria-hidden="true" /> {label}
           </Link>

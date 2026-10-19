@@ -14,11 +14,12 @@ import { Showcase } from "@/components/landing/showcase";
  */
 
 const STAGES = [
-  { time: "Dos minutos", seconds: 120, clause: "Primero, creas tu credencial con tu RUT y tu perfil. Una sola vez.", bg: "var(--accent-soft)", ink: "var(--accent-ink)" },
-  { time: "Treinta segundos", seconds: 30, clause: "Después, eliges mesa, oficina o charla con el cupo real a la vista.", bg: "var(--accent-track)", ink: "var(--accent-ink)" },
-  { time: "Siete segundos", seconds: 7, clause: "En la puerta, acercas el teléfono o muestras tu QR.", bg: "var(--accent)", ink: "#ffffff" },
+  { time: "Dos minutos", seconds: 120, clause: "Primero, creas tu credencial con tu RUT y tu perfil. Una sola vez.", bg: "var(--surface)", ink: "var(--text)" },
+  { time: "Treinta segundos", seconds: 30, clause: "Después, eliges mesa, oficina o charla con el cupo real a la vista.", bg: "var(--raised)", ink: "var(--text)" },
+  { time: "Siete segundos", seconds: 7, clause: "En la puerta, acercas el teléfono o muestras tu QR.", bg: "var(--stone)", ink: "var(--text)" },
   { time: "Las horas que necesites", seconds: 7200, clause: "Luego, el tiempo es tuyo: trabajas, aprendes o te reúnes.", bg: "var(--primary)", ink: "#ffffff" },
 ];
+const STRIP = ["/hub/cowork.jpg", "/hub/oficina.jpg", "/hub/set.jpg", "/hub/charlas.jpg", "/hub/empleo.jpg", "/hub/fachada.jpg"];
 const TOTAL = STAGES.reduce((a, s) => a + s.seconds, 0);
 
 const ROWS = [
@@ -97,11 +98,7 @@ export default function Landing() {
         <div className="flex flex-1 items-center justify-center">
           <h1 className="lp-display whitespace-nowrap" aria-label="AforoON">
             <span aria-hidden="true">
-              Aforo
-              <span className="lp-o lp-shutter">
-                <Image src="/hub/fachada.jpg" alt="" width={360} height={360} priority sizes="(min-width: 768px) 15vw, 30vw" className="object-[50%_44%]" />
-              </span>
-              N
+              Aforo<span className="lp-o lp-shutter"><Image src="/hub/fachada.jpg" alt="" width={360} height={360} priority sizes="(min-width: 768px) 15vw, 30vw" className="object-[50%_44%]" /></span>N
             </span>
           </h1>
         </div>
@@ -130,7 +127,7 @@ export default function Landing() {
             <Image src="/hub/cowork.jpg" alt="" width={120} height={80} className="object-[80%_58%]" />
           </span>
           o charla
-          <span className="lp-thumb">
+          <span className="lp-thumb max-md:!hidden">
             <Image src="/hub/charlas.jpg" alt="" width={120} height={80} className="object-[50%_42%]" />
           </span>
           desde el teléfono.
@@ -181,6 +178,16 @@ export default function Landing() {
             Todo el Hub, con su aforo
           </h2>
         </div>
+        {/* Tira de fotos reales del Hub que avanza lenta (Noho): el color saturado vive en las fotos. */}
+        <div className="lp-strip -mx-[var(--m)] mt-16 md:mt-24" aria-hidden="true">
+          <div className="lp-strip-track">
+            {[...STRIP, ...STRIP].map((src, i) => (
+              <div key={i} className="relative aspect-[3/4] w-[44vw] flex-none overflow-hidden md:w-[17vw]">
+                <Image src={src} alt="" fill sizes="(min-width: 768px) 17vw, 44vw" className="object-cover" />
+              </div>
+            ))}
+          </div>
+        </div>
         <div className="mt-16 flex flex-col gap-16 md:mt-24 md:gap-28">
           {ROWS.map((r, i) => (
             <article key={r.title} className="grid gap-6 md:grid-cols-12 md:items-start" data-reveal>
@@ -229,7 +236,7 @@ export default function Landing() {
       </section>
 
       {/* ------------------------------------------------------------ preguntas */}
-      <section id="preguntas" aria-labelledby="faq-title" className="lp-wrap pb-[120px] md:pb-[200px]" data-reveal>
+      <section id="preguntas" aria-labelledby="faq-title" className="lp-wrap bg-stone py-[120px] md:py-[180px]" data-reveal>
         <dl className="flex flex-col gap-14 md:gap-20">
           <div className="grid md:grid-cols-12">
             <h2 id="faq-title" className="lp-rise lp-statement text-muted md:col-span-6">
