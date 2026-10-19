@@ -1,55 +1,123 @@
-# Proyecto_Cobblestone
-# Desafío 01: Edificios Inteligentes — Caracterización de Usuarios del Hub Providencia
+# 📂 Proyecto Cobblestone: Sistema de Caracterización y Control de Acceso
+**Capstone Intermedio 2026**
 
-> **Curso:** Proyecto Capstone Intermedio 2026  
-> **Organización Mandante:** Municipalidad de Providencia / Hub Providencia  
-> **Grupo:** Equipo 4 — Cobblestone  
-
----
-
-### 👥 Integrantes
-* Fernando Alarcón -  Ingeniería Civil Industrial
-* Diego Ayala - Ingeniería Civil Electrónica
-* Víctor Santana - Ingeniería Civil en Computación e Informática.
-* Luciano Torretti - Ingeniería Civil en Computación e Informática
+* **Equipo:** Equipo 04 — Cobblestone  
+* **Desafío:** 01 — Edificios Inteligentes: Caracterización de usuarios del Hub Providencia  
+* **Contraparte:** Hub Providencia (Cowork y Empleo)  
+* **Estado actual:** En desarrollo (Fase de diagnóstico y diseño de prototipo)  
 
 ---
 
-## 📑 Índice de Contenidos
+## 📌 Descripción del Proyecto
+Este proyecto aborda la ineficiencia en el registro de acceso y la falta de información respecto a los perfiles de uso en las instalaciones del Hub Providencia (Edificio Cowork y Edificio Empleo). 
 
-1. [Descripción del Desafío](#-descripción-del-desafío)
-2. [Estructura del Repositorio](#-estructura-del-repositorio)
-3. [Entregables Esperados](#-entregables-esperados)
+Actualmente, el ingreso depende de formularios con código QR estático que exigen al usuario digitar manualmente sus datos en cada visita, o de controles manuales que no generan un historial estructurado. Esto genera fricción para los visitantes frecuentes y produce "ceguera de datos" para la administración, impidiendo conocer el flujo real de personas, las frecuencias y la ocupación de espacios. 
 
----
-
-## 🎯 Descripción del Desafío
-
-**Pregunta orientadora:**  
-¿Cómo podríamos cuantificar y caracterizar a los usuarios del edificio del Hub Providencia?
-
-**Contexto y Problema:**  
-El Hub Providencia recibe diariamente a emprendedores, startups, estudiantes, vecinos y visitantes. Actualmente existe información limitada sobre quiénes utilizan el edificio, la frecuencia y los espacios que ocupan, lo que dificulta la planificación de servicios y actividades.
-
-**Objetivo:**  
-Diseñar e implementar una solución que permita identificar, segmentar y analizar perfiles y patrones de uso del edificio para apoyar la gestión y la toma de decisiones.
+**Objetivo:** Desarrollar un sistema de caracterización rápida y control de acceso mediante credenciales digitales (NFC/QR) e interfaces ágiles, apoyado por un dashboard que genere métricas de uso reales para optimizar la toma de decisiones del municipio.
 
 ---
 
-## 📁 Estructura del Repositorio
+## 👥 Equipo y Roles
 
-| Carpeta / Archivo | Descripción |
+| Integrante | Carrera o Especialidad | Rol en el Proyecto | Usuario de GitHub |
+| :--- | :--- | :--- | :--- |
+| **Fernando Alarcón** | Ingeniería Civil Industrial | Análisis de datos de categorización, informes y estructuración | *(Tu usuario de GitHub)* |
+| **Diego Ayala** | Ingeniería Civil Electrónica | Evaluación de hardware, configurador de tecnología y pitch | *(Usuario de Diego)* |
+| **Víctor Santana** | Ingeniería Civil Informática | Desarrollador Backend, base de datos y seguridad | *(Usuario de Víctor)* |
+| **Luciano Torretti** | Ingeniería Civil Informática | Desarrollador Frontend e interfaz de interacción humano-máquina | *(Usuario de Luciano)* |
+
+---
+
+## 🤝 Valores y Normas del Equipo
+
+### Valores del Equipo
+* **Responsabilidad:** Cumplir con las partes asignadas en los plazos acordados para no retrasar la continuidad de los hitos del proyecto.
+* **Comunicación transparente:** Avisar con anticipación ante bloqueos técnicos o imprevistos de tiempo.
+* **Proactividad:** Proponer soluciones, bocetos y diseños sin esperar instrucciones paso a paso.
+
+### Normas de Funcionamiento
+1. **Plazos internos:** Fijar entregas de revisión al menos 1 o 2 días antes de las fechas límites estipuladas en la asignatura.
+2. **Centralización de archivos:** Todo avance formal, bitácora y código se sube directamente a este repositorio de GitHub.
+3. **Resolución de desacuerdos:** Las decisiones técnicas priorizarán las necesidades reales levantadas en el Hub Providencia. Si no hay consenso, se resolverá por votación de mayoría simple (3 de 4).
+4. **Registro de decisiones:** El seguimiento de tareas se coordinará por WhatsApp, mientras que la documentación de arquitectura y bitácora se consolidará en GitHub.
+
+---
+
+## 🔍 Desafío Inicial
+
+El reto consiste en cuantificar y caracterizar a los usuarios del Hub Providencia evitando la sobrecarga de datos en cada visita.
+
+* **Lo que sabemos:** El proceso actual con código QR es repetitivo para usuarios frecuentes. La infraestructura cuenta con dos edificios (Cowork con 4 salas/oficinas de charlas en primer piso y Empleo con múltiples pisos de capacitación). No se reportan problemas críticos de seguridad/robos, pero existe baja caracterización del flujo.
+* **Lo que no sabemos:** El tiempo exacto de espera en hora punta y la predisposición de los usuarios a adoptar tecnología NFC vs. QR.
+* **Supuestos a comprobar:** Suponemos que al ofrecer un enrolamiento único vía App/Credencial Digital se reducirá el tiempo de acceso a menos de 7 segundos y aumentará la precisión del dashboard administrativo.
+
+---
+
+## 🎯 Objetivo SMART del Equipo
+Desarrollar e integrar un prototipo funcional (hardware de captura + base de datos + dashboard administrativo) capaz de registrar, categorizar y visualizar los patrones de acceso e indicadores de uso de los edificios del Hub Providencia en un tiempo de respuesta menor a 7 segundos, con fecha de entrega final el **2 de diciembre de 2026**.
+
+---
+
+## 👤 Objetivos SMART Individuales
+
+| Integrante | Compromiso / Objetivo SMART Individual |
 | :--- | :--- |
-| [`/sesiones`](./sesiones) | Bitácora de avances por cada sesión de trabajo en la universidad. |
-| [`/codigo`](./codigo) | Código fuente y scripts del prototipo desarrollado. |
-| [`/proyecto-final`](./proyecto-final) | Entregables finales, presentaciones y documentación técnica. |
-| [`/Imagenes`](./Imagenes) | Registro fotográfico y diagramas de las sesiones. |
+| **Fernando Alarcón** | Levantar el flujo actual de ingreso y entrevistar a 3 encargados del Hub Providencia antes del **12 de septiembre**, entregando una matriz de cuellos de botella. |
+| **Diego Ayala** | Evaluar tres tecnologías de captura rápida antes del **22 de septiembre**, garantizando que el hardware opere con un tiempo de respuesta inferior a 7 segundos. |
+| **Víctor Santana** | Diseñar la arquitectura relacional de la base de datos y desarrollar la API de registro antes del **6 de octubre**. |
+| **Luciano Torretti** | Desarrollar la interfaz de selección de espacios y la visualización de indicadores (Frontend) antes del **20 de octubre**. |
 
 ---
 
-## 🚀 Entregables Esperados
+## 🏢 Usuarios y Contexto
+El proyecto impacta directamente a:
+1. **Administración del Hub Providencia:** Requieren métricas consolidadas sobre quiénes ingresan, horarios pico y uso de salas para planificar actividades.
+2. **Usuarios Finales:** Emprendedores, Startups, Estudiantes, Vecinos y Empresas que asisten a capacitaciones o espacios de coworking y buscan un ingreso fluido.
 
-- [ ] Prototipo funcional de registro de ingresos/salidas.
-- [ ] Base de datos estructurada con variables para caracterizar el uso.
-- [ ] Dashboard de visualización con indicadores clave (frecuencia, perfiles, espacios).
+**Lugar físico:**
+* **Edificio Cowork:** Los Jesuitas 881, Providencia.
+* **Edificio Empleo:** Múltiples pisos dedicados a capacitación laboral y vinculación.
+
+---
+
+## 📅 Plan Inicial y Fases de Desarrollo
+
+| Fase | Descripción / Actividad | Fechas Clave | Estado |
+| :--- | :--- | :--- | :--- |
+| **Fase 1: Descubrimiento** | Levantamiento de requerimientos, visita a terreno y entrevistas en el Hub. | 31 Ago – 12 Sep | 🟢 Completado |
+| **Fase 2: Prototipado** | Diseño de arquitectura de base de datos, matrices comparativas y wireframes. | 13 Sep – 06 Oct | 🟡 En Desarrollo |
+| **Fase 3: Desarrollo** | Programación del sistema de registro de acceso (NFC/QR) e integración con API. | 07 Oct – 01 Dic | ⚪ Pendiente |
+| **Fase 4: Entrega Final** | Exposición en Feria Capstone y validación final en instalaciones del Hub. | 02 Dic – 08 Dic | ⚪ Pendiente |
+
+---
+
+## 📝 Índice de Bitácoras
+
+En la carpeta [`/sesiones`](./sesiones) se encuentra el registro detallado de cada clase y salida a terreno:
+
+* 📄 **[Sesión 01: Identidad del Equipo y Definición del Desafío](./sesiones/sesion-01.md)** — Definición del nombre (Cobblestone), valores, normas y primer acercamiento al problema.
+* 📄 **[Sesión 02: Objetivos SMART y Compromisos](./sesiones/sesion-02.md)** — Formulación del objetivo grupal y las metas individuales de cada integrante.
+* 📄 **[Sesión 03: Presentación, Certezas y Salida a Terreno](./sesiones/sesion-03.md)** — Presentación del problema, papelógrafo de certezas/incertidumbres y levantamiento en terreno (Mapa de Empatía en Hub Providencia).
+* 📄 **[Sesión 04: Estado del Arte, Benchmarking y Propuesta](./sesiones/sesion-04.md)** — Análisis comparativo de soluciones (NFC, Biometría, QR), matriz de atributos y arquitectura mínima del prototipo.
+
+---
+
+## 📊 Decisiones Relativas del Proyecto
+
+| Fecha | Decisión Tomada | Evidencia / Criterio Utilizado |
+| :--- | :--- | :--- |
+| **28-08-2026** | Centrar el Hito 1 exclusivamente en la problemática y diagnóstico del Hub. | Exigencia de la pauta de evaluación del profesor (comprender el problema antes de proponer solución). |
+| **02-09-2026** | Ejecutar observación no participante y entrevistas presenciales en el Hub. | Necesidad de responder las 4 preguntas orientadoras del papelógrafo de la Sesión 3. |
+| **22-09-2026** | Priorizar **Seguridad y Rapidez** sobre la Biometría compleja en la matriz de atributos. | Resultados de la matriz comparativa (Estado del Arte) donde la combinación NFC + QR demostró mejor equilibrio técnico. |
+
+---
+
+## 🚀 Próximo Hito
+* **Objetivo:** Simular y desarrollar el prototipo funcional de la aplicación móvil (Frontend) para la validación de usuarios y la selección de espacios.
+* **Criterio de éxito:** Subir al repositorio los wireframes finales y la interfaz gráfica lista para pruebas de interacción humano-máquina.
+
+---
+
+## 📄 Uso y Licencia
+*[Proyecto desarrollado en el marco de la asignatura Proyecto Capstone Intermedio 2026 - Universidad Mayor. Prohibida la reproducción total o parcial sin autorización del equipo o de la contraparte Hub Providencia.]*
 
