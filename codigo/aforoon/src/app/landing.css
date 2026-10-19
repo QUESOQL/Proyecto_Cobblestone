@@ -1,0 +1,200 @@
+/*
+ * Landing de AforoON — dirección "The sentence is the layout" (taste skill, seed 1821631555).
+ * La idea: en el nombre AforoON, la segunda O es la puerta real del Hub (Los Jesuitas 881),
+ * recortada en un círculo que es también el anillo de la marca.
+ *
+ * Cinco pasos de tipo: display (nombre), heading, statement, body (17 px), small (14 px).
+ * Un margen de página, un radio de botón, un acento (solo en la acción).
+ */
+
+.lp {
+  --m: clamp(16px, 3.4vw, 48px); /* margen exterior único */
+  --t-display: clamp(84px, 15vw, 230px);
+  --t-heading: clamp(40px, 5.6vw, 88px);
+  --t-statement: clamp(24px, 2.5vw, 34px);
+  --t-body: 17px;
+  --t-small: 14px;
+  background: var(--ground);
+  color: var(--text);
+  overflow-x: clip;
+}
+
+.lp-wrap {
+  padding-inline: var(--m);
+}
+
+.lp-display {
+  font-size: var(--t-display);
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  line-height: 0.92;
+}
+
+.lp-heading {
+  font-size: var(--t-heading);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 0.98;
+}
+
+.lp-statement {
+  font-size: var(--t-statement);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.22;
+}
+
+.lp-body {
+  font-size: var(--t-body);
+  line-height: 1.55;
+}
+
+.lp-small {
+  font-size: var(--t-small);
+  line-height: 1.45;
+}
+
+/* La O del nombre: un círculo exactamente de alto de mayúscula, apoyado en la línea base. */
+.lp-o {
+  display: inline-block;
+  width: 0.74em;
+  height: 0.74em;
+  margin-inline: 0.02em 0.01em;
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+  vertical-align: baseline;
+  border: 0.085em solid var(--accent);
+  isolation: isolate;
+}
+.lp-o img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+}
+
+/* Miniaturas dentro de la frase. */
+.lp-thumb {
+  display: inline-block;
+  height: 0.85em;
+  width: 1.25em;
+  margin-inline: 0.12em;
+  vertical-align: -0.1em;
+  border-radius: 0.14em;
+  overflow: hidden;
+  position: relative;
+}
+.lp-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Botón: rectangular, 52 px, el acento solo aquí. */
+.lp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 52px;
+  padding: 0 22px;
+  border-radius: 6px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 17px;
+  font-weight: 500;
+  transition: transform 140ms var(--ease-out), background-color 150ms ease;
+}
+.lp-btn:active {
+  transform: scale(0.97);
+}
+@media (hover: hover) and (pointer: fine) {
+  .lp-btn:hover {
+    background: #185a90;
+  }
+  .lp-link:hover {
+    color: var(--accent);
+  }
+}
+.lp-btn--invert {
+  background: #fff;
+  color: var(--text);
+}
+@media (hover: hover) and (pointer: fine) {
+  .lp-btn--invert:hover {
+    background: var(--accent-soft);
+  }
+}
+
+.lp-link {
+  transition: color 150ms ease;
+}
+
+/* Firma: la foto de la puerta se abre como un obturador. */
+@keyframes lp-shutter {
+  from {
+    clip-path: inset(50% 0 50% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes lp-settle {
+  from {
+    transform: scale(1.12);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+.lp-shutter {
+  animation: lp-shutter 1100ms var(--ease-in-out) 200ms both;
+}
+.lp-shutter img {
+  animation: lp-settle 1400ms var(--ease-out) 200ms both;
+}
+
+/* Entradas por partes: título, texto, imagen, escalonadas. Sin JS, el contenido se ve igual. */
+.lp-rise {
+  opacity: 1;
+  transform: none;
+}
+.js .lp-rise {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 600ms var(--ease-out), transform 700ms var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 75ms);
+}
+.js .lp-in .lp-rise,
+.js .lp-rise.lp-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Imagen en movimiento: la del final de la vitrina deriva lentamente. */
+@keyframes lp-drift {
+  from {
+    transform: scale(1.04) translateX(-1.5%);
+  }
+  to {
+    transform: scale(1.04) translateX(1.5%);
+  }
+}
+.lp-drift {
+  animation: lp-drift 14s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-shutter,
+  .lp-shutter img,
+  .lp-drift {
+    animation: none;
+  }
+  .js .lp-rise {
+    transform: none;
+    transition: opacity 300ms ease;
+  }
+}
