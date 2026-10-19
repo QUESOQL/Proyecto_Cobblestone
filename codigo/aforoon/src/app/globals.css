@@ -1,26 +1,29 @@
 @import "tailwindcss";
 
 /*
- * AforoON tokens — estilo "accent-ladder" (taste skill, seed 647775934).
+ * AforoON tokens — estilo "accent-ladder" (taste skill, seed 647775934), con la paleta
+ * "tres piedras": tonos de hormigón cálido como el Edificio Cowork, tinta carbón y un
+ * verde azulado apagado (pariente del logo de HUB Providencia) como único acento.
+ * Referencias: Noho y Vero New-York (piedras cálidas), Colonia Zacamil y Archiv (putty y teal).
  * Los mismos nombres viven como variables en Figma ("AforoON — Sistema de diseño",
  * colecciones Color y Size) con sintaxis web var(--…).
- * El azul HUB Providencia pleno va solo en marcas pequeñas: lo ocupado, la acción y el ícono activo.
+ * El acento pleno va solo en marcas pequeñas: lo ocupado, la acción y el ícono activo.
  * Sus tintes pálidos hacen el trabajo de área: pistas de aforo, filas activas, insignias.
  */
 :root {
-  --ground: #f6f9fc;
-  --surface: #ffffff;
-  --raised: #f3f4f6;
-  --border: #e5e7eb;
-  --rule: #f2f2f2;
-  --control: #d1d5db;
-  --text: #111827;
-  --muted: #5f6672;
-  --primary: #1d1f20;
-  --accent: #1e6aa8;
-  --accent-soft: #eef5fb;
-  --accent-track: #cfe2f2;
-  --accent-ink: #0f3a5f;
+  --ground: #eeece8;
+  --surface: #f6f5f3;
+  --raised: #e6e3de;
+  --border: #dcd8d1;
+  --rule: #e7e4de;
+  --control: #c9c4bc;
+  --text: #2b2a28;
+  --muted: #66625c;
+  --primary: #2b2a28;
+  --accent: #2f6b78;
+  --accent-soft: #e1eaea;
+  --accent-track: #c6d8d9;
+  --accent-ink: #1c4550;
   --positive: #247b50;
   --negative: #c4242a;
   --warning: #92400e;
@@ -30,8 +33,12 @@
   --pill-negative-ink: #831c1e;
   --pill-warning-bg: #fffbeb;
   --pill-warning-ink: #92400e;
-  --pill-neutral-bg: #f3f4f6;
-  --pill-neutral-ink: #374151;
+  --pill-neutral-bg: #e6e3de;
+  --pill-neutral-ink: #3f3d3a;
+  /* Tercera piedra: banda cálida para una sección y grises neutros cálidos para lo inactivo. */
+  --stone: #d5cdc1;
+  --inactive: #a8a39b;
+  --inactive-soft: #cfcac2;
 
   --radius-chip: 4px;
   --radius-control: 6px;
@@ -63,6 +70,8 @@
   --color-positive: var(--positive);
   --color-negative: var(--negative);
   --color-warning: var(--warning);
+  --color-stone: var(--stone);
+  --color-inactive: var(--inactive);
   --radius-chip: var(--radius-chip);
   --radius-control: var(--radius-control);
   --radius-card: var(--radius-card);
@@ -123,7 +132,7 @@ h3 {
   transition: border-color 150ms ease;
 }
 .input::placeholder {
-  color: #6b6b6b;
+  color: #75706a;
 }
 .input:focus {
   outline: none;

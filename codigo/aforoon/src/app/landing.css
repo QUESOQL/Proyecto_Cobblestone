@@ -9,7 +9,7 @@
 
 .lp {
   --m: clamp(16px, 3.4vw, 48px); /* margen exterior único */
-  --t-display: clamp(84px, 15vw, 230px);
+  --t-display: clamp(64px, 15vw, 230px);
   --t-heading: clamp(40px, 5.6vw, 88px);
   --t-statement: clamp(24px, 2.5vw, 34px);
   --t-body: 17px;
@@ -21,6 +21,12 @@
 
 .lp-wrap {
   padding-inline: var(--m);
+}
+
+@media (max-width: 767px) {
+  .lp {
+    --t-display: 20vw;
+  }
 }
 
 .lp-display {
@@ -113,14 +119,14 @@
 }
 @media (hover: hover) and (pointer: fine) {
   .lp-btn:hover {
-    background: #185a90;
+    background: #275a65;
   }
   .lp-link:hover {
     color: var(--accent);
   }
 }
 .lp-btn--invert {
-  background: #fff;
+  background: var(--surface);
   color: var(--text);
 }
 @media (hover: hover) and (pointer: fine) {
@@ -174,6 +180,22 @@
   transform: none;
 }
 
+/* Tira de fotos: avanza sola, lenta, en bucle. Transform solamente. */
+.lp-strip {
+  overflow: hidden;
+}
+.lp-strip-track {
+  display: flex;
+  gap: 12px;
+  width: max-content;
+  animation: lp-marquee 60s linear infinite;
+}
+@keyframes lp-marquee {
+  to {
+    transform: translateX(calc(-50% - 6px));
+  }
+}
+
 /* Imagen en movimiento: la del final de la vitrina deriva lentamente. */
 @keyframes lp-drift {
   from {
@@ -190,6 +212,7 @@
 @media (prefers-reduced-motion: reduce) {
   .lp-shutter,
   .lp-shutter img,
+  .lp-strip-track,
   .lp-drift {
     animation: none;
   }

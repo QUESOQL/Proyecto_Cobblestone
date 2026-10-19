@@ -96,8 +96,8 @@ export function Button({ variant = "secondary", size = "md", className, ...rest 
       className={cx(
         "press inline-flex items-center justify-center gap-2 rounded-control font-medium disabled:cursor-not-allowed",
         size === "lg" ? "h-12 px-5 text-[15px]" : "h-11 px-4 text-[14px] lg:h-9 lg:px-3.5",
-        variant === "primary" && "bg-primary text-white disabled:bg-[#9aa0a6]",
-        variant === "accent" && "bg-accent text-white disabled:bg-[#9aa0a6]",
+        variant === "primary" && "bg-primary text-white disabled:bg-[var(--inactive)]",
+        variant === "accent" && "bg-accent text-white disabled:bg-[var(--inactive)]",
         variant === "secondary" && "border border-control bg-surface text-text disabled:text-muted",
         variant === "ghost" && "text-text hover-raise",
         className,
@@ -125,7 +125,7 @@ export function CapacityTrack({ used, capacity, className, label }: { used: numb
       className={cx("h-1.5 w-full overflow-hidden rounded-full", full ? "bg-raised" : "bg-accent-track", className)}
     >
       <div
-        className={cx("h-full rounded-full", full ? "bg-[#9aa0a6]" : "bg-accent")}
+        className={cx("h-full rounded-full", full ? "bg-[var(--inactive)]" : "bg-accent")}
         style={{ width: `${pct}%`, transition: "width 300ms var(--ease-out)" }}
       />
     </div>

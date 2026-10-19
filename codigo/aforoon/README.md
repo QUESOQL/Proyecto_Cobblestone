@@ -42,8 +42,9 @@ Cubren el flujo de cada pantalla y revisan cada ruta a 390, 768 y 1440 px, sin s
 ## Diseño
 
 - **Sistema de diseño en Figma:** [AforoON — Sistema de diseño](https://www.figma.com/design/NK1PirX0HLADYyv9tvmqcj). Tiene variables de color y espaciado con su sintaxis CSS, estilos de texto DM Sans y una lámina de fundamentos.
-- **Pantallas de app:** estilo *accent-ladder* (taste skill) con el azul de HUB Providencia. El azul pleno solo va en lo ocupado y en la acción principal; sus tintes forman las pistas de aforo.
-- **Landing:** dirección *The sentence is the layout*. En el nombre AforoON, la segunda O es la foto real de la puerta del Edificio Cowork.
+- **Paleta "tres piedras":** tonos de hormigón cálido como el Edificio Cowork, tinta carbón y un verde azulado apagado (`#2f6b78`) como único acento. El color saturado queda para las fotos del Hub. Referencias: Noho y Vero New-York (piedras cálidas), Colonia Zacamil y Archiv (putty y teal).
+- **Pantallas de app:** estilo *accent-ladder* (taste skill). El acento pleno solo va en lo ocupado y en la acción principal; sus tintes forman las pistas de aforo.
+- **Landing:** dirección *The sentence is the layout*. En el nombre AforoON, la segunda O es la foto real de la puerta del Edificio Cowork. Una tira de fotos reales del Hub avanza lenta entre secciones, y las preguntas frecuentes van sobre una banda de piedra.
 - **Movimiento:** curvas y duraciones de Emil Kowalski (ease-out fuerte, hojas con curva *drawer*, botones que se hunden al presionar) y respeto por `prefers-reduced-motion`.
 - **Revisión:** taste skill (`lint.mjs` e `inspect.mjs`) e Impeccable (`audit` y detector).
 

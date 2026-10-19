@@ -302,7 +302,7 @@ function ResultPanel({ reading, result, offline, onException }: { reading: Perso
               "block size-10 rounded-full md:size-14",
               led === "ok" && "bg-positive",
               led === "no" && "bg-negative",
-              led === "idle" && "bg-[#c7cbd1]",
+              led === "idle" && "bg-[var(--inactive-soft)]",
               led === "reading" && "animate-pulse bg-accent",
             )}
             style={{ transition: "background-color 150ms ease" }}
