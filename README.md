@@ -96,9 +96,9 @@ El proyecto impacta directamente a:
 En la carpeta [`/sesiones`](./sesiones) se encuentra el registro detallado de cada clase y salida a terreno:
 
 * 📄 **[Sesión 01: Identidad del Equipo y Definición del Desafío](./sesiones/Sesion1.md)** — Definición del nombre (Cobblestone), valores, normas y primer acercamiento al problema.
-* 📄 **[Sesión 02: Objetivos SMART y Compromisos](./sesiones/sesion-02.md)** — Formulación del objetivo grupal y las metas individuales de cada integrante.
-* 📄 **[Sesión 03: Presentación, Certezas y Salida a Terreno](./sesiones/sesion-03.md)** — Presentación del problema, papelógrafo de certezas/incertidumbres y levantamiento en terreno (Mapa de Empatía en Hub Providencia).
-* 📄 **[Sesión 04: Estado del Arte, Benchmarking y Propuesta](./sesiones/sesion-04.md)** — Análisis comparativo de soluciones (NFC, Biometría, QR), matriz de atributos y arquitectura mínima del prototipo.
+* 📄 **[Sesión 02: Objetivos SMART y Compromisos](./sesiones/Sesion2.md)** — Formulación del objetivo grupal y las metas individuales de cada integrante.
+* 📄 **[Sesión 03: Presentación, Certezas y Salida a Terreno](./sesiones/Sesion3.md)** — Presentación del problema, papelógrafo de certezas/incertidumbres y levantamiento en terreno (Mapa de Empatía en Hub Providencia).
+* 📄 **[Sesión 04: Estado del Arte, Benchmarking y Propuesta](./sesiones/Sesion4.md)** — Análisis comparativo de soluciones (NFC, Biometría, QR), matriz de atributos y arquitectura mínima del prototipo.
 
 ---
 
