@@ -249,13 +249,14 @@ function mulberry32(seed: number) {
   };
 }
 
-function hashString(s: string): number {
-  let h = 2166136261;
-  for (let i = 0; i < s.length; i++) {
-    h ^= s.charCodeAt(i);
-    h = Math.imul(h, 16777619);
+/** Barajado Fisher-Yates determinista: igual en el servidor y en cualquier navegador. */
+function shuffle<T>(arr: T[], rnd: () => number): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(rnd() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
   }
-  return h >>> 0;
+  return a;
 }
 
 /** Dígito verificador de un RUT chileno (módulo 11). */
@@ -384,7 +385,7 @@ function buildReservations(): Reservation[] {
     const day = dayKey(off);
     for (const block of BLOCKS) {
       // Cada socio tiene a lo más una reserva por bloque: se barajan y se reparten.
-      const pool = [...MEMBERS].sort(() => rnd() - 0.5);
+      const pool = shuffle(MEMBERS, rnd);
       let p = 0;
       for (const unit of UNITS) {
         const n = targetCount(unit, day, block.id, rnd);
@@ -500,7 +501,7 @@ function nextWeekday(wd: number, from = 0): string {
 
 function pickEnrolled(n: number, seed: number): string[] {
   const rnd = mulberry32(seed);
-  return [...MEMBERS].sort(() => rnd() - 0.5).slice(0, n).map((m) => m.id);
+  return shuffle(MEMBERS, rnd).slice(0, n).map((m) => m.id);
 }
 
 export const TALKS: Talk[] = [

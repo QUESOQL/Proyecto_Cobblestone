@@ -99,6 +99,30 @@ body {
   color: var(--accent-ink);
 }
 
+/* Campos: 44 px de alto en el teléfono (objetivo táctil), borde de control, fondo blanco. */
+.input {
+  height: 44px;
+  width: 100%;
+  border: 1px solid var(--control);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  padding: 0 12px;
+  font-size: 16px; /* 16 px evita que iOS haga zoom al enfocar */
+  color: var(--text);
+  transition: border-color 150ms ease;
+}
+.input::placeholder {
+  color: #6b6b6b;
+}
+.input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.input[aria-invalid="true"] {
+  border-color: var(--negative);
+}
+
 /* Respuesta al presionar: todo lo pulsable se hunde un poco (100–160 ms). */
 .press {
   transition: transform 140ms var(--ease-out), background-color 150ms ease, border-color 150ms ease,
