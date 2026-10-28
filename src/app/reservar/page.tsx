@@ -17,7 +17,7 @@ import {
   type ZoneId,
 } from "@/lib/data";
 import { BOOKING_WINDOW_DAYS, RESERVE_ERRORS, countFor, nextBlocks, useAforo, useHydrated } from "@/lib/store";
-import { Button, CapacityTrack, MobileShell, Sheet, Toast, Wordmark, cx } from "@/components/ui";
+import { Button, CapacityTrack, MobileShell, Sheet, Tabs, Toast, Wordmark, cx } from "@/components/ui";
 
 const BOOKABLE: { id: ZoneId; short: string }[] = [
   { id: "mesas", short: "Mesas" },
@@ -103,7 +103,7 @@ function Reservar() {
       <MobileShell title={<Wordmark sub="Reserva confirmada" />}>
         <div className="enter flex flex-col items-start gap-4 pt-6">
           <CircleCheck size={44} strokeWidth={1.5} className="text-positive" aria-hidden="true" />
-          <h1 className="text-[24px] font-semibold leading-[30px]">Listo, tienes tu cupo</h1>
+          <h1 className="text-[28px] font-normal leading-[1.22]">Listo, tienes tu cupo</h1>
           {r && (
             <div className="w-full rounded-card border border-border p-4">
               <p className="text-[15px] font-medium">{unitById(r.unitId).name}</p>
@@ -133,7 +133,7 @@ function Reservar() {
 
   return (
     <MobileShell title={<Wordmark sub="Reservar espacio" />}>
-      <h1 className="text-[24px] font-semibold leading-[30px] tracking-[-0.01em]">¿Dónde trabajas hoy?</h1>
+      <h1 className="text-[28px] font-normal leading-[1.22]">¿Dónde trabajas hoy?</h1>
       <p className="mt-1 text-[14px] text-muted">{finding}</p>
 
       {hydrated && !profile && (
@@ -159,7 +159,7 @@ function Reservar() {
               }}
               className={cx(
                 "press flex h-14 min-w-[64px] flex-none flex-col items-center justify-center rounded-card border text-[13px]",
-                active ? "border-accent bg-accent-soft text-accent-ink" : "border-border bg-surface",
+                active ? "border-black bg-raised" : "border-border bg-surface",
                 closed && "border-transparent bg-raised text-muted",
               )}
             >
@@ -173,29 +173,18 @@ function Reservar() {
       </div>
 
       {/* Zona */}
-      <div role="tablist" aria-label="Zona" className="mt-4 grid grid-cols-3 gap-1 rounded-card bg-raised p-1">
-        {BOOKABLE.map((b) => (
-          <button
-            key={b.id}
-            role="tab"
-            aria-selected={zone === b.id}
-            onClick={() => pickZone(b.id)}
-            className={cx(
-              "press h-11 rounded-control text-[13px]",
-              zone === b.id ? "bg-surface font-medium text-text shadow-[0_1px_2px_rgba(0,0,0,0.06)]" : "text-muted",
-            )}
-          >
-            {b.short}
-          </button>
-        ))}
-      </div>
+      <Tabs items={BOOKABLE.map((b) => ({ id: b.id, label: b.short }))} value={zone} onChange={pickZone} label="Zona" className="-mx-1 mt-4" />
+      <Link href="/maquinas" className="press mt-2 flex min-h-11 items-center justify-between rounded-card bg-raised px-3.5 text-[14px]">
+        <span>Impresoras 3D, láser y costura</span>
+        <span className="link-more flex-none">Ver máquinas</span>
+      </Link>
 
       <div key={zone} className="enter mt-4 flex gap-3">
         <div className="relative h-[76px] w-[76px] flex-none overflow-hidden rounded-card">
           <Image src={z.photo} alt={z.name} fill sizes="76px" className="object-cover" />
         </div>
         <div className="min-w-0">
-          <h2 className="text-[16px] font-semibold">{z.name}</h2>
+          <h2 className="text-[18px] font-normal">{z.name}</h2>
           <p className="text-[12px] text-muted">{z.building}</p>
           <p className="mt-1 text-[13px] leading-[18px] text-muted">{z.description}</p>
         </div>
@@ -261,7 +250,7 @@ function Reservar() {
                 onClick={() => setBlock(active ? null : r.id)}
                 className={cx(
                   "press w-full rounded-card border p-3.5 text-left",
-                  active ? "border-accent bg-accent-soft" : "border-border bg-surface",
+                  active ? "border-black bg-raised" : "border-border bg-surface",
                   r.disabled && "border-transparent bg-raised",
                 )}
               >
@@ -304,7 +293,7 @@ function Reservar() {
         {selected && (
           <div className="flex flex-col gap-4">
             <div>
-              <h2 className="text-[18px] font-semibold">Confirmar reserva</h2>
+              <h2 className="text-[20px] font-normal">Confirmar reserva</h2>
               <p className="mt-1 text-[14px] text-muted">Si no llegas, el cupo se libera al terminar el bloque.</p>
             </div>
             <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-[14px]">

@@ -161,6 +161,33 @@ export const SLOTS = {
     ref: "/landing/ref-dashboard.png",
   }),
 
+  // Páginas de detalle del Hub.
+  coworkInfantil: slot({
+    id: "cowork-infantil",
+    idea: "La zona infantil y la zona de descanso del cowork general, con una familia trabajando cerca.",
+    alt: "Zona infantil del cowork general",
+    icon: Users,
+  }),
+  oficinasSet: slot({
+    id: "oficinas-set",
+    idea: "Dos personas grabando un podcast en el set audiovisual, con luces y micrófonos.",
+    alt: "Set audiovisual del Hub",
+    icon: Monitor,
+    ref: "/hub/set.jpg",
+  }),
+  charlasTaller: slot({
+    id: "charlas-taller",
+    idea: "Un taller de emprendimiento en marcha: una capacitadora frente a la pantalla y vecinos tomando notas.",
+    alt: "Taller en la zona de charlas",
+    icon: Presentation,
+  }),
+  empleoAsesoria: slot({
+    id: "empleo-asesoria",
+    idea: "Una asesora del Departamento de Empleo revisando un CV junto a una vecina, en una mesa del Castillito Sermini.",
+    alt: "Asesoría de empleo en el Castillito Sermini",
+    icon: Users,
+  }),
+
   // "También en el Hub".
   govtech: slot({
     id: "govtech",

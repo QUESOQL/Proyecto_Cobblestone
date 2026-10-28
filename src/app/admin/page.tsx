@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { BarChart3, ChevronsUpDown, DoorOpen, Download, LayoutGrid, Menu, Mic, Settings, Smartphone, Users, X } from "lucide-react";
+import { BarChart3, ChevronsUpDown, DoorOpen, Download, GraduationCap, LayoutGrid, Menu, Mic, Settings, Smartphone, Users, X } from "lucide-react";
 import {
   BLOCKS,
   CURRENT_BLOCK,
@@ -28,7 +28,8 @@ import {
 } from "@/lib/data";
 import { allReservations, talkEnrolledCount, useAforo, useHydrated } from "@/lib/store";
 import { BarChart, BarList } from "@/components/charts";
-import { Avatar, Mark, Pill, cx } from "@/components/ui";
+import { Avatar, Pill, Tabs, TopBar, Wordmark, cx } from "@/components/ui";
+import { TrainingAdmin } from "@/components/training-admin";
 
 const ZONE_TABS: { id: ZoneId; label: string }[] = [
   { id: "mesas", label: "Centro de mesas" },
@@ -154,34 +155,34 @@ export default function AdminPage() {
   ];
 
   return (
-    <div className="min-h-dvh bg-ground lg:grid lg:grid-cols-[230px_minmax(0,1fr)]">
-      {/* Barra lateral: sobre el mismo fondo, sin línea dura. */}
-      <Sidebar className="hidden lg:flex" />
-      {/* Teléfono y tablet: barra superior de 48 px con menú. */}
-      <div className="sticky top-0 z-30 flex h-12 items-center justify-between border-b border-border bg-ground px-4 lg:hidden">
-        <span className="flex items-center gap-2 text-[14px] font-semibold">
-          <Mark size={20} /> Ocupación
-        </span>
-        <button onClick={() => setMenu(true)} aria-label="Abrir menú" className="press flex size-11 items-center justify-center rounded-control">
-          <Menu size={20} aria-hidden="true" />
-        </button>
-      </div>
+    <div className="min-h-dvh bg-ground">
+      {/* Barra negra de todas las pantallas; en teléfono y tablet abre el menú. */}
+      <TopBar
+        title={<Wordmark sub="Administración" />}
+        action={
+          <button onClick={() => setMenu(true)} aria-label="Abrir menú" className="topbar-link press inline-flex size-11 justify-center !p-0 lg:hidden">
+            <Menu size={20} aria-hidden="true" />
+          </button>
+        }
+      />
       {menu && (
         <div className="enter fixed inset-0 z-50 bg-ground lg:hidden">
-          <div className="flex h-12 items-center justify-end px-4">
-            <button onClick={() => setMenu(false)} aria-label="Cerrar menú" className="press flex size-11 items-center justify-center rounded-control">
+          <div className="topbar flex h-[var(--bar)] items-center justify-end px-4">
+            <button onClick={() => setMenu(false)} aria-label="Cerrar menú" className="topbar-link press inline-flex size-11 justify-center !p-0">
               <X size={20} aria-hidden="true" />
             </button>
           </div>
-          <Sidebar className="flex" />
+          <Sidebar className="flex" onNavigate={() => setMenu(false)} />
         </div>
       )}
+      <div className="lg:grid lg:grid-cols-[230px_minmax(0,1fr)]">
+      <Sidebar className="hidden lg:flex" />
 
       <main className="min-w-0 px-4 pb-12 pt-5 md:px-8 lg:pt-8">
         {/* Título */}
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="min-w-0">
-            <h1 className="text-[24px] font-semibold leading-[30px] tracking-[-0.01em]">Ocupación del Hub</h1>
+            <h1 className="text-[28px] font-normal leading-[1.22]">Ocupación del Hub</h1>
             <p className="mt-1 text-[14px] text-muted">
               {formatDay(TODAY, "long")}, {formatMin(NOW_MIN)}. El centro de mesas está lleno de 10:00 a 14:00 y {lastOpenName} {noShowsYesterday}{" "}
               {noShowsYesterday === 1 ? "persona no llegó" : "personas no llegaron"} a su reserva.
@@ -216,24 +217,12 @@ export default function AdminPage() {
           <section aria-labelledby="occ-title" className="min-w-0 rounded-card border border-border bg-surface p-5">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <h2 id="occ-title" className="text-[18px] font-semibold">
+                <h2 id="occ-title" className="text-[20px] font-normal">
                   Ocupación por bloque · hoy
                 </h2>
                 <p className="mt-0.5 text-[13px] text-muted">{zoneFinding}</p>
               </div>
-              <div role="tablist" aria-label="Zona" className="flex flex-wrap rounded-control bg-raised p-1">
-                {ZONE_TABS.map((t) => (
-                  <button
-                    key={t.id}
-                    role="tab"
-                    aria-selected={zone === t.id}
-                    onClick={() => setZone(t.id)}
-                    className={cx("press h-8 rounded-[5px] px-3 text-[13px]", zone === t.id ? "bg-surface font-medium shadow-[0_1px_2px_rgba(0,0,0,0.06)]" : "text-muted")}
-                  >
-                    {t.label}
-                  </button>
-                ))}
-              </div>
+              <Tabs items={ZONE_TABS} value={zone} onChange={setZone} label="Zona" className="max-w-full" />
             </div>
             <div className="mt-3 flex gap-4 text-[12px] text-muted">
               <span className="flex items-center gap-1.5">
@@ -258,7 +247,7 @@ export default function AdminPage() {
           <div className="flex min-w-0 flex-col gap-6">
             <section aria-labelledby="seg-title" className="rounded-card border border-border bg-surface p-5">
               <div className="flex items-baseline justify-between">
-                <h2 id="seg-title" className="text-[16px] font-semibold">
+                <h2 id="seg-title" className="text-[18px] font-normal">
                   Quiénes vienen
                 </h2>
                 <span className="num text-[12px] text-muted">{segTotal} socios · 7 días</span>
@@ -269,7 +258,7 @@ export default function AdminPage() {
             </section>
 
             <section aria-labelledby="inc-title">
-              <h2 id="inc-title" className="mb-2 text-[16px] font-semibold">
+              <h2 id="inc-title" className="mb-2 text-[18px] font-normal">
                 Para revisar hoy
               </h2>
               <ul className="overflow-hidden rounded-card border border-border bg-surface">
@@ -318,7 +307,7 @@ export default function AdminPage() {
         {/* Semana y horas punta, a igual ancho */}
         <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
           <section aria-labelledby="week-title" className="min-w-0 rounded-card border border-border bg-surface p-5">
-            <h2 id="week-title" className="text-[16px] font-semibold">
+            <h2 id="week-title" className="text-[18px] font-normal">
               Entradas por día
             </h2>
             <p className="num mt-0.5 text-[13px] text-muted">
@@ -329,7 +318,7 @@ export default function AdminPage() {
             </div>
           </section>
           <section aria-labelledby="peak-title" className="min-w-0 rounded-card border border-border bg-surface p-5">
-            <h2 id="peak-title" className="text-[16px] font-semibold">
+            <h2 id="peak-title" className="text-[18px] font-normal">
               Horas punta
             </h2>
             <p className="num mt-0.5 text-[13px] text-muted">
@@ -344,7 +333,7 @@ export default function AdminPage() {
         {/* Charlas */}
         <section aria-labelledby="talks-title" className="mt-6 overflow-hidden rounded-card border border-border bg-surface">
           <div className="flex items-baseline justify-between px-5 pt-5">
-            <h2 id="talks-title" className="text-[16px] font-semibold">
+            <h2 id="talks-title" className="text-[18px] font-normal">
               Charlas y capacitaciones
             </h2>
             <span className="num text-[12px] text-muted">{talks.length} charlas</span>
@@ -390,17 +379,21 @@ export default function AdminPage() {
             </table>
           </div>
         </section>
+        <TrainingAdmin />
+
         <p className="mt-6 text-[12px] text-muted">
           Datos de ejemplo generados para la demo. {HUB.name} · {HUB.address}.
         </p>
       </main>
+      </div>
     </div>
   );
 }
 
-function Sidebar({ className }: { className?: string }) {
+function Sidebar({ className, onNavigate }: { className?: string; onNavigate?: () => void }) {
   const nav = [
     { href: "/admin", label: "Ocupación", icon: BarChart3, active: true },
+    { href: "/admin#capacitaciones", label: "Capacitaciones", icon: GraduationCap },
     { href: "/recepcion", label: "Terminal de acceso", icon: DoorOpen },
     { href: "/inicio", label: "App del socio", icon: Smartphone },
   ];
@@ -410,12 +403,8 @@ function Sidebar({ className }: { className?: string }) {
     { label: "Charlas", icon: Mic },
   ];
   return (
-    <aside className={cx("min-h-full flex-col px-3 py-5 lg:sticky lg:top-0 lg:h-dvh", className)}>
-      <div className="flex items-center gap-2 px-2">
-        <Mark />
-        <span className="text-[15px] font-semibold">AforoON</span>
-      </div>
-      <button className="press mt-4 flex h-10 items-center justify-between rounded-control border border-border bg-surface px-3 text-left">
+    <aside className={cx("min-h-full flex-col px-3 py-5 lg:sticky lg:top-[var(--bar)] lg:h-[calc(100dvh-var(--bar))]", className)}>
+      <button className="press flex h-10 items-center justify-between rounded-control border border-border bg-surface px-3 text-left">
         <span className="min-w-0">
           <span className="block truncate text-[13px] font-medium">{HUB.name}</span>
           <span className="block text-[12px] text-muted">2 edificios</span>
@@ -427,10 +416,11 @@ function Sidebar({ className }: { className?: string }) {
           <Link
             key={href}
             href={href}
+            onClick={onNavigate}
             aria-current={active ? "page" : undefined}
-            className={cx("press flex h-8 items-center gap-2.5 rounded-[8px] px-2.5 text-[14px] mb-0.5", active ? "bg-[var(--raised)] text-text" : "text-muted hover-raise")}
+            className={cx("press mb-0.5 flex h-10 items-center gap-2.5 rounded-[8px] px-2.5 text-[14px]", active ? "bg-[var(--raised)] text-text" : "text-muted hover-raise")}
           >
-            <Icon size={16} strokeWidth={1.6} className={active ? "text-accent" : undefined} aria-hidden="true" /> {label}
+            <Icon size={16} strokeWidth={active ? 2 : 1.6} aria-hidden="true" /> {label}
           </Link>
         ))}
         <p className="mt-6 px-2.5 text-[12px] text-muted">Próximas pantallas</p>

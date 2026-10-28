@@ -54,7 +54,7 @@ export function RoleTabs() {
 
   return (
     <div>
-      <div className="lp-tabs" role="tablist" aria-label="AforoON según quién lo usa">
+      <div className="tabs" role="tablist" aria-label="AforoON según quién lo usa">
         {ROLES.map((role, i) => (
           <button
             key={role.id}
@@ -63,7 +63,7 @@ export function RoleTabs() {
             aria-selected={i === active}
             aria-controls={`panel-${role.id}`}
             onClick={() => setActive(i)}
-            className="lp-tab"
+            className="tab"
           >
             {role.tab}
           </button>
@@ -80,12 +80,12 @@ export function RoleTabs() {
           <h3 className="lp-heading-sm">{r.title}</h3>
           <ul className="mt-5 flex flex-col">
             {r.points.map((p) => (
-              <li key={p} className="lp-rule-row text-[16px] leading-[1.5]">
+              <li key={p} className="rule-row text-[16px] leading-[1.5]">
                 {p}
               </li>
             ))}
           </ul>
-          <Link href={r.cta.href} className="lp-btn mt-6 max-md:w-full">
+          <Link href={r.cta.href} className="btn mt-6 max-md:w-full">
             {r.cta.label}
           </Link>
         </div>

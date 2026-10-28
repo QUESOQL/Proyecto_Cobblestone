@@ -7,6 +7,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { Check, ChevronLeft, Mail, Nfc, ShieldCheck } from "lucide-react";
 import { HUB, SEGMENTS, rutDv, type Segment } from "@/lib/data";
 import { useAforo, useHydrated, type Profile } from "@/lib/store";
+import { TRAINING_KINDS } from "@/lib/lab";
 import { Avatar, Button, MobileShell, Pill, Wordmark, cx } from "@/components/ui";
 
 const REASONS = ["Trabajar en el cowork", "Capacitación", "Charlas", "Asesoría de empleo", "Reunión de trabajo"];
@@ -157,7 +158,7 @@ function DataForm({ provider }: { provider: Profile["provider"] }) {
       noValidate
     >
       <div>
-        <h1 className="text-[24px] font-semibold leading-[30px] tracking-[-0.01em]">Tus datos, una sola vez</h1>
+        <h1 className="text-[28px] font-normal leading-[1.22]">Tus datos, una sola vez</h1>
         <p className="mt-1 text-[14px] text-muted">
           {provider === "correo" ? "Completa tus datos." : `Trajimos tu nombre y correo desde ${provider === "google" ? "Google" : "Apple"}.`}
         </p>
@@ -273,6 +274,8 @@ function Field({ label, htmlFor, hint, error, children }: { label: string; htmlF
 
 function Credential({ profile }: { profile: Profile }) {
   const reset = useAforo((s) => s.reset);
+  const myTrainings = useAforo((s) => s.myTrainings);
+  const approved = TRAINING_KINDS.filter((k) => myTrainings[k.id]?.status === "aprobada");
   const [tick, setTick] = useState(0);
   useEffect(() => {
     const t = setInterval(() => setTick((x) => x + 1), 1000);
@@ -290,7 +293,7 @@ function Credential({ profile }: { profile: Profile }) {
         <div className="flex items-center gap-3">
           <Avatar name={profile.name} hue={hue} size={48} />
           <div className="min-w-0">
-            <h1 className="truncate text-[20px] font-semibold leading-[26px]">{profile.name}</h1>
+            <h1 className="truncate text-[24px] font-normal leading-[1.3]">{profile.name}</h1>
             <p className="text-[13px] text-muted">
               {profile.segment} · {profile.occupation}
             </p>
@@ -308,6 +311,28 @@ function Credential({ profile }: { profile: Profile }) {
             <p className="text-[13px] leading-[18px] text-muted">Acerca tu teléfono al lector de la puerta. No necesitas abrir la app.</p>
           </div>
           <Pill tone="positive">Activa</Pill>
+        </section>
+
+        <section aria-labelledby="badges-title" className="rounded-card bg-raised p-4">
+          <h2 id="badges-title" className="text-[15px] font-medium">
+            Capacitaciones
+          </h2>
+          {approved.length > 0 ? (
+            <ul className="mt-2 flex flex-wrap gap-1.5" aria-label="Capacitaciones aprobadas">
+              {approved.map((k) => (
+                <li key={k.id}>
+                  <Pill tone="positive">✓ {k.name}</Pill>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-0.5 text-[13px] text-muted">
+              Aún no tienes. Con una capacitación aprobada puedes reservar las máquinas del Lab881 y del cowork textil.{" "}
+              <Link href="/capacitaciones" className="link-more">
+                Ver capacitaciones
+              </Link>
+            </p>
+          )}
         </section>
 
         <section aria-labelledby="qr-title" className="rounded-card border border-border p-4">

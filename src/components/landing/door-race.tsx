@@ -124,12 +124,12 @@ export function DoorRace() {
             <p className="text-[14px] leading-[22px] text-white/80">
               El formulario tardó {fmt(formSeconds)} s, {Math.round(formSeconds / DOOR_SECONDS)} veces más. Y mañana, otra vez.
             </p>
-            <button onClick={go} className="lp-btn lp-btn--invert">
+            <button onClick={go} className="btn btn--invert">
               <RotateCcw size={17} aria-hidden="true" /> Repetir
             </button>
           </div>
         ) : (
-          <button onClick={go} disabled={running} className="lp-btn lp-btn--invert disabled:opacity-60">
+          <button onClick={go} disabled={running} className="btn btn--invert disabled:opacity-60">
             <Nfc size={18} aria-hidden="true" /> {running ? "Comparando…" : "Acercar el teléfono"}
           </button>
         )}

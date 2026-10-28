@@ -19,9 +19,9 @@ export default defineConfig({
     trace: "retain-on-failure",
   },
   projects: [
-    { name: "telefono", use: { ...devices["Pixel 7"], channel: "chrome" }, testMatch: /(registro|reservar|inicio)\.spec\.ts/ },
+    { name: "telefono", use: { ...devices["Pixel 7"], channel: "chrome" }, testMatch: /(registro|reservar|inicio|maquinas)\.spec\.ts/ },
     { name: "tablet", use: { viewport: { width: 1024, height: 768 }, hasTouch: true }, testMatch: /recepcion\.spec\.ts/ },
-    { name: "escritorio", use: { viewport: { width: 1440, height: 900 } }, testMatch: /(admin|portada|capturas)\.spec\.ts/ },
+    { name: "escritorio", use: { viewport: { width: 1440, height: 900 } }, testMatch: /(admin|portada|capturas|hub)\.spec\.ts/ },
   ],
   webServer: {
     command: "npm run dev",

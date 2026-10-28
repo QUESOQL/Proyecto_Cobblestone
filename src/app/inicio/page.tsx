@@ -16,6 +16,7 @@ import {
   dayKey,
   dayOffset,
   formatDay,
+  formatMin,
   trainerById,
   unitById,
   unitsOfZone,
@@ -23,7 +24,8 @@ import {
   zoneById,
   type ZoneId,
 } from "@/lib/data";
-import { activeMine, countFor, talkEnrolledCount, useAforo, useHydrated } from "@/lib/store";
+import { TRAINING_KINDS, lowerFirst, machineById, sessionById } from "@/lib/lab";
+import { activeMachineBookings, activeMine, countFor, talkEnrolledCount, useAforo, useHydrated } from "@/lib/store";
 import { Avatar, Button, CapacityTrack, MobileShell, Pill, Toast, Wordmark, cx } from "@/components/ui";
 
 function startsIn(day: string, startMin: number): string {
@@ -42,7 +44,19 @@ export default function InicioPage() {
   const enrolled = useAforo((s) => s.enrolledTalkIds);
   const toggleTalk = useAforo((s) => s.toggleTalk);
   const cancel = useAforo((s) => s.cancel);
+  const myTrainings = useAforo((s) => s.myTrainings);
+  const myMachineBookings = useAforo((s) => s.myMachineBookings);
+  const cancelMachine = useAforo((s) => s.cancelMachine);
   const [toast, setToast] = useState<string | null>(null);
+
+  const approved = hydrated ? TRAINING_KINDS.filter((k) => myTrainings[k.id]?.status === "aprobada") : [];
+  const pendingTrainings = hydrated
+    ? TRAINING_KINDS.flatMap((k) => {
+        const t = myTrainings[k.id];
+        return t?.status === "inscrito" && t.sessionId ? [{ kind: k, session: sessionById(t.sessionId) }] : [];
+      })
+    : [];
+  const machines = hydrated ? activeMachineBookings({ myMachineBookings }) : [];
 
   const state = { myReservations: hydrated ? myReservations : [] };
   const mine = hydrated
@@ -82,7 +96,7 @@ export default function InicioPage() {
         ) : null
       }
     >
-      <h1 className="text-[24px] font-semibold leading-[30px] tracking-[-0.01em]">{firstName ? `Hola, ${firstName}` : "Inicio"}</h1>
+      <h1 className="text-[28px] font-normal leading-[1.22]">{firstName ? `Hola, ${firstName}` : "Inicio"}</h1>
       <p className="mt-1 min-h-5 text-[14px] text-muted">{subline}</p>
 
       {hydrated && !profile && (
@@ -104,7 +118,7 @@ export default function InicioPage() {
           <div className="p-4">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <h2 id="next-title" className="text-[17px] font-semibold">
+                <h2 id="next-title" className="text-[17px] font-medium">
                   {unitById(next.unitId).name}
                 </h2>
                 <p className="text-[13px] text-muted">{zoneById(unitById(next.unitId).zoneId).building}</p>
@@ -131,10 +145,78 @@ export default function InicioPage() {
         </section>
       )}
 
+      {/* Máquinas y capacitaciones */}
+      {hydrated && profile && (
+        <section aria-labelledby="lab-title" className="mt-6">
+          <div className="flex items-baseline justify-between">
+            <h2 id="lab-title" className="text-[18px]">
+              Máquinas y capacitaciones
+            </h2>
+            <Link href="/capacitaciones" className="link-more">
+              Ver todas
+            </Link>
+          </div>
+
+          {/* Insignias: las capacitaciones aprobadas viajan con la credencial. */}
+          <ul className="mt-2 flex flex-wrap gap-1.5" aria-label="Capacitaciones aprobadas">
+            {approved.length === 0 && <li className="text-[13px] text-muted">Aún no tienes capacitaciones aprobadas.</li>}
+            {approved.map((k) => (
+              <li key={k.id}>
+                <Pill tone="positive">✓ {k.name}</Pill>
+              </li>
+            ))}
+          </ul>
+
+          {pendingTrainings.length > 0 && (
+            <ul className="mt-3" aria-label="Capacitaciones inscritas">
+              {pendingTrainings.map(({ kind, session }) => (
+                <li key={kind.id} className="flex items-center justify-between gap-3 border-b border-border py-3 last:border-b-0">
+                  <div className="min-w-0">
+                    <p className="text-[14px]">Capacitación de {lowerFirst(kind.name)}</p>
+                    <p className="num text-[12px] text-muted">
+                      {formatDay(session.day, "long")} · {formatMin(session.startMin)} · {session.place}
+                    </p>
+                  </div>
+                  <Pill tone="accent">Inscrita</Pill>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {machines.length > 0 && (
+            <ul className="mt-3" aria-label="Tus reservas de máquinas">
+              {machines.map((b) => (
+                <li key={b.id} className="flex items-center justify-between gap-3 border-b border-border py-3 last:border-b-0">
+                  <div className="min-w-0">
+                    <p className="truncate text-[14px] font-medium">{machineById(b.machineId).name}</p>
+                    <p className="num text-[12px] text-muted">
+                      {formatDay(b.day, "long")} · {formatMin(b.startMin)} · {b.hours} h
+                    </p>
+                  </div>
+                  <Button
+                    onClick={() => {
+                      cancelMachine(b.id);
+                      setToast("Reserva de máquina cancelada.");
+                      setTimeout(() => setToast(null), 3000);
+                    }}
+                    aria-label={`Cancelar ${machineById(b.machineId).name}`}
+                  >
+                    Cancelar
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          )}
+          <Link href="/maquinas" className="press mt-2 flex h-11 items-center justify-center gap-1.5 rounded-control bg-raised text-[14px] font-medium">
+            Reservar una máquina <ArrowRight size={16} aria-hidden="true" />
+          </Link>
+        </section>
+      )}
+
       {/* Ahora en el Hub */}
       <section aria-labelledby="live-title" className="mt-6">
         <div className="flex items-baseline justify-between">
-          <h2 id="live-title" className="text-[16px] font-semibold">
+          <h2 id="live-title" className="text-[18px] font-normal">
             Ahora en el Hub
           </h2>
           <span className="num text-[12px] text-muted">{blockLabel(CURRENT_BLOCK)}</span>
@@ -153,14 +235,14 @@ export default function InicioPage() {
             </li>
           ))}
         </ul>
-        <Link href="/reservar" className="press mt-2 flex h-11 items-center justify-center gap-1.5 rounded-control border border-control text-[14px] font-medium">
+        <Link href="/reservar" className="press mt-2 flex h-11 items-center justify-center gap-1.5 rounded-control bg-black text-[14px] font-medium text-white">
           Reservar un espacio <ArrowRight size={16} aria-hidden="true" />
         </Link>
       </section>
 
       {/* Charlas */}
       <section aria-labelledby="talks-title" className="mt-7">
-        <h2 id="talks-title" className="text-[16px] font-semibold">
+        <h2 id="talks-title" className="text-[18px] font-normal">
           Charlas de la semana
         </h2>
         <p className="text-[13px] text-muted">En la zona de charlas y el Edificio Empleo. Inscribirte te guarda el asiento.</p>
@@ -174,7 +256,7 @@ export default function InicioPage() {
               <li key={t.id} className="flex gap-3 border-b border-rule py-3.5 last:border-b-0">
                 <div className="num flex w-12 flex-none flex-col items-center rounded-card bg-raised py-1.5 text-center">
                   <span className="text-[11px] capitalize text-muted">{formatDay(t.day, "short").split(" ")[0]}</span>
-                  <span className="text-[17px] font-semibold leading-[22px]">{t.day.slice(-2).replace(/^0/, "")}</span>
+                  <span className="text-[17px] font-medium leading-[22px]">{t.day.slice(-2).replace(/^0/, "")}</span>
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-[14px] font-medium leading-[19px]">{t.title}</p>
@@ -209,7 +291,7 @@ export default function InicioPage() {
 
       {/* Capacitadores */}
       <section aria-labelledby="trainers-title" className="mt-7">
-        <h2 id="trainers-title" className="text-[16px] font-semibold">
+        <h2 id="trainers-title" className="text-[18px] font-normal">
           Capacitadores
         </h2>
         <p className="text-[13px] text-muted">Reunión privada de 2 horas en la sala de entrevistas del Edificio Empleo.</p>
@@ -258,7 +340,7 @@ export default function InicioPage() {
       {/* Otras reservas */}
       {mine.length > 1 && (
         <section aria-labelledby="mine-title" className="mt-7">
-          <h2 id="mine-title" className="text-[16px] font-semibold">
+          <h2 id="mine-title" className="text-[18px] font-normal">
             Tus otras reservas
           </h2>
           <ul className="mt-1">

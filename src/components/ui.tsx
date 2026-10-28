@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ComponentProps, ReactNode } from "react";
-import { CalendarPlus, Home, IdCard } from "lucide-react";
+import { CalendarPlus, Home, IdCard, Printer } from "lucide-react";
 
 export function cx(...c: (string | false | null | undefined)[]) {
   return c.filter(Boolean).join(" ");
@@ -11,13 +11,16 @@ export function cx(...c: (string | false | null | undefined)[]) {
 
 /* ------------------------------------------------------------------ marca */
 
-/** La marca de AforoON: un anillo de aforo con el punto "ON" encendido. */
-export function Mark({ size = 24 }: { size?: number }) {
+/**
+ * La marca de AforoON: un anillo de aforo con el punto "ON" encendido.
+ * Toma el color del texto, así sirve igual sobre la barra negra y sobre blanco.
+ */
+export function Mark({ size = 20 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
-      <circle cx="12" cy="12" r="9" fill="none" stroke="var(--accent-track)" strokeWidth="3" />
-      <path d="M12 3a9 9 0 0 1 8.2 12.7" fill="none" stroke="var(--accent)" strokeWidth="3" strokeLinecap="round" />
-      <circle cx="12" cy="12" r="3.2" fill="var(--accent)" />
+      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeOpacity="0.35" strokeWidth="3" />
+      <path d="M12 3a9 9 0 0 1 8.2 12.7" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+      <circle cx="12" cy="12" r="3.2" fill="currentColor" />
     </svg>
   );
 }
@@ -27,10 +30,24 @@ export function Wordmark({ sub }: { sub?: string }) {
     <span className="flex items-center gap-2">
       <Mark />
       <span className="flex flex-col leading-none">
-        <span className="text-[15px] font-semibold tracking-[-0.01em]">AforoON</span>
-        {sub && <span className="mt-1 text-[12px] text-muted">{sub}</span>}
+        <span className="text-[17px] font-bold tracking-[-0.01em]">AforoON</span>
+        {sub && <span className="mt-1 text-[12px] opacity-70">{sub}</span>}
       </span>
     </span>
+  );
+}
+
+/* ------------------------------------------------------------------ barra superior */
+
+/** La barra negra de todas las pantallas: marca a la izquierda, acciones a la derecha. */
+export function TopBar({ title, action, className }: { title?: ReactNode; action?: ReactNode; className?: string }) {
+  return (
+    <header className={cx("topbar flex h-[var(--bar)] flex-none items-center justify-between gap-3 px-4", className)}>
+      <Link href="/" className="min-w-0" aria-label="AforoON, ir a la portada">
+        {title ?? <Wordmark />}
+      </Link>
+      {action && <div className="flex flex-none items-center gap-2">{action}</div>}
+    </header>
   );
 }
 
@@ -89,20 +106,64 @@ export function Pill({ tone = "neutral", children, className }: { tone?: Tone; c
 
 type ButtonProps = ComponentProps<"button"> & { variant?: "primary" | "secondary" | "ghost" | "accent"; size?: "md" | "lg" };
 
+/**
+ * Botón de 8 px de radio. Primario: negro. Secundario: gris niebla. Sin color propio:
+ * "accent" queda como alias de primario para las pantallas antiguas.
+ */
 export function Button({ variant = "secondary", size = "md", className, ...rest }: ButtonProps) {
   return (
     <button
       {...rest}
       className={cx(
         "press inline-flex items-center justify-center gap-2 rounded-control font-medium disabled:cursor-not-allowed",
-        size === "lg" ? "h-12 px-5 text-[15px]" : "h-11 px-4 text-[14px] lg:h-9 lg:px-3.5",
-        variant === "primary" && "bg-primary text-white disabled:bg-[var(--inactive)]",
-        variant === "accent" && "bg-accent text-white disabled:bg-[var(--inactive)]",
-        variant === "secondary" && "border border-control bg-surface text-text disabled:text-muted",
+        size === "lg" ? "h-12 px-5 text-[16px]" : "h-11 px-4 text-[14px]",
+        (variant === "primary" || variant === "accent") && "bg-black text-white disabled:bg-[var(--hair)] disabled:text-muted",
+        variant === "secondary" && "bg-raised text-text hover-raise disabled:text-muted",
         variant === "ghost" && "text-text hover-raise",
         className,
       )}
     />
+  );
+}
+
+/** Tarjeta gris niebla, sin borde ni sombra. */
+export function Card({ className, ...rest }: ComponentProps<"div">) {
+  return <div {...rest} className={cx("card", className)} />;
+}
+
+/** Campo con etiqueta y ayuda; el control va dentro (input, select). */
+export function Field({ label, hint, children, className }: { label: string; hint?: string; children: ReactNode; className?: string }) {
+  return (
+    <label className={cx("flex flex-col gap-1.5", className)}>
+      <span className="text-[14px] font-medium">{label}</span>
+      {children}
+      {hint && <span className="text-[12px] text-muted">{hint}</span>}
+    </label>
+  );
+}
+
+/** Tira de pestañas: la activa en teal pálido, el único color de la interfaz. */
+export function Tabs<T extends string>({
+  items,
+  value,
+  onChange,
+  label,
+  className,
+}: {
+  items: { id: T; label: ReactNode }[];
+  value: T;
+  onChange: (id: T) => void;
+  label: string;
+  className?: string;
+}) {
+  return (
+    <div role="tablist" aria-label={label} className={cx("tabs", className)}>
+      {items.map((it) => (
+        <button key={it.id} role="tab" aria-selected={value === it.id} onClick={() => onChange(it.id)} className="tab press">
+          {it.label}
+        </button>
+      ))}
+    </div>
   );
 }
 
@@ -137,6 +198,7 @@ export function CapacityTrack({ used, capacity, className, label }: { used: numb
 const TABS = [
   { href: "/inicio", label: "Inicio", icon: Home },
   { href: "/reservar", label: "Reservar", icon: CalendarPlus },
+  { href: "/maquinas", label: "Máquinas", icon: Printer },
   { href: "/registro", label: "Credencial", icon: IdCard },
 ];
 
@@ -158,16 +220,13 @@ export function MobileShell({
   const path = usePathname();
   return (
     <div className="min-h-dvh sm:py-8">
-      <div className="mx-auto flex min-h-dvh w-full max-w-[440px] flex-col bg-surface sm:min-h-[860px] sm:rounded-[20px] sm:border sm:border-border">
-        <header className="sticky top-0 z-20 flex h-14 flex-none items-center justify-between gap-3 border-b border-rule bg-surface/95 px-4 sm:rounded-t-[20px]">
-          <div className="min-w-0">{title}</div>
-          {action}
-        </header>
+      <div className="mx-auto flex min-h-dvh w-full max-w-[440px] flex-col bg-surface sm:min-h-[860px] sm:overflow-clip sm:rounded-[16px] sm:border sm:border-border">
+        <TopBar title={title} action={action} className="z-20" />
         <main className="flex-1 px-4 pb-6 pt-4">{children}</main>
         {!hideNav && (
           <nav
             aria-label="Secciones"
-            className="sticky bottom-0 z-20 grid flex-none grid-cols-3 border-t border-rule bg-surface pb-[env(safe-area-inset-bottom)] sm:rounded-b-[20px]"
+            className="sticky bottom-0 z-20 grid flex-none grid-cols-4 border-t border-border bg-surface pb-[env(safe-area-inset-bottom)]"
           >
             {TABS.map(({ href, label, icon: Icon }) => {
               const active = path === href;
@@ -178,7 +237,7 @@ export function MobileShell({
                   aria-current={active ? "page" : undefined}
                   className={cx("press flex h-14 flex-col items-center justify-center gap-1 text-[12px]", active ? "text-text" : "text-muted")}
                 >
-                  <Icon size={20} strokeWidth={1.6} className={active ? "text-accent" : undefined} aria-hidden="true" />
+                  <Icon size={20} strokeWidth={active ? 2 : 1.6} aria-hidden="true" />
                   <span className={active ? "font-medium" : undefined}>{label}</span>
                 </Link>
               );
@@ -210,7 +269,7 @@ export function Sheet({ open, onClose, title, children }: { open: boolean; onClo
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="absolute inset-x-0 bottom-0 mx-auto w-full max-w-[440px] rounded-t-[20px] bg-surface px-4 pb-[calc(16px+env(safe-area-inset-bottom))] pt-3 shadow-[0_-8px_32px_rgba(0,0,0,0.12)]"
+        className="absolute inset-x-0 bottom-0 mx-auto w-full max-w-[440px] rounded-t-[16px] bg-surface px-4 pb-[calc(16px+env(safe-area-inset-bottom))] pt-3"
         style={{
           transform: open ? "translateY(0)" : "translateY(100%)",
           transition: `transform ${open ? 380 : 240}ms var(--ease-drawer)`,
@@ -232,7 +291,7 @@ export function Toast({ message, tone = "neutral" }: { message: string | null; t
         <div
           key={message}
           className={cx(
-            "enter rounded-card px-4 py-3 text-[14px] shadow-[0_8px_24px_rgba(0,0,0,0.16)]",
+            "enter rounded-card px-4 py-3 text-[14px]",
             tone === "negative" ? "bg-[var(--pill-negative-bg)] text-[var(--pill-negative-ink)]" : "bg-primary text-white",
           )}
         >

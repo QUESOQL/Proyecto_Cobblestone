@@ -20,8 +20,9 @@ import {
   type Reservation,
   type ZoneId,
 } from "@/lib/data";
-import { ME_ID, allReservations, insideNow, useAforo, useHydrated, type AccessEvent } from "@/lib/store";
-import { Avatar, Button, CapacityTrack, Pill, Wordmark, cx } from "@/components/ui";
+import { ME_ID, allReservations, insideNow, isLate, trainingStatus, useAforo, useHydrated, type AccessEvent } from "@/lib/store";
+import { BASE_MACHINE_BOOKINGS, machineById, trainingKind, type MachineBooking } from "@/lib/lab";
+import { Avatar, Button, CapacityTrack, Pill, TopBar, Wordmark, cx } from "@/components/ui";
 
 type Mode = "entrada" | "salida";
 type Person = { id: string; name: string; rut: string; hue: number; segment: string; verified: boolean };
@@ -30,6 +31,15 @@ interface Result {
   person: Person;
   event: AccessEvent;
   reservation?: Reservation;
+  /** Reserva de máquina con la que entró (Lab881 o cowork textil). */
+  machine?: MachineBooking;
+}
+
+/** Reserva de máquina que corresponde a esta hora: empieza dentro de la próxima hora o está en curso. */
+function machineNow(bookings: MachineBooking[], memberId: string) {
+  return bookings.find(
+    (b) => b.memberId === memberId && b.status === "confirmada" && b.day === TODAY && b.startMin - 60 <= NOW_MIN && NOW_MIN < b.startMin + b.hours * 60,
+  );
 }
 
 const RESULT_COPY: Record<AccessEvent["result"], { led: "ok" | "no"; title: string; tone: "positive" | "negative" | "warning" | "accent" }> = {
@@ -37,6 +47,8 @@ const RESULT_COPY: Record<AccessEvent["result"], { led: "ok" | "no"; title: stri
   excepcion: { led: "ok", title: "Ingreso por excepción", tone: "accent" },
   sin_reserva: { led: "no", title: "Sin reserva para este bloque", tone: "negative" },
   no_enrolado: { led: "no", title: "Credencial no enrolada", tone: "warning" },
+  sin_capacitacion: { led: "no", title: "Capacitación no vigente", tone: "negative" },
+  atrasado: { led: "no", title: "Reserva cancelada por atraso", tone: "negative" },
 };
 
 export default function RecepcionPage() {
@@ -62,6 +74,8 @@ export default function RecepcionPage() {
   const queue: Person[] = useMemo(() => {
     if (mode === "salida") return inside.slice(0, 6).map((r) => toPerson(r.memberId));
     const pending = now.filter((r) => r.checkInMin === undefined);
+    // Quien viene a usar una máquina también pasa por la puerta.
+    const mineMachine = hydrated && s.profile ? machineNow(s.myMachineBookings, ME_ID) : undefined;
     const mineFirst = pending.sort((a, b) => (a.memberId === ME_ID ? -1 : b.memberId === ME_ID ? 1 : 0));
     const people = mineFirst.slice(0, 5).map((r) => toPerson(r.memberId));
     const booked = new Set(now.map((r) => r.memberId));
@@ -69,8 +83,9 @@ export default function RecepcionPage() {
     const unenrolled = MEMBERS.find((m) => !m.verified && !s.events.some((e) => e.memberId === m.id));
     if (walkIn) people.splice(2, 0, toPerson(walkIn.id));
     if (unenrolled) people.splice(4, 0, toPerson(unenrolled.id));
+    if (mineMachine && !s.events.some((e) => e.memberId === ME_ID && e.kind === "entrada")) people.unshift(toPerson(ME_ID));
     return people.filter((p, i, a) => a.findIndex((x) => x.id === p.id) === i).slice(0, 7);
-  }, [mode, now.length, inside.length, s.events.length, s.profile]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [mode, now.length, inside.length, s.events.length, s.profile, s.myMachineBookings, hydrated]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const scan = (p: Person, method: AccessMethod) => {
     if (reading) return;
@@ -80,12 +95,18 @@ export default function RecepcionPage() {
     const latency = Math.round((0.5 + Math.random() * 1.1 + (s.offline ? 0.2 : 0)) * 10) / 10;
     timer.current = setTimeout(() => {
       const reservation = now.find((r) => r.memberId === p.id);
+      const machine = !reservation && mode === "entrada" ? machineNow(p.id === ME_ID ? s.myMachineBookings : BASE_MACHINE_BOOKINGS, p.id) : undefined;
       const atMin = Math.min(NOW_MIN + s.events.length, 719);
       let res: AccessEvent["result"] = "aprobado";
       if (!p.verified) res = "no_enrolado";
-      else if (!reservation && mode === "entrada") res = "sin_reserva";
+      else if (machine && isLate(machine)) {
+        // Pasados 20 minutos del inicio, la reserva de la máquina se cancela.
+        res = "atrasado";
+        if (p.id === ME_ID) s.cancelMachine(machine.id, "atraso");
+      } else if (machine && p.id === ME_ID && trainingStatus(s, machineById(machine.machineId).training) !== "aprobada") res = "sin_capacitacion";
+      else if (!reservation && !machine && mode === "entrada") res = "sin_reserva";
       const event = s.recordEvent({ memberId: p.id, reservationId: reservation?.id, kind: mode, result: res, method, latency, atMin });
-      setResult({ person: p, event, reservation });
+      setResult({ person: p, event, reservation, machine });
       setReading(null);
     }, 700);
   };
@@ -117,19 +138,16 @@ export default function RecepcionPage() {
 
   return (
     <div className="min-h-dvh bg-ground">
-      <div className="mx-auto max-w-[1180px] px-4 py-4 md:px-6 md:py-6">
-        <header className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-4">
-            <Wordmark sub="Terminal de acceso" />
-            <span className="hidden h-8 w-px bg-border md:block" aria-hidden="true" />
-            <div className="hidden md:block">
+      <TopBar
+        title={<Wordmark sub="Terminal de acceso" />}
+        action={
+          <>
+            <div className="hidden text-right md:block">
               <p className="text-[13px] font-medium">Edificio Cowork · Puerta principal</p>
-              <p className="num text-[12px] text-muted">
+              <p className="num text-[12px] opacity-70">
                 Bloque {blockLabel(CURRENT_BLOCK)} · {formatMin(NOW_MIN)}
               </p>
             </div>
-          </div>
-          <div className="flex items-center gap-2">
             <button
               onClick={() => s.setOffline(!state.offline)}
               aria-pressed={state.offline}
@@ -141,8 +159,10 @@ export default function RecepcionPage() {
               {state.offline ? <CloudOff size={16} aria-hidden="true" /> : <Wifi size={16} aria-hidden="true" />}
               {state.offline ? `Sin conexión · ${queued} en cola` : "En línea"}
             </button>
-          </div>
-        </header>
+          </>
+        }
+      />
+      <div className="mx-auto max-w-[1180px] px-4 py-4 md:px-6 md:py-6">
 
         <h1 className="sr-only">Terminal de acceso del Edificio Cowork</h1>
 
@@ -151,7 +171,7 @@ export default function RecepcionPage() {
           <div className="flex min-w-0 flex-col gap-6">
             <section aria-labelledby="result-title" className="overflow-hidden rounded-card border border-border bg-surface">
               <div className="flex items-center justify-between border-b border-rule px-5 py-3">
-                <div role="tablist" aria-label="Sentido" className="flex rounded-control bg-raised p-1">
+                <div role="tablist" aria-label="Sentido" className="toggle">
                   {(["entrada", "salida"] as Mode[]).map((m) => (
                     <button
                       key={m}
@@ -161,10 +181,7 @@ export default function RecepcionPage() {
                         setMode(m);
                         setResult(null);
                       }}
-                      className={cx(
-                        "press h-11 rounded-[5px] px-5 text-[14px] capitalize",
-                        mode === m ? "bg-surface font-medium shadow-[0_1px_2px_rgba(0,0,0,0.06)]" : "text-muted",
-                      )}
+                      className="toggle-option press h-11 px-5 capitalize"
                     >
                       {m}
                     </button>
@@ -178,7 +195,7 @@ export default function RecepcionPage() {
 
             <section aria-labelledby="queue-title">
               <div className="flex items-baseline justify-between">
-                <h2 id="queue-title" className="text-[16px] font-semibold">
+                <h2 id="queue-title" className="text-[18px] font-normal">
                   {mode === "entrada" ? "En la puerta" : "Saliendo"}
                 </h2>
                 <span className="hidden text-[12px] text-muted sm:inline">Simula la lectura de cada credencial</span>
@@ -214,7 +231,7 @@ export default function RecepcionPage() {
               <h2 id="inside-title" className="text-[14px] text-muted">
                 Dentro del Hub ahora
               </h2>
-              <p className="num mt-1 text-[32px] font-semibold leading-[38px]">
+              <p className="num mt-1 text-[36px] font-normal leading-[1.22]">
                 {totalInside}
                 <span className="ml-1.5 text-[14px] font-normal text-muted">personas</span>
               </p>
@@ -241,7 +258,7 @@ export default function RecepcionPage() {
 
             <section aria-labelledby="log-title">
               <div className="flex items-baseline justify-between">
-                <h2 id="log-title" className="text-[16px] font-semibold">
+                <h2 id="log-title" className="text-[18px] font-normal">
                   Registro de accesos
                 </h2>
                 {state.events.length > 0 && (
@@ -316,7 +333,7 @@ function ResultPanel({ reading, result, offline, onException }: { reading: Perso
       <div className="flex min-w-0 flex-col justify-center">
         {!reading && !result && (
           <div>
-            <h2 id="result-title" className="text-[22px] font-semibold leading-[28px]">
+            <h2 id="result-title" className="text-[24px] font-normal leading-[1.3]">
               Acerca el teléfono o muestra el QR
             </h2>
             <p className="mt-2 max-w-[460px] text-[14px] leading-[20px] text-muted">
@@ -327,7 +344,7 @@ function ResultPanel({ reading, result, offline, onException }: { reading: Perso
         )}
         {reading && (
           <div className="enter">
-            <h2 id="result-title" className="text-[22px] font-semibold leading-[28px]">
+            <h2 id="result-title" className="text-[24px] font-normal leading-[1.3]">
               Validando a {reading.name.split(" ")[0]}…
             </h2>
             <p className="mt-2 text-[14px] text-muted">{offline ? "Sin conexión: se valida contra la copia local de reservas del día." : "Consultando la reserva del bloque en curso."}</p>
@@ -339,7 +356,7 @@ function ResultPanel({ reading, result, offline, onException }: { reading: Perso
               <Avatar name={result.person.name} hue={result.person.hue} size={64} />
               <div className="min-w-0">
                 <Pill tone={copy.tone}>{copy.title}</Pill>
-                <h2 id="result-title" className="mt-1.5 truncate text-[22px] font-semibold leading-[28px]">
+                <h2 id="result-title" className="mt-1.5 truncate text-[24px] font-normal leading-[1.3]">
                   {result.person.name}
                 </h2>
                 <p className="num text-[13px] text-muted">
@@ -351,12 +368,23 @@ function ResultPanel({ reading, result, offline, onException }: { reading: Perso
             <dl className="grid grid-cols-2 gap-x-6 gap-y-3 rounded-card bg-raised p-4 text-[13px] sm:grid-cols-[1.5fr_1fr_1fr]">
               <div className="col-span-2 sm:col-span-1">
                 <dt className="text-muted">Destino</dt>
-                <dd className="font-medium">{result.reservation ? unitById(result.reservation.unitId).name : "—"}</dd>
+                <dd className="font-medium">
+                  {result.reservation ? unitById(result.reservation.unitId).name : result.machine ? machineById(result.machine.machineId).name : "—"}
+                </dd>
                 {result.reservation && <dd className="text-[12px] text-muted">{zoneById(unitById(result.reservation.unitId).zoneId).building}</dd>}
+                {result.machine && (
+                  <dd className="text-[12px] text-muted">Capacitación: {trainingKind(machineById(result.machine.machineId).training).name}</dd>
+                )}
               </div>
               <div>
                 <dt className="text-muted">Bloque</dt>
-                <dd className="num font-medium">{result.reservation ? blockLabel(result.reservation.block) : "—"}</dd>
+                <dd className="num font-medium">
+                  {result.reservation
+                    ? blockLabel(result.reservation.block)
+                    : result.machine
+                      ? `${formatMin(result.machine.startMin)} · ${result.machine.hours} h`
+                      : "—"}
+                </dd>
               </div>
               <div>
                 <dt className="text-muted">Validado en</dt>
@@ -374,6 +402,12 @@ function ResultPanel({ reading, result, offline, onException }: { reading: Perso
                 </Button>
                 <p className="text-[12px] text-muted">Queda registrado con la hora y el turno de recepción.</p>
               </div>
+            )}
+            {result.event.result === "sin_capacitacion" && (
+              <p className="text-[13px] text-muted">La capacitación de esta máquina ya no está aprobada. Puede inscribirse de nuevo desde la app.</p>
+            )}
+            {result.event.result === "atrasado" && (
+              <p className="text-[13px] text-muted">Llegó más de 20 minutos tarde: la reserva se canceló y el atraso queda en su ficha.</p>
             )}
             {result.event.result === "no_enrolado" && (
               <div className="flex flex-wrap items-center gap-3">

@@ -35,7 +35,7 @@ export function HeroForm() {
 
   return (
     <form onSubmit={submit} className="flex flex-col gap-3" aria-label="Buscar un espacio">
-      <div className="lp-toggle self-start" role="radiogroup" aria-label="Cuándo">
+      <div className="toggle self-start" role="radiogroup" aria-label="Cuándo">
         {(["hoy", "despues"] as const).map((m) => (
           <button
             key={m}
@@ -43,7 +43,7 @@ export function HeroForm() {
             role="radio"
             aria-checked={mode === m}
             onClick={() => setMode(m)}
-            className="lp-toggle-option"
+            className="toggle-option"
           >
             {m === "hoy" ? "Ir hoy" : "Programar"}
           </button>
@@ -83,7 +83,7 @@ export function HeroForm() {
         </label>
       </div>
 
-      <button type="submit" className="lp-btn mt-1 self-start max-md:w-full">
+      <button type="submit" className="btn mt-1 self-start max-md:w-full">
         Ver cupos
       </button>
     </form>

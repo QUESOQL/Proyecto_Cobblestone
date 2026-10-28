@@ -84,7 +84,7 @@ export function LabScroll() {
               steps.current[i] = el;
             }}
             className="lp-lab-step"
-            style={{ color: i === active ? "var(--lp-black)" : "var(--lp-iron)" }}
+            style={{ color: i === active ? "var(--black)" : "var(--iron)" }}
           >
             <h3 className="lp-heading-sm">{s.title}</h3>
             <p className="mt-2 max-w-[38ch] text-[16px] leading-[1.5]">{s.text}</p>
