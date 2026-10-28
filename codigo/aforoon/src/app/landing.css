@@ -1,178 +1,270 @@
 /*
- * Landing de AforoON — dirección "The sentence is the layout" (taste skill, seed 1821631555).
- * La idea: en el nombre AforoON, la segunda O es la puerta real del Hub (Los Jesuitas 881),
- * recortada en un círculo que es también el anillo de la marca.
- *
- * Cinco pasos de tipo: display (nombre), heading, statement, body (17 px), small (14 px).
- * Un margen de página, un radio de botón, un acento (solo en la acción).
+ * Landing de AforoON y páginas del Hub — estilo "quiosco de transporte" de Uber (DESIGN.md).
+ * Los tokens y los componentes compartidos (barra, botón, tarjeta, pestañas, filas, barra
+ * fija) viven en globals.css; aquí solo lo propio de las páginas públicas: tipografía
+ * editorial, el formulario de la portada, los paneles de imagen y la sección del Lab881.
  */
 
 .lp {
-  --m: clamp(16px, 3.4vw, 48px); /* margen exterior único */
-  --t-display: clamp(64px, 15vw, 230px);
-  --t-heading: clamp(40px, 5.6vw, 88px);
-  --t-statement: clamp(24px, 2.5vw, 34px);
-  --t-body: 17px;
-  --t-small: 14px;
-  background: var(--ground);
-  color: var(--text);
+  /* La carrera de puertas usa los roles de la app sobre fondo gris: la tarjeta va blanca. */
+  background: var(--white);
+  color: var(--black);
+  font-size: 16px;
+  line-height: 1.43;
   overflow-x: clip;
+  padding-bottom: var(--bar); /* deja ver el pie sobre la barra fija */
+}
+
+.lp :focus-visible {
+  outline: 2px solid var(--black);
+  outline-offset: 2px;
 }
 
 .lp-wrap {
-  padding-inline: var(--m);
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 16px;
 }
-
-@media (max-width: 767px) {
-  .lp {
-    --t-display: 20vw;
+@media (min-width: 768px) {
+  .lp-wrap {
+    padding-inline: 32px;
   }
 }
 
+.lp-section {
+  padding-block: 64px;
+}
+@media (min-width: 768px) {
+  .lp-section {
+    padding-block: 96px;
+  }
+}
+
+/* Tipografía: un solo peso (400) para los títulos; el tamaño hace el trabajo. */
 .lp-display {
-  font-size: var(--t-display);
-  font-weight: 700;
-  letter-spacing: -0.05em;
-  line-height: 0.92;
-}
-
-.lp-heading {
-  font-size: var(--t-heading);
-  font-weight: 700;
-  letter-spacing: -0.035em;
-  line-height: 0.98;
-}
-
-.lp-statement {
-  font-size: var(--t-statement);
-  font-weight: 500;
-  letter-spacing: -0.015em;
+  font-size: clamp(36px, 6vw, 52px);
+  font-weight: 400;
   line-height: 1.22;
+  letter-spacing: -0.01em;
 }
-
-.lp-body {
-  font-size: var(--t-body);
-  line-height: 1.55;
+.lp-heading {
+  font-size: clamp(28px, 4vw, 36px);
+  font-weight: 400;
+  line-height: 1.22;
+  letter-spacing: -0.005em;
 }
-
+.lp-heading-sm {
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.33;
+}
+.lp-sub {
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--slate);
+}
+.lp-caption {
+  font-size: 12px;
+  line-height: 1.67;
+}
 .lp-small {
-  font-size: var(--t-small);
-  line-height: 1.45;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.text-slate {
+  color: var(--slate);
+}
+.lp-eyebrow {
+  font-size: 12px;
+  line-height: 1.67;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--slate);
 }
 
-/* La O del nombre: un círculo exactamente de alto de mayúscula, apoyado en la línea base. */
-.lp-o {
-  display: inline-block;
-  width: 0.74em;
-  height: 0.74em;
-  margin-inline: 0.02em 0.01em;
-  border-radius: 999px;
-  overflow: hidden;
-  position: relative;
-  vertical-align: baseline;
-  border: 0.085em solid var(--accent);
-  isolation: isolate;
-}
-.lp-o img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: -1;
-}
-
-/* Miniaturas dentro de la frase. */
-.lp-thumb {
-  display: inline-block;
-  height: 0.85em;
-  width: 1.25em;
-  margin-inline: 0.12em;
-  vertical-align: -0.1em;
-  border-radius: 0.14em;
-  overflow: hidden;
-  position: relative;
-}
-.lp-thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* Botón: rectangular, 52 px, el acento solo aquí. */
-.lp-btn {
+/* ---------------------------------------------------------------- portada */
+.lp-place {
   display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  font-size: 18px;
+  font-weight: 500;
+}
+.lp-place::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--black);
+}
+.lp-place-note {
+  border-radius: 9999px;
+  background: var(--mist);
+  padding: 2px 12px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Origen y destino: dos campos unidos por una línea vertical. */
+.lp-route {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.lp-route::before {
+  content: "";
+  position: absolute;
+  z-index: 2; /* por encima del borde de los campos: une el círculo con el cuadrado */
+  left: 22.5px;
+  top: 28px;
+  bottom: 28px;
+  width: 1px;
+  background: var(--black);
+}
+.lp-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 56px;
+  padding: 0 16px 0 18px;
+  border: 1px solid var(--iron);
+  border-radius: 8px;
+  background: var(--white);
+}
+.lp-field:focus-within {
+  border-color: var(--black);
+  box-shadow: inset 0 0 0 1px var(--black);
+}
+.lp-field select {
+  flex: 1;
+  min-width: 0;
+  height: 54px;
+  appearance: none;
+  background: transparent;
+  font-size: 16px;
+  color: var(--black);
+  outline: none;
+}
+.lp-field select:disabled {
+  opacity: 1;
+}
+.lp-dot,
+.lp-square {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  background: var(--black);
+  position: relative;
+  z-index: 1;
+}
+.lp-dot {
+  border-radius: 9999px;
+}
+
+/* ---------------------------------------------------------------- paneles de imagen */
+.lp-slot {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--mist);
+}
+.lp-slot-tag {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  border-radius: 8px;
+  background: var(--white);
+  padding: 2px 10px;
+  font-size: 12px;
+  line-height: 1.67;
+}
+.lp-slot-icon {
+  display: inline-flex;
+  width: 52px;
+  height: 52px;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  min-height: 52px;
-  padding: 0 22px;
-  border-radius: 6px;
-  background: var(--accent);
-  color: #fff;
-  font-size: 17px;
-  font-weight: 500;
-  transition: transform 140ms var(--ease-out), background-color 150ms ease;
+  border-radius: 9999px;
+  background: var(--white);
 }
-.lp-btn:active {
-  transform: scale(0.97);
+.lp-slot--contain img {
+  object-fit: contain;
+  padding: 16px;
 }
-@media (hover: hover) and (pointer: fine) {
-  .lp-btn:hover {
-    background: #275a65;
+
+/* Tarjeta con imagen a la derecha (las de "Qué hay en el Hub"). */
+.lp-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 104px;
+  gap: 16px;
+}
+
+/* ---------------------------------------------------------------- Lab881 */
+.lp-lab-sticky {
+  position: sticky;
+  top: var(--bar);
+  z-index: 10;
+  align-self: start;
+  background: var(--white);
+  padding-block: 12px;
+}
+@media (min-width: 768px) {
+  .lp-lab-sticky {
+    top: calc(var(--bar) + 32px);
+    padding-block: 0;
   }
-  .lp-link:hover {
-    color: var(--accent);
+}
+.lp-lab-frame {
+  position: absolute;
+  inset: 0;
+  transition: opacity 500ms var(--ease-out), transform 700ms var(--ease-out);
+}
+.lp-lab-step {
+  padding-block: 18vh;
+  border-top: 1px solid var(--hair);
+  transition: color 300ms ease;
+}
+.lp-lab-step:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+@media (min-width: 768px) {
+  .lp-lab-step {
+    padding-block: 26vh;
   }
-}
-.lp-btn--invert {
-  background: var(--surface);
-  color: var(--text);
-}
-@media (hover: hover) and (pointer: fine) {
-  .lp-btn--invert:hover {
-    background: var(--accent-soft);
+  .lp-lab-step:first-child {
+    padding-top: 8vh;
   }
 }
 
-.lp-link {
-  transition: color 150ms ease;
+/* Cowork textil: dos paneles apilados en el teléfono, escalonados en escritorio. */
+.lp-textil-slot {
+  aspect-ratio: 4 / 3;
+}
+@media (min-width: 768px) {
+  .lp-textil-slot {
+    aspect-ratio: 3 / 4;
+  }
+  .lp-textil-slot--offset {
+    margin-top: 48px;
+  }
 }
 
-/* Firma: la foto de la puerta se abre como un obturador. */
-@keyframes lp-shutter {
-  from {
-    clip-path: inset(50% 0 50% 0);
-  }
-  to {
-    clip-path: inset(0 0 0 0);
-  }
-}
-@keyframes lp-settle {
-  from {
-    transform: scale(1.12);
-  }
-  to {
-    transform: scale(1);
-  }
-}
-.lp-shutter {
-  animation: lp-shutter 1100ms var(--ease-in-out) 200ms both;
-}
-.lp-shutter img {
-  animation: lp-settle 1400ms var(--ease-out) 200ms both;
-}
-
-/* Entradas por partes: título, texto, imagen, escalonadas. Sin JS, el contenido se ve igual. */
+/* ---------------------------------------------------------------- entradas */
 .lp-rise {
   opacity: 1;
   transform: none;
 }
 .js .lp-rise {
   opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 600ms var(--ease-out), transform 700ms var(--ease-out);
-  transition-delay: calc(var(--i, 0) * 75ms);
+  transform: translateY(16px);
+  transition: opacity 500ms var(--ease-out), transform 600ms var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 70ms);
 }
 .js .lp-in .lp-rise,
 .js .lp-rise.lp-in {
@@ -180,41 +272,10 @@
   transform: none;
 }
 
-/* Tira de fotos: avanza sola, lenta, en bucle. Transform solamente. */
-.lp-strip {
-  overflow: hidden;
-}
-.lp-strip-track {
-  display: flex;
-  gap: 12px;
-  width: max-content;
-  animation: lp-marquee 60s linear infinite;
-}
-@keyframes lp-marquee {
-  to {
-    transform: translateX(calc(-50% - 6px));
-  }
-}
-
-/* Imagen en movimiento: la del final de la vitrina deriva lentamente. */
-@keyframes lp-drift {
-  from {
-    transform: scale(1.04) translateX(-1.5%);
-  }
-  to {
-    transform: scale(1.04) translateX(1.5%);
-  }
-}
-.lp-drift {
-  animation: lp-drift 14s ease-in-out infinite alternate;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .lp-shutter,
-  .lp-shutter img,
-  .lp-strip-track,
-  .lp-drift {
-    animation: none;
+  .lp-lab-frame {
+    transition: opacity 200ms ease;
+    transform: none !important;
   }
   .js .lp-rise {
     transform: none;

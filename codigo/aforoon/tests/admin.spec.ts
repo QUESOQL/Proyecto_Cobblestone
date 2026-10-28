@@ -19,7 +19,7 @@ test.describe("Pantalla 5 · Dashboard de ocupación", () => {
     const seg = page.getByRole("heading", { name: "Quiénes vienen" }).locator("../..");
     for (const s of ["Emprendimiento", "Búsqueda de empleo", "Estudiante", "Startup", "Vecino/a", "Empresa"]) await expect(seg).toContainText(s);
 
-    await expect(page.getByRole("table")).toContainText("Boletas de honorarios sin enredos");
+    await expect(page.getByRole("table").filter({ hasText: "Boletas de honorarios sin enredos" })).toBeVisible();
 
     const download = page.waitForEvent("download");
     await page.getByRole("button", { name: "Exportar accesos de hoy" }).click();

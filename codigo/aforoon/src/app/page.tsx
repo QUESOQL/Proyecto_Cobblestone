@@ -1,60 +1,95 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import "./landing.css";
 import { DoorRace } from "@/components/landing/door-race";
+import { HeroForm } from "@/components/landing/hero-form";
+import { ImageSlot } from "@/components/landing/image-slot";
+import { LabScroll } from "@/components/landing/lab-scroll";
 import { Reveal } from "@/components/landing/reveal";
-import { Showcase } from "@/components/landing/showcase";
+import { RoleTabs } from "@/components/landing/role-tabs";
+import { BottomBar, SiteFooter, SiteNav } from "@/components/landing/site-chrome";
+import { SLOTS } from "@/components/landing/slots";
 
 /*
- * Landing de AforoON.
- * Idea: en el nombre AforoON, la segunda O es la puerta real del Edificio Cowork
- * (Los Jesuitas 881), recortada en el mismo anillo de la marca.
- * Lo que se puede hacer: comparar la puerta de hoy (formulario) con la de AforoON.
+ * Landing de AforoON, con el estilo de Uber (DESIGN.md): lienzo blanco, bandas negras,
+ * tarjetas gris niebla y una interfaz sin color. El color llegará con las ilustraciones;
+ * mientras tanto, cada espacio de imagen muestra una referencia o la idea de lo que va
+ * (ver src/components/landing/slots.ts).
+ * Contenido del Hub: providencia.cl y el documento del Hub Providencia.
  */
 
-const STAGES = [
-  { time: "Dos minutos", seconds: 120, clause: "Primero, creas tu credencial con tu RUT y tu perfil. Una sola vez.", bg: "var(--surface)", ink: "var(--text)" },
-  { time: "Treinta segundos", seconds: 30, clause: "Después, eliges mesa, oficina o charla con el cupo real a la vista.", bg: "var(--raised)", ink: "var(--text)" },
-  { time: "Siete segundos", seconds: 7, clause: "En la puerta, acercas el teléfono o muestras tu QR.", bg: "var(--stone)", ink: "var(--text)" },
-  { time: "Las horas que necesites", seconds: 7200, clause: "Luego, el tiempo es tuyo: trabajas, aprendes o te reúnes.", bg: "var(--primary)", ink: "#ffffff" },
-];
-const STRIP = ["/hub/cowork.jpg", "/hub/oficina.jpg", "/hub/set.jpg", "/hub/charlas.jpg", "/hub/empleo.jpg", "/hub/fachada.jpg"];
-const TOTAL = STAGES.reduce((a, s) => a + s.seconds, 0);
-
-const ROWS = [
+const HUB = [
   {
-    title: "Oficinas 1 a 4",
-    text: "Cuatro oficinas cerradas, para cuatro a seis personas, que se reservan completas por bloque de dos horas. Nadie llega a una oficina ocupada.",
-    photo: { src: "/hub/oficina.jpg", alt: "La Oficina 1 del Edificio Cowork, con mesa redonda y sillas naranjas", w: 380, ratio: "4/5" },
+    title: "Cowork general",
+    text: "Para unas 200 personas, sin reserva previa. Wifi, salas de reuniones, zona infantil y pet friendly.",
+    link: { href: "/hub/cowork", label: "Conocer el cowork" },
+    slot: SLOTS.cardCowork,
   },
   {
-    title: "Set audiovisual",
-    text: "Luces, sillones y fondo para grabar un podcast o un video. Se reserva igual que una oficina y queda solo para tu equipo.",
-    photo: { src: "/hub/set.jpg", alt: "El set audiovisual del Hub, con luces de estudio y dos sillones", w: 520, ratio: "3/2" },
+    title: "Oficinas y set audiovisual",
+    text: "Cuatro oficinas para 4 a 6 personas y un set para grabar, por bloques de dos horas.",
+    link: { href: "/hub/oficinas", label: "Conocer las oficinas" },
+    slot: SLOTS.cardOficinas,
   },
   {
     title: "Zona de charlas",
-    text: "Sesenta sillas frente a las pantallas. Inscribirte en una charla te guarda el asiento, y si ya está llena lo sabes antes de ir.",
-    photo: { src: "/hub/charlas.jpg", alt: "Charla en el Hub con el público sentado frente al escenario", w: 340, ratio: "1/1" },
+    text: "Sesenta sillas frente a las pantallas. Inscribirte te guarda el asiento.",
+    link: { href: "/hub/charlas", label: "Conocer la zona" },
+    slot: SLOTS.cardCharlas,
   },
   {
-    title: "Edificio Empleo",
-    text: "Salas de capacitación por piso y una sala de entrevistas para reunirte a solas con un capacitador del Departamento de Empleo.",
-    photo: { src: "/hub/empleo.jpg", alt: "Fachada del Edificio Empleo, con almenas y ventanas de rombos", w: 440, ratio: "4/5" },
+    title: "Lab881",
+    text: "Impresoras 3D, impresora de resina y cortadora láser, de uso gratuito.",
+    link: { href: "/hub/lab881", label: "Conocer el lab" },
+    slot: SLOTS.cardLab,
   },
+  {
+    title: "Cowork textil",
+    text: "Máquinas y capacitaciones para aprender o perfeccionar el oficio textil.",
+    link: { href: "/hub/cowork-textil", label: "Conocer el cowork textil" },
+    slot: SLOTS.cardTextil,
+  },
+  {
+    title: "Empleo",
+    text: "Orientación de CV, entrevistas e inclusión laboral en el Castillito Sermini.",
+    link: { href: "/hub/empleo", label: "Conocer Empleo" },
+    slot: SLOTS.cardEmpleo,
+  },
+];
+
+const LAB_FACTS = [
+  { label: "Horario", value: "Lunes a jueves de 9:00 a 17:30, viernes hasta 16:30." },
+  { label: "Cupos", value: "15 reservas al año por persona, de hasta 18 horas cada una." },
+  { label: "Cómo se reserva", value: "Te inscribes en la capacitación, el equipo del Hub la aprueba y reservas la máquina desde AforoON." },
+];
+
+const MORE = [
+  { title: "GovTech Lab", text: "Cowork para startups que prueban soluciones para la ciudad.", slot: SLOTS.govtech, href: "/hub/govtech" },
+  { title: "InGaming Providencia", text: "Comunidad de videojuegos y esports, junto a Esports Chile.", slot: SLOTS.ingaming, href: "/hub/ingaming" },
+  { title: "Comunidad EmprendePro", text: "Capacitaciones, asesorías y ferias gratis para emprender en la comuna.", slot: SLOTS.emprende, href: "/hub/emprendepro" },
 ];
 
 const FAQ = [
   {
-    q: "¿Qué pasa con mi RUT?",
-    a: "Se guarda cifrado y solo sirve para validar tu ingreso. En la puerta, recepción ve tu nombre y tu foto, nunca el RUT completo. Puedes borrar tu cuenta cuando quieras, como pide la Ley 21.719.",
+    q: "¿Tiene algún costo?",
+    a: "No. El Hub Providencia es un espacio municipal gratuito, y su credencial también.",
   },
-  { q: "¿Y si mi teléfono no tiene NFC?", a: "Muestras el QR dinámico de la app. Cambia cada 30 segundos, así que una captura de pantalla no sirve para entrar." },
-  { q: "¿Qué pasa si se cae el internet?", a: "El terminal de la puerta sigue validando con la copia de las reservas del día y sincroniza cada entrada apenas vuelve la conexión." },
-  { q: "¿Tiene algún costo?", a: "No. El Hub Providencia es un espacio municipal gratuito, y su credencial también." },
-  { q: "¿Y si no tengo smartphone?", a: "En recepción te registran en un minuto y entras dando tu RUT. El registro queda igual que el de cualquier socio." },
-  { q: "¿Qué pasa si reservo y no llego?", a: "El cupo se libera al terminar el bloque para que otra persona lo use. Si sabes que no vas, cancelas desde la app y queda libre al tiro." },
+  {
+    q: "¿Qué pasa con mi RUT?",
+    a: "Se guarda cifrado y solo sirve para validar tu ingreso. Recepción ve tu nombre y tu foto, nunca el RUT completo. Puedes borrar tu cuenta cuando quieras (Ley 21.719).",
+  },
+  {
+    q: "¿Y si mi teléfono no tiene NFC?",
+    a: "Muestras el QR de la app. Cambia cada 30 segundos, así que una captura de pantalla no sirve para entrar.",
+  },
+  {
+    q: "¿Y si no tengo smartphone?",
+    a: "En recepción te registran en un minuto y entras dando tu RUT.",
+  },
+  {
+    q: "¿Qué pasa si reservo y no llego?",
+    a: "El cupo se libera al terminar el bloque. Si sabes que no vas, cancelas desde la app y queda libre al tiro.",
+  },
 ];
 
 export default function Landing() {
@@ -62,254 +97,167 @@ export default function Landing() {
     <div className="lp">
       <Reveal />
 
-      {/* ------------------------------------------------------------ portada */}
-      <header className="lp-wrap relative flex min-h-[100svh] flex-col">
-        <nav aria-label="Principal" className="flex h-16 items-center justify-between gap-6">
-          <Link href="/" className="flex items-center gap-2 text-[17px] font-semibold">
-            <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
-              <circle cx="12" cy="12" r="9" fill="none" stroke="var(--accent-track)" strokeWidth="3" />
-              <path d="M12 3a9 9 0 0 1 8.2 12.7" fill="none" stroke="var(--accent)" strokeWidth="3" strokeLinecap="round" />
-              <circle cx="12" cy="12" r="3.2" fill="var(--accent)" />
-            </svg>
-            AforoON
-          </Link>
-          <ul className="hidden items-center gap-8 text-[14px] md:flex">
-            <li>
-              <a href="#como" className="lp-link">Cómo funciona</a>
-            </li>
-            <li>
-              <a href="#espacios" className="lp-link">Espacios</a>
-            </li>
-            <li>
-              <a href="#preguntas" className="lp-link">Preguntas</a>
-            </li>
-            <li>
-              <Link href="/admin" className="lp-link">Administración</Link>
-            </li>
-            <li>
-              <Link href="/avance" className="lp-link">Avance</Link>
-            </li>
-          </ul>
-          <Link href="/registro" className="lp-link text-[17px] font-medium md:hidden">
-            Entrar
-          </Link>
-        </nav>
+      <SiteNav />
 
-        <div className="flex flex-1 items-center justify-center">
-          <h1 className="lp-display whitespace-nowrap" aria-label="AforoON">
-            <span aria-hidden="true">
-              Aforo<span className="lp-o lp-shutter"><Image src="/hub/fachada.jpg" alt="" width={360} height={360} priority sizes="(min-width: 768px) 15vw, 30vw" className="object-[50%_44%]" /></span>N
-            </span>
-          </h1>
-        </div>
+      <main>
+        {/* ------------------------------------------------------------ portada */}
+        <section aria-labelledby="hero-title" className="lp-wrap grid gap-10 pb-16 pt-10 md:grid-cols-2 md:items-center md:gap-16 md:pb-24 md:pt-16">
+          <div className="flex flex-col gap-6">
+            <p className="lp-place">
+              Los Jesuitas 881, Providencia <span className="lp-place-note">Gratis</span>
+            </p>
+            <h1 id="hero-title" className="lp-display max-w-[14ch]">
+              Entra al Hub Providencia con tu teléfono
+            </h1>
+            <p className="lp-sub max-w-[44ch]">
+              AforoON es la credencial del Hub: te registras una vez, reservas viendo el cupo real y en la puerta solo acercas el teléfono.
+            </p>
+            <HeroForm />
+          </div>
+          <ImageSlot slot={SLOTS.hero} ratio="1/1" priority sizes="(min-width: 768px) 560px, 100vw" />
+        </section>
 
-        <div className="grid gap-5 pb-8 md:grid-cols-12 md:items-end md:pb-10">
-          <p className="max-w-[34ch] text-[20px] leading-[1.45] md:col-span-5 md:col-start-6">
-            La credencial para entrar al Hub Providencia: te registras una vez y en la puerta solo acercas el teléfono. Sin formulario en cada visita.
-          </p>
-          <div className="md:col-span-3 md:col-start-10 md:justify-self-end">
-            <Link href="/registro" className="lp-btn w-full md:w-auto">
-              Crear mi credencial <ArrowRight size={18} aria-hidden="true" />
+        {/* ------------------------------------------------------------ Lab881 */}
+        <section id="lab" aria-labelledby="lab-title" className="bg-[var(--white)]">
+          <div className="lp-wrap pt-4 md:pt-8" data-reveal>
+            <p className="lp-eyebrow lp-rise">Innovación · Lab881</p>
+            <h2 id="lab-title" className="lp-heading lp-rise mt-2 max-w-[22ch]" style={{ ["--i" as string]: 1 }}>
+              Fabrica tu idea en el primer laboratorio municipal gratuito del país
+            </h2>
+            <p className="lp-sub lp-rise mt-4 max-w-[52ch]" style={{ ["--i" as string]: 2 }}>
+              Fabricación digital e impresión 3D para emprendedores, estudiantes y vecinos. Pasa por las máquinas:
+            </p>
+            <div className="mt-10 md:mt-14">
+              <LabScroll />
+            </div>
+            <dl className="mt-4 grid gap-4 md:grid-cols-3">
+              {LAB_FACTS.map((f) => (
+                <div key={f.label} className="rounded-[8px] bg-[var(--mist)] p-5 md:p-6">
+                  <dt className="text-[16px] font-medium">{f.label}</dt>
+                  <dd className="mt-1 text-[14px] leading-[1.5] text-slate">{f.value}</dd>
+                </div>
+              ))}
+            </dl>
+            <Link href="/hub/lab881" className="btn mt-6 max-md:w-full">
+              Todo sobre el Lab881 <ArrowRight size={18} aria-hidden="true" />
             </Link>
           </div>
-        </div>
-      </header>
+        </section>
 
-      {/* ------------------------------------------------------------ la frase con miniaturas + la prueba */}
-      <section aria-labelledby="race-title" className="lp-wrap pb-[120px] pt-[120px] md:pt-[160px]" data-reveal>
-        <p className="lp-statement lp-rise mx-auto max-w-[30ch] md:max-w-[44ch] md:text-center">
-          Hoy, en Los Jesuitas 881
-          <span className="lp-thumb">
-            <Image src="/hub/fachada.jpg" alt="" width={120} height={80} className="object-[50%_45%]" />
-          </span>
-          , cada visita empieza con un formulario. Con AforoON reservas mesa
-          <span className="lp-thumb">
-            <Image src="/hub/cowork.jpg" alt="" width={120} height={80} className="object-[80%_58%]" />
-          </span>
-          o charla
-          <span className="lp-thumb max-md:!hidden">
-            <Image src="/hub/charlas.jpg" alt="" width={120} height={80} className="object-[50%_42%]" />
-          </span>
-          desde el teléfono.
-        </p>
-
-        <div className="mx-auto mt-[120px] max-w-[1100px] md:mt-[160px]">
-          <h2 id="race-title" className="lp-heading lp-rise" style={{ ["--i" as string]: 1 }}>
-            Prueba las dos puertas
+        {/* ------------------------------------------------------------ qué hay en el Hub */}
+        <section id="hub" aria-labelledby="hub-title" className="lp-wrap lp-section" data-reveal>
+          <h2 id="hub-title" className="lp-heading lp-rise">
+            Qué hay en el Hub
           </h2>
-          <p className="lp-body lp-rise mt-4 max-w-[52ch]" style={{ ["--i" as string]: 2 }}>
-            Un toque arranca las dos al mismo tiempo. El formulario se escribe a ritmo de teléfono; la puerta de AforoON solo lee tu credencial.
+          <p className="lp-sub lp-rise mt-3 max-w-[56ch]" style={{ ["--i" as string]: 1 }}>
+            Un espacio municipal y gratuito desde 2018, con tres áreas: Emprendimiento, Innovación y Empleo. Lunes a jueves de 8:30 a 18:00, viernes hasta las 17:00.
           </p>
-          <div className="lp-rise mt-10" style={{ ["--i" as string]: 3 }}>
-            <DoorRace />
+          <ul className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {HUB.map((c, i) => (
+              <li key={c.title} className="card lp-card lp-rise" style={{ ["--i" as string]: (i % 3) + 1 }}>
+                <div className="flex flex-col">
+                  <h3 className="text-[16px] font-medium">{c.title}</h3>
+                  <p className="mt-1 flex-1 text-[14px] leading-[1.5] text-slate">{c.text}</p>
+                  <Link href={c.link.href} className="link-more mt-3 self-start">
+                    {c.link.label}
+                  </Link>
+                </div>
+                <ImageSlot slot={c.slot} ratio="1/1" compact sizes="104px" className="self-start" />
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* ------------------------------------------------------------ cowork textil */}
+        <section id="textil" aria-labelledby="textil-title" className="lp-wrap lp-section grid gap-10 md:grid-cols-2 md:items-center md:gap-16" data-reveal>
+          <div>
+            <p className="lp-eyebrow lp-rise">Emprendimiento · Cowork textil</p>
+            <h2 id="textil-title" className="lp-heading lp-rise mt-2" style={{ ["--i" as string]: 1 }}>
+              Aprende el oficio textil, con máquinas del Hub
+            </h2>
+            <p className="lp-sub lp-rise mt-4 max-w-[44ch]" style={{ ["--i" as string]: 2 }}>
+              Un taller gratuito para que vecinas y vecinos aprendan o perfeccionen la costura y saquen adelante su emprendimiento. Con apoyo de TexSur.
+            </p>
+            <ul className="lp-rise mt-6" style={{ ["--i" as string]: 3 }}>
+              <li className="rule-row">Sala vitrina del Hub Providencia Fábrica</li>
+              <li className="rule-row">Lunes de 8:30 a 17:30 y viernes de 8:30 a 16:30</li>
+              <li className="rule-row">Gratis, con reserva previa del puesto</li>
+            </ul>
+            <Link href="/hub/cowork-textil" className="btn lp-rise mt-6 max-md:w-full" style={{ ["--i" as string]: 4 }}>
+              Todo sobre el cowork textil <ArrowRight size={18} aria-hidden="true" />
+            </Link>
           </div>
-        </div>
-      </section>
+          <div className="lp-rise grid gap-4 md:grid-cols-[3fr_2fr]" style={{ ["--i" as string]: 2 }}>
+            <ImageSlot slot={SLOTS.textilMaquina} className="lp-textil-slot" sizes="(min-width: 768px) 330px, 100vw" />
+            <ImageSlot slot={SLOTS.textilMesa} className="lp-textil-slot lp-textil-slot--offset" sizes="(min-width: 768px) 220px, 100vw" />
+          </div>
+        </section>
 
-      {/* ------------------------------------------------------------ cómo funciona */}
-      <section id="como" aria-labelledby="como-title" className="lp-wrap py-[120px] md:py-[200px]" data-reveal>
-        <div className="grid gap-6 md:grid-cols-12 md:items-end">
-          <h2 id="como-title" className="lp-heading lp-rise md:col-span-7">
-            Una vez, y listo.
+        {/* ------------------------------------------------------------ cómo funciona */}
+        <section id="como" aria-labelledby="como-title" className="lp-wrap lp-section" data-reveal>
+          <h2 id="como-title" className="lp-heading lp-rise">
+            AforoON para cada uno
           </h2>
-          <p className="lp-body lp-rise max-w-[36ch] md:col-span-4 md:col-start-9" style={{ ["--i" as string]: 1 }}>
-            Registrarte toma dos minutos y se hace una sola vez. Entrar toma segundos. El resto del día es tuyo.
+          <p className="lp-sub lp-rise mt-3 max-w-[52ch]" style={{ ["--i" as string]: 1 }}>
+            Hoy cada visita al Hub empieza con un formulario. Con AforoON, la puerta te reconoce.
           </p>
-        </div>
-        <div className="lp-rise mt-16 flex flex-col gap-1.5 md:flex-row" data-ui style={{ ["--i" as string]: 1 }}>
-          {STAGES.map((s) => (
-            <div key={s.time} className="flex flex-col md:min-w-0" style={{ flexGrow: Math.max(0.17, s.seconds / TOTAL) * 100, flexBasis: 0 }}>
-              <div className="flex min-h-[72px] items-start rounded-[6px] p-5 md:h-[22vh] md:min-h-[160px]" style={{ background: s.bg, color: s.ink }}>
-                <h3 className="text-[20px] font-semibold leading-[1.2]">{s.time}</h3>
-              </div>
-              <p className="mt-3 max-w-[22ch] text-[17px] leading-[1.45]">{s.clause}</p>
+          <div className="lp-rise mt-10" style={{ ["--i" as string]: 2 }}>
+            <RoleTabs />
+          </div>
+        </section>
+
+        {/* ------------------------------------------------------------ la carrera de puertas */}
+        <section aria-labelledby="race-title" className="bg-[var(--mist)]" style={{ ["--surface" as string]: "var(--white)" }}>
+          <div className="lp-wrap lp-section" data-reveal>
+            <h2 id="race-title" className="lp-heading lp-rise">
+              Prueba las dos puertas
+            </h2>
+            <p className="lp-sub lp-rise mt-3 max-w-[52ch]" style={{ ["--i" as string]: 1 }}>
+              Un toque arranca las dos. El formulario se escribe a ritmo de teléfono; la puerta de AforoON solo lee tu credencial.
+            </p>
+            <div className="lp-rise mt-10" style={{ ["--i" as string]: 2 }}>
+              <DoorRace />
             </div>
-          ))}
-        </div>
-      </section>
+          </div>
+        </section>
 
-      {/* ------------------------------------------------------------ vitrina fija */}
-      <Showcase />
-
-      {/* ------------------------------------------------------------ espacios */}
-      <section id="espacios" aria-labelledby="esp-title" className="lp-wrap py-[120px] md:py-[200px]">
-        <div className="grid md:grid-cols-12" data-reveal>
-          <h2 id="esp-title" className="lp-heading lp-rise md:col-span-9 md:col-start-4">
-            Todo el Hub, con su aforo
+        {/* ------------------------------------------------------------ también en el Hub */}
+        <section aria-labelledby="more-title" className="lp-wrap lp-section" data-reveal>
+          <h2 id="more-title" className="lp-heading lp-rise">
+            También en el Hub
           </h2>
-        </div>
-        {/* Tira de fotos reales del Hub que avanza lenta (Noho): el color saturado vive en las fotos. */}
-        <div className="lp-strip -mx-[var(--m)] mt-16 md:mt-24" aria-hidden="true">
-          <div className="lp-strip-track">
-            {[...STRIP, ...STRIP].map((src, i) => (
-              <div key={i} className="relative aspect-[3/4] w-[44vw] flex-none overflow-hidden md:w-[17vw]">
-                <Image src={src} alt="" fill sizes="(min-width: 768px) 17vw, 44vw" className="object-cover" />
+          <ul className="mt-10 grid gap-8 md:grid-cols-3 md:gap-4">
+            {MORE.map((m, i) => (
+              <li key={m.title} className="lp-rise" style={{ ["--i" as string]: i + 1 }}>
+                <ImageSlot slot={m.slot} ratio="16/10" sizes="(min-width: 768px) 380px, 100vw" />
+                <h3 className="mt-4 text-[18px] font-medium">{m.title}</h3>
+                <p className="mt-1 text-[14px] leading-[1.5] text-slate">{m.text}</p>
+                <Link href={m.href} className="link-more mt-2 inline-block" aria-label={`Más sobre ${m.title}`}>
+                  Más información
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* ------------------------------------------------------------ preguntas */}
+        <section id="preguntas" aria-labelledby="faq-title" className="lp-wrap lp-section grid gap-8 md:grid-cols-[1fr_2fr] md:gap-16" data-reveal>
+          <h2 id="faq-title" className="lp-heading lp-rise">
+            Preguntas
+          </h2>
+          <dl className="lp-rise" style={{ ["--i" as string]: 1 }}>
+            {FAQ.map((f) => (
+              <div key={f.q} className="rule-row rule-row--lg grid gap-1 md:grid-cols-2 md:gap-8">
+                <dt className="text-[18px]">{f.q}</dt>
+                <dd className="text-[16px] leading-[1.5] text-slate">{f.a}</dd>
               </div>
             ))}
-          </div>
-        </div>
-        <div className="mt-16 flex flex-col gap-16 md:mt-24 md:gap-28">
-          {ROWS.map((r, i) => (
-            <article key={r.title} className="grid gap-6 md:grid-cols-12 md:items-start" data-reveal>
-              <div className="md:col-span-4 md:col-start-4">
-                <h3 className="lp-rise lp-statement font-semibold">{r.title}</h3>
-                <p className="lp-body lp-rise mt-4 max-w-[34ch] text-text" style={{ ["--i" as string]: 1 }}>
-                  {r.text}
-                </p>
-              </div>
-              <div
-                className={`lp-rise relative overflow-hidden md:col-span-4 md:col-start-9 md:justify-self-end ${i % 3 === 1 ? "ml-auto w-[70%]" : i % 3 === 2 ? "w-[55%]" : "w-full"} md:ml-0`}
-                style={{ aspectRatio: r.photo.ratio, ["--i" as string]: 2, maxWidth: r.photo.w, width: undefined }}
-              >
-                <Image src={r.photo.src} alt={r.photo.alt} fill sizes={`${r.photo.w}px`} className="object-cover" />
-              </div>
-            </article>
-          ))}
+          </dl>
+        </section>
+      </main>
 
-          {/* La administración: un fragmento real del dashboard, con datos de ejemplo. */}
-          <article className="grid gap-6 md:grid-cols-12 md:items-start" data-reveal>
-            <div className="md:col-span-4 md:col-start-4">
-              <h3 className="lp-rise lp-statement font-semibold">Para la administración</h3>
-              <p className="lp-body lp-rise mt-4 max-w-[34ch]" style={{ ["--i" as string]: 1 }}>
-                Entradas, ocupación por zona, horas punta y quiénes vienen al Hub, medidos en la puerta en vez de estimados. Se exportan en un clic.
-              </p>
-              <Link href="/admin" className="lp-link lp-rise mt-5 inline-flex items-center gap-1.5 text-[17px] font-medium underline underline-offset-4" style={{ ["--i" as string]: 2 }}>
-                Ver el dashboard <ArrowRight size={16} aria-hidden="true" />
-              </Link>
-            </div>
-            <figure className="lp-rise md:col-span-5 md:col-start-8" style={{ ["--i" as string]: 2 }}>
-              <div data-ui className="rounded-[8px] bg-surface p-4" style={{ boxShadow: "inset 0 0 0 1px var(--border)" }}>
-                <p className="text-[14px] text-muted">Ocupación por bloque · Centro de mesas</p>
-                <div className="mt-4 flex h-[200px] items-end gap-3" aria-hidden="true">
-                  {[15, 40, 40, 32, 23, 10].map((v, i) => (
-                    <div key={i} className="flex flex-1 flex-col items-center gap-1.5">
-                      <div className="w-full" style={{ height: `${(v / 40) * 170}px`, background: i < 2 ? "var(--accent)" : "var(--accent-track)" }} />
-                      <span className="num text-[14px] text-muted">{8 + i * 2}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <figcaption className="mt-2 text-[14px] text-muted">Vista del dashboard, con datos de ejemplo.</figcaption>
-            </figure>
-          </article>
-        </div>
-      </section>
-
-      {/* ------------------------------------------------------------ preguntas */}
-      <section id="preguntas" aria-labelledby="faq-title" className="lp-wrap bg-stone py-[120px] md:py-[180px]" data-reveal>
-        <dl className="flex flex-col gap-14 md:gap-20">
-          <div className="grid md:grid-cols-12">
-            <h2 id="faq-title" className="lp-rise lp-statement text-muted md:col-span-6">
-              Preguntas
-            </h2>
-          </div>
-          {FAQ.map((f, i) => (
-            <div key={f.q} className="grid gap-3 md:grid-cols-12 md:items-baseline">
-              <dt className="lp-rise lp-statement md:col-span-6" style={{ ["--i" as string]: i % 3 }}>
-                {f.q}
-              </dt>
-              <dd className="lp-body lp-rise max-w-[40ch] md:col-span-5 md:col-start-8" style={{ ["--i" as string]: (i % 3) + 1 }}>
-                {f.a}
-              </dd>
-            </div>
-          ))}
-        </dl>
-      </section>
-
-      {/* ------------------------------------------------------------ cierre invertido + pie */}
-      <section aria-labelledby="cta-title" className="bg-primary text-white">
-        <div className="lp-wrap flex flex-col justify-between pb-10 pt-[120px] md:min-h-[80svh] md:pt-[18vh]" data-reveal>
-          <h2 id="cta-title" className="lp-heading lp-rise max-w-[12ch]">
-            Tu teléfono ya es la llave.
-          </h2>
-          <div className="mt-16 grid gap-6 md:grid-cols-12 md:items-end">
-            <p className="lp-body lp-rise text-white/80 md:col-span-5" style={{ ["--i" as string]: 1 }}>
-              Crea tu credencial en dos minutos y reserva tu primer espacio en el Hub Providencia.
-            </p>
-            <div className="lp-rise md:col-span-3 md:col-start-10 md:justify-self-end" style={{ ["--i" as string]: 2 }}>
-              <Link href="/registro" className="lp-btn w-full !min-h-14 md:w-auto">
-                Crear mi credencial <ArrowRight size={18} aria-hidden="true" />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <footer className="relative overflow-hidden bg-primary pt-[160px] text-white">
-        <div className="lp-wrap grid gap-10 md:grid-cols-12">
-          <div className="md:col-span-7">
-            <h2 className="lp-heading">Ven a trabajar al Hub.</h2>
-            <Link href="/reservar" className="lp-btn lp-btn--invert mt-8">
-              Reservar un espacio
-            </Link>
-          </div>
-          <ul className="lp-body flex flex-col gap-2 md:col-span-3 md:col-start-10">
-            <li>Los Jesuitas 881, Providencia</li>
-            <li>Edificio Cowork y Edificio Empleo</li>
-            <li>
-              <Link href="/avance" className="underline underline-offset-4">
-                Avance del prototipo
-              </Link>
-            </li>
-            <li>
-              <a href="https://github.com/QUESOQL/Proyecto_Cobblestone" className="underline underline-offset-4">
-                Repositorio del equipo
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div className="lp-wrap mt-24 flex flex-wrap justify-between gap-3 text-[14px] text-white/70">
-          <span>Equipo Cobblestone · Proyecto Capstone Intermedio 2026, Universidad Mayor</span>
-          <span>Fotos: Equipo Cobblestone, salida a terreno al Hub Providencia</span>
-        </div>
-        <p
-          aria-hidden="true"
-          className="mt-2 whitespace-nowrap px-[var(--m)] text-[28vw] font-bold leading-[0.8] tracking-[-0.06em] text-white"
-          style={{ transform: "translateY(30%)" }}
-        >
-          AforoON
-        </p>
-      </footer>
+      <SiteFooter />
+      <BottomBar href="/registro" label="Crear mi credencial" />
     </div>
   );
 }

@@ -1,47 +1,57 @@
 @import "tailwindcss";
 
 /*
- * AforoON tokens — estilo "accent-ladder" (taste skill, seed 647775934), con la paleta
- * "tres piedras": tonos de hormigón cálido como el Edificio Cowork, tinta carbón y un
- * verde azulado apagado (pariente del logo de HUB Providencia) como único acento.
- * Referencias: Noho y Vero New-York (piedras cálidas), Colonia Zacamil y Archiv (putty y teal).
- * Los mismos nombres viven como variables en Figma ("AforoON — Sistema de diseño",
- * colecciones Color y Size) con sintaxis web var(--…).
- * El acento pleno va solo en marcas pequeñas: lo ocupado, la acción y el ícono activo.
- * Sus tintes pálidos hacen el trabajo de área: pistas de aforo, filas activas, insignias.
+ * Sistema de diseño de AforoON — estilo "quiosco de transporte" de Uber (DESIGN.md).
+ * Lienzo blanco, bandas negras (barra superior, barras fijas, pie), tarjetas gris niebla,
+ * bordes de 1 px y ninguna sombra de elevación. La interfaz no tiene color: el negro hace
+ * de acción y de selección. Las únicas excepciones son el teal pálido de la pestaña activa
+ * y los colores de estado (verde pasa, rojo no pasa), que cargan información.
+ * Radios binarios: 8 px para todo; píldora solo en el botón de la barra y los selectores.
  */
 :root {
-  --ground: #eeece8;
-  --surface: #f6f5f3;
-  --raised: #e6e3de;
-  --border: #dcd8d1;
-  --rule: #e7e4de;
-  --control: #c9c4bc;
-  --text: #2b2a28;
-  --muted: #66625c;
-  --primary: #2b2a28;
-  --accent: #2f6b78;
-  --accent-soft: #e1eaea;
-  --accent-track: #c6d8d9;
-  --accent-ink: #1c4550;
-  --positive: #247b50;
-  --negative: #c4242a;
-  --warning: #92400e;
-  --pill-positive-bg: #dcfce7;
-  --pill-positive-ink: #14532d;
-  --pill-negative-bg: #ffedea;
-  --pill-negative-ink: #831c1e;
-  --pill-warning-bg: #fffbeb;
-  --pill-warning-ink: #92400e;
-  --pill-neutral-bg: #e6e3de;
-  --pill-neutral-ink: #3f3d3a;
-  /* Tercera piedra: banda cálida para una sección y grises neutros cálidos para lo inactivo. */
-  --stone: #d5cdc1;
-  --inactive: #a8a39b;
-  --inactive-soft: #cfcac2;
+  /* Paleta base (DESIGN.md). */
+  --black: #000000;
+  --white: #ffffff;
+  --mist: #f6f6f6;
+  --charcoal: #333333;
+  --iron: #767676;
+  --ash: #afafaf;
+  --slate: #5e5e5e;
+  --hair: #e2e2e2;
+  --teal: #9dcdd6;
+  --bar: 56px;
 
-  --radius-chip: 4px;
-  --radius-control: 6px;
+  /* Roles que usan las pantallas. */
+  --ground: var(--white);
+  --surface: var(--white);
+  --raised: var(--mist);
+  --border: var(--hair);
+  --rule: #eeeeee;
+  --control: var(--iron);
+  --text: var(--black);
+  --muted: var(--slate);
+  --primary: var(--black);
+  --accent: var(--black);
+  --accent-soft: var(--mist);
+  --accent-track: var(--hair);
+  --accent-ink: var(--black);
+  --positive: #0e8345;
+  --negative: #d0242b;
+  --warning: #8a4b00;
+  --pill-positive-bg: #e6f4ea;
+  --pill-positive-ink: #0b5c31;
+  --pill-negative-bg: #fdecec;
+  --pill-negative-ink: #8f1a1f;
+  --pill-warning-bg: #fff4e0;
+  --pill-warning-ink: #7a4200;
+  --pill-neutral-bg: var(--mist);
+  --pill-neutral-ink: var(--charcoal);
+  --stone: var(--mist);
+  --inactive: var(--ash);
+  --inactive-soft: var(--hair);
+
+  --radius-chip: 8px;
+  --radius-control: 8px;
   --radius-card: 8px;
   --gap: 24px;
   --control-height: 32px;
@@ -75,7 +85,7 @@
   --radius-chip: var(--radius-chip);
   --radius-control: var(--radius-control);
   --radius-card: var(--radius-card);
-  --font-sans: var(--font-dm-sans), Inter, system-ui, sans-serif;
+  --font-sans: var(--font-inter), "Helvetica Neue", system-ui, sans-serif;
   --ease-out: var(--ease-out);
   --ease-drawer: var(--ease-drawer);
 }
@@ -87,7 +97,7 @@ html {
 body {
   background: var(--ground);
   color: var(--text);
-  font-family: var(--font-dm-sans), Inter, system-ui, sans-serif;
+  font-family: var(--font-inter), "Helvetica Neue", system-ui, sans-serif;
   font-size: 14px;
   line-height: 20px;
   -webkit-font-smoothing: antialiased;
@@ -121,7 +131,7 @@ h3 {
 
 /* Campos: 44 px de alto en el teléfono (objetivo táctil), borde de control, fondo blanco. */
 .input {
-  height: 44px;
+  height: 48px;
   width: 100%;
   border: 1px solid var(--control);
   border-radius: var(--radius-control);
@@ -136,8 +146,8 @@ h3 {
 }
 .input:focus {
   outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-soft);
+  border-color: var(--black);
+  box-shadow: inset 0 0 0 1px var(--black);
 }
 .input[aria-invalid="true"] {
   border-color: var(--negative);
@@ -169,6 +179,183 @@ h3 {
     transform: translateY(6px);
   }
 }
+
+/* ================================================================== componentes compartidos
+ * Los mismos en la landing y en la app. Ver también src/components/ui.tsx.
+ */
+
+/* Barra superior negra: marca a la izquierda, acciones a la derecha. */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--black);
+  color: var(--white);
+}
+/* Sin display propio: cada enlace lo pone con utilidades (inline-flex, hidden, md:inline-flex). */
+.topbar-link {
+  align-items: center;
+  min-height: 36px;
+  font-size: 14px;
+  padding: 8px 12px;
+  border-radius: 9999px;
+  transition: background-color 150ms ease;
+}
+/* Botón píldora blanco: el único que rompe la barra negra. */
+.pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 6px 16px;
+  border-radius: 9999px;
+  background: var(--white);
+  color: var(--black);
+  font-size: 14px;
+  transition: background-color 150ms ease;
+}
+
+/* Botón negro, 8 px de radio. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  background: var(--black);
+  color: var(--white);
+  font-size: 16px;
+  font-weight: 500;
+  transition: transform 140ms var(--ease-out), background-color 150ms ease;
+}
+.btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+.btn:disabled {
+  background: var(--hair);
+  color: var(--slate);
+  cursor: not-allowed;
+}
+.btn--invert {
+  background: var(--white);
+  color: var(--black);
+}
+.btn--quiet {
+  background: var(--mist);
+  color: var(--black);
+}
+.link-more {
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Tarjeta gris niebla: sin borde, sin sombra. */
+.card {
+  border-radius: 8px;
+  background: var(--mist);
+  padding: 20px;
+}
+@media (min-width: 768px) {
+  .card {
+    padding: 24px;
+  }
+}
+
+/* Pestañas: el teal pálido marca la activa (el único color de la interfaz). */
+.tabs {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tab {
+  flex: none;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 16px;
+  white-space: nowrap;
+  transition: background-color 150ms ease;
+}
+.tab[aria-selected="true"] {
+  background: var(--teal);
+}
+@media (min-width: 768px) {
+  .tab {
+    padding-inline: 16px;
+  }
+}
+
+/* Selector de modo en píldora (Ir hoy / Programar, Entrada / Salida). */
+.toggle {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 9999px;
+  background: var(--mist);
+}
+.toggle-option {
+  min-height: 36px;
+  padding: 6px 16px;
+  border-radius: 9999px;
+  font-size: 16px;
+  transition: background-color 150ms ease;
+}
+.toggle-option[aria-checked="true"],
+.toggle-option[aria-selected="true"] {
+  background: var(--white);
+  box-shadow: inset 0 0 0 1px var(--hair);
+}
+
+/* Filas separadas por líneas finas. */
+.rule-row {
+  padding-block: 12px;
+  border-top: 1px solid var(--hair);
+}
+.rule-row:last-child {
+  border-bottom: 1px solid var(--hair);
+}
+.rule-row--lg {
+  padding-block: 20px;
+}
+
+/* Barra negra fija abajo: toda la barra es el botón. */
+.bottom-bar {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 40;
+  display: flex;
+  height: var(--bar);
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--black);
+  color: var(--white);
+  font-size: 16px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .topbar-link:hover {
+    background: #282828;
+  }
+  .pill-btn:hover {
+    background: var(--hair);
+  }
+  .btn:hover:not(:disabled) {
+    background: var(--charcoal);
+  }
+  .btn--invert:hover:not(:disabled),
+  .btn--quiet:hover:not(:disabled) {
+    background: var(--hair);
+  }
+  .bottom-bar:hover {
+    background: #1a1a1a;
+  }
+}
+
 
 @media (prefers-reduced-motion: reduce) {
   .press:active:not(:disabled) {
