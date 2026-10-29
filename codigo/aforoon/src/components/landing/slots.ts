@@ -56,30 +56,35 @@ export const SLOTS = {
     idea: "Primer plano de la boquilla de una impresora 3D de filamento (Ender 3 V3 SE o Creality K1C) dejando una capa, con la pieza a medio formar.",
     alt: "Impresora 3D de filamento imprimiendo una pieza",
     icon: Printer,
+    src: "/photos/PimerPlanoImp3DFilNara.webp",
   }),
   labMulticolor: slot({
     id: "lab-multicolor",
     idea: "Una pieza de varios colores saliendo de la impresora multifilamento Creality Sparkx i7, con los carretes de colores detrás.",
     alt: "Pieza multicolor en la impresora multifilamento",
     icon: Palette,
+    src: "/photos/PiezaVariosColores3D.webp",
   }),
   labResina: slot({
     id: "lab-resina",
     idea: "La plataforma de la impresora de resina Halot Mage 8K subiendo desde la tina, con una figura muy detallada colgando; al lado, la curadora con luz UV.",
     alt: "Impresora de resina con una pieza recién impresa",
     icon: Layers,
+    src: "/photos/ImpreResinaCuradoraUV.webp",
   }),
   labLaser: slot({
     id: "lab-laser",
     idea: "La cortadora láser de 100 W y 90 × 60 cm cortando una plancha de madera o acrílico, con el punto de luz y el humo del corte.",
     alt: "Cortadora láser cortando una plancha de madera",
     icon: Zap,
+    src: "/photos/CortadoraLaser.webp",
   }),
   labPiezas: slot({
     id: "lab-piezas",
     idea: "Una mesa con prototipos terminados: piezas 3D, cortes láser en madera y figuras de resina, listos para llevar.",
     alt: "Prototipos terminados en el Lab881",
     icon: Box,
+    src: "/photos/MesaPrototipos.webp",
   }),
 
   // Tarjetas "Qué hay en el Hub".
@@ -109,12 +114,14 @@ export const SLOTS = {
     idea: "Una impresora 3D vista de frente, con una pieza naranja en la cama.",
     alt: "Impresora 3D del Lab881",
     icon: Printer,
+    src: "/photos/PimerPlanoImp3DFilNara.webp",
   }),
   cardTextil: slot({
     id: "card-textil",
     idea: "Una máquina de coser con tela e hilo de color.",
     alt: "Máquina de coser del Cowork textil",
     icon: Scissors,
+    src: "/photos/PrimerPlanoMaquiCose.webp",
   }),
   cardEmpleo: slot({
     id: "card-empleo",
@@ -130,12 +137,14 @@ export const SLOTS = {
     idea: "Primer plano de una máquina de coser: la aguja bajando sobre una tela de color, el hilo tenso y las manos guiando la costura.",
     alt: "Máquina de coser cosiendo una tela",
     icon: Scissors,
+    src: "/photos/PrimerPlanoMaquiCose.webp",
   }),
   textilMesa: slot({
     id: "textil-mesa",
     idea: "La mesa de trabajo textil de la sala vitrina: moldes, tijeras, rollos de tela y vecinas aprendiendo el oficio.",
     alt: "Mesa de trabajo del Cowork textil",
     icon: Shirt,
+    src: "/photos/VecinasAprendiendoCoser.webp",
   }),
 
   // AforoON según quién lo usa.
@@ -194,17 +203,20 @@ export const SLOTS = {
     idea: "El GovTech Lab: un equipo de startup trabajando frente a un prototipo, en el segundo piso.",
     alt: "GovTech Lab del Hub Providencia",
     icon: Rocket,
+    src: "/photos/EquipoGovTech.webp",
   }),
   ingaming: slot({
     id: "ingaming",
     idea: "InGaming Providencia: sillas gamer y pantallas con luz de colores, junto a Esports Chile.",
     alt: "Espacio InGaming Providencia",
     icon: Gamepad2,
+    src: "/photos/SalaInGaming.webp",
   }),
   emprende: slot({
     id: "emprende",
     idea: "Una feria de emprendimiento EmprendePro al aire libre, con puestos de productos locales.",
     alt: "Feria de emprendimiento de la Comunidad EmprendePro",
     icon: Store,
+    src: "/photos/FeriaEmprendePro.webp",
   }),
 };
