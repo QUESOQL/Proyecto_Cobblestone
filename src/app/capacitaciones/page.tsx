@@ -37,6 +37,7 @@ function Capacitaciones() {
   const myTrainings = useAforo((s) => s.myTrainings);
   const enrollTraining = useAforo((s) => s.enrollTraining);
   const leaveTraining = useAforo((s) => s.leaveTraining);
+  const sessionCounts = useAforo((s) => s.sessionCounts);
   const [toast, setToast] = useState<string | null>(null);
 
   useEffect(() => {
@@ -45,7 +46,7 @@ function Capacitaciones() {
     return () => clearTimeout(t);
   }, [toast]);
 
-  const state = { myTrainings: hydrated ? myTrainings : {} };
+  const state = { myTrainings: hydrated ? myTrainings : {}, sessionCounts };
   const focus = TRAINING_KINDS.find((k) => k.id === params.get("tipo"))?.id;
   // La capacitación que se pidió desde una máquina bloqueada va primero.
   const kinds = focus ? [...TRAINING_KINDS].sort((a, b) => (a.id === focus ? -1 : b.id === focus ? 1 : 0)) : TRAINING_KINDS;
@@ -118,13 +119,13 @@ function Capacitaciones() {
                           disabled={full || !profile}
                           aria-pressed={isIn}
                           aria-label={`${isIn ? "Inscrita en" : "Inscribirme en"} ${k.name}, ${formatDay(s.day, "long")}`}
-                          onClick={() => {
+                          onClick={async () => {
                             if (isIn) {
-                              leaveTraining(k.id as TrainingType);
+                              await leaveTraining(k.id as TrainingType);
                               setToast("Ya no estás inscrita en esta capacitación.");
                               return;
                             }
-                            const r = enrollTraining(s.id);
+                            const r = await enrollTraining(s.id);
                             setToast(r.ok ? "Inscripción lista. El equipo del Hub aprueba tu capacitación al terminarla." : (r.error ?? null));
                           }}
                           className={cx(

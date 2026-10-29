@@ -4,10 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
-import { Check, ChevronLeft, Mail, Nfc, ShieldCheck } from "lucide-react";
+import { Check, Mail, Nfc, ShieldCheck } from "lucide-react";
 import { HUB, SEGMENTS, rutDv, type Segment } from "@/lib/data";
 import { useAforo, useHydrated, type Profile } from "@/lib/store";
 import { TRAINING_KINDS } from "@/lib/lab";
+import { supabase } from "@/lib/supabase";
 import { Avatar, Button, MobileShell, Pill, Wordmark, cx } from "@/components/ui";
 
 const REASONS = ["Trabajar en el cowork", "Capacitación", "Charlas", "Asesoría de empleo", "Reunión de trabajo"];
@@ -37,40 +38,24 @@ function validateRut(v: string): "vacio" | "incompleto" | "invalido" | "valido" 
 
 /* ------------------------------------------------------------------ pantalla */
 
+/**
+ * Paso 1: cuenta (correo y contraseña en Supabase Auth).
+ * Paso 2: datos de la persona, una sola vez (registrar_persona cifra el RUT en la base).
+ * Paso 3: la credencial.
+ */
 export default function RegistroPage() {
   const hydrated = useHydrated();
   const profile = useAforo((s) => s.profile);
-  const [step, setStep] = useState<0 | 1>(0);
-  const [provider, setProvider] = useState<Profile["provider"]>("google");
+  const signedIn = useAforo((s) => s.signedIn);
 
   if (!hydrated) return <MobileShell title={<Wordmark />}>{null}</MobileShell>;
   if (profile) return <Credential profile={profile} />;
 
+  const step = signedIn ? 1 : 0;
   return (
-    <MobileShell
-      hideNav
-      title={
-        step === 0 ? (
-          <Wordmark sub={HUB.name} />
-        ) : (
-          <button onClick={() => setStep(0)} className="press -ml-2 flex h-11 items-center gap-1 rounded-control px-2 text-[14px]">
-            <ChevronLeft size={18} aria-hidden="true" /> Volver
-          </button>
-        )
-      }
-      action={<span className="num text-[12px] text-muted">Paso {step + 1} de 3</span>}
-    >
+    <MobileShell hideNav title={<Wordmark sub={HUB.name} />} action={<span className="num text-[12px] opacity-70">Paso {step + 1} de 3</span>}>
       <Steps current={step} />
-      {step === 0 ? (
-        <Welcome
-          onPick={(p) => {
-            setProvider(p);
-            setStep(1);
-          }}
-        />
-      ) : (
-        <DataForm provider={provider} />
-      )}
+      {signedIn ? <DataForm /> : <Welcome />}
     </MobileShell>
   );
 }
@@ -85,40 +70,114 @@ function Steps({ current }: { current: number }) {
   );
 }
 
-function Welcome({ onPick }: { onPick: (p: Profile["provider"]) => void }) {
+/** Mensajes de Supabase Auth, en palabras de la app. */
+function authMessage(m: string): string {
+  if (/invalid login credentials/i.test(m)) return "Correo o contraseña incorrectos.";
+  if (/already registered/i.test(m)) return "Ese correo ya tiene cuenta. Entra con tu contraseña.";
+  if (/password should be at least/i.test(m)) return "La contraseña debe tener al menos 6 caracteres.";
+  if (/email not confirmed/i.test(m)) return "Confirma tu correo con el enlace que te enviamos y vuelve a entrar.";
+  if (/rate limit/i.test(m)) return "Demasiados intentos seguidos. Espera un momento y vuelve a intentar.";
+  return "No pudimos entrar. Revisa tus datos e inténtalo de nuevo.";
+}
+
+function Welcome() {
+  const [mode, setMode] = useState<"crear" | "entrar">("crear");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [checkMail, setCheckMail] = useState(false);
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    if (!/.+@.+\..+/.test(email) || password.length < 6) {
+      setError("Ingresa un correo válido y una contraseña de al menos 6 caracteres.");
+      return;
+    }
+    setBusy(true);
+    const res =
+      mode === "crear" ? await supabase.auth.signUp({ email: email.trim(), password }) : await supabase.auth.signInWithPassword({ email: email.trim(), password });
+    setBusy(false);
+    if (res.error) setError(authMessage(res.error.message));
+    // Si el proyecto pide confirmar el correo, la sesión llega después del enlace.
+    else if (mode === "crear" && !res.data.session) setCheckMail(true);
+  };
+
   return (
     <div className="enter flex flex-col">
-      <div className="relative -mx-4 -mt-5 mb-5 h-[260px] overflow-hidden">
+      <div className="relative -mx-4 mb-5 h-[220px] overflow-hidden">
         <Image src="/hub/fachada.jpg" alt="Entrada del Edificio Cowork del Hub Providencia" fill priority sizes="440px" className="object-cover object-[50%_40%]" />
       </div>
-      <h1 className="text-[28px] font-bold leading-[32px] tracking-[-0.02em]">Entra al Hub sin llenar el formulario</h1>
-      <p className="mt-3 text-[15px] leading-[22px] text-muted">
+      <h1 className="text-[28px] leading-[1.22]">Entra al Hub sin llenar el formulario</h1>
+      <p className="mt-2 text-[15px] leading-[22px] text-muted">
         Te registras una sola vez. Desde ahí, tu teléfono es tu credencial en la puerta de {HUB.address}.
       </p>
-      <div className="mt-6 flex flex-col gap-2.5">
-        <Button size="lg" variant="primary" onClick={() => onPick("google")}>
-          <GoogleG /> Continuar con Google
-        </Button>
-        <Button size="lg" onClick={() => onPick("apple")}>
-          <AppleLogo /> Continuar con Apple
-        </Button>
-        <Button size="lg" variant="ghost" onClick={() => onPick("correo")}>
-          <Mail size={18} aria-hidden="true" /> Usar mi correo
-        </Button>
-      </div>
-      <p className="mt-5 text-[12px] leading-[18px] text-muted">
-        Hoy el ingreso se registra con un formulario que se llena en cada visita. Con AforoON lo llenas una vez y entras en
-        menos de 7 segundos.
-      </p>
+
+      {checkMail ? (
+        <div className="card mt-6" role="status">
+          <p className="flex items-center gap-2 text-[16px] font-medium">
+            <Mail size={18} aria-hidden="true" /> Revisa tu correo
+          </p>
+          <p className="mt-1 text-[14px] text-muted">Te enviamos un enlace a {email}. Ábrelo para confirmar tu cuenta y sigue con tus datos.</p>
+        </div>
+      ) : (
+        <form onSubmit={submit} className="mt-6 flex flex-col gap-4" noValidate aria-label={mode === "crear" ? "Crear cuenta" : "Entrar"}>
+          <div className="toggle self-start" role="tablist" aria-label="Cuenta">
+            {(["crear", "entrar"] as const).map((m) => (
+              <button
+                key={m}
+                type="button"
+                role="tab"
+                aria-selected={mode === m}
+                onClick={() => {
+                  setMode(m);
+                  setError(null);
+                }}
+                className="toggle-option press"
+              >
+                {m === "crear" ? "Crear cuenta" : "Ya tengo cuenta"}
+              </button>
+            ))}
+          </div>
+          <Field label="Correo" htmlFor="email">
+            <input id="email" type="email" inputMode="email" className="input" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
+          </Field>
+          <Field label="Contraseña" htmlFor="password" hint={mode === "crear" ? "Al menos 6 caracteres." : undefined}>
+            <input
+              id="password"
+              type="password"
+              className="input"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete={mode === "crear" ? "new-password" : "current-password"}
+            />
+          </Field>
+          {error && (
+            <p role="alert" className="text-[13px] text-negative">
+              {error}
+            </p>
+          )}
+          <Button type="submit" size="lg" variant="primary" disabled={busy}>
+            {busy ? "Un momento…" : mode === "crear" ? "Crear cuenta" : "Entrar"}
+          </Button>
+          <p className="text-[12px] text-muted">Pronto también con Google.</p>
+        </form>
+      )}
     </div>
   );
 }
 
-function DataForm({ provider }: { provider: Profile["provider"] }) {
+const ENROLL_ERRORS: Record<string, string> = {
+  rut_invalido: "El RUT no es válido.",
+  rut_registrado: "Ese RUT ya tiene una credencial. Entra con la cuenta con que lo registraste.",
+  nombre_vacio: "Escribe tu nombre.",
+};
+
+function DataForm() {
   const enroll = useAforo((s) => s.enroll);
-  // El proveedor social entrega nombre y correo; el resto lo completa la persona.
-  const [name, setName] = useState(provider === "correo" ? "" : "Valentina Muñoz Rojas");
-  const [email, setEmail] = useState(provider === "correo" ? "" : "valentina.munoz@gmail.com");
+  const signOut = useAforo((s) => s.signOut);
+  const [name, setName] = useState("");
   const [rut, setRut] = useState("");
   const [phone, setPhone] = useState("");
   const [segment, setSegment] = useState<Segment | null>(null);
@@ -126,26 +185,28 @@ function DataForm({ provider }: { provider: Profile["provider"] }) {
   const [reason, setReason] = useState(REASONS[0]);
   const [consent, setConsent] = useState(false);
   const [touched, setTouched] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
 
   const rutState = validateRut(rut);
   const phoneOk = phone.replace(/\D/g, "").length === 8;
-  const emailOk = /.+@.+\..+/.test(email);
-  const ready = name.trim().length > 3 && emailOk && rutState === "valido" && phoneOk && segment && occupation.trim() && consent;
+  const ready = name.trim().length > 3 && rutState === "valido" && phoneOk && segment && occupation.trim() && consent;
 
-  const submit = () => {
+  const submit = async () => {
     setTouched(true);
+    setServerError(null);
     if (!ready || !segment) return;
-    enroll({
+    setBusy(true);
+    const r = await enroll({
       name: name.trim(),
-      email,
-      provider,
       rut: formatRutInput(rut),
       phone: `+56 9 ${phone}`,
       segment,
       occupation: occupation.trim(),
       reason,
-      consentAt: new Date().toISOString(),
     });
+    setBusy(false);
+    if (!r.ok) setServerError(ENROLL_ERRORS[r.error ?? ""] ?? "No pudimos guardar tus datos. Inténtalo de nuevo.");
   };
 
   return (
@@ -160,15 +221,12 @@ function DataForm({ provider }: { provider: Profile["provider"] }) {
       <div>
         <h1 className="text-[28px] font-normal leading-[1.22]">Tus datos, una sola vez</h1>
         <p className="mt-1 text-[14px] text-muted">
-          {provider === "correo" ? "Completa tus datos." : `Trajimos tu nombre y correo desde ${provider === "google" ? "Google" : "Apple"}.`}
+          Completa tus datos. Se guardan una vez y sirven para entrar siempre.
         </p>
       </div>
 
       <Field label="Nombre completo" htmlFor="name">
         <input id="name" className="input" value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" />
-      </Field>
-      <Field label="Correo" htmlFor="email" error={touched && !emailOk ? "Revisa el correo." : undefined}>
-        <input id="email" type="email" inputMode="email" className="input" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
       </Field>
       <Field
         label="RUT"
@@ -251,9 +309,17 @@ function DataForm({ provider }: { provider: Profile["provider"] }) {
       </label>
       {touched && !consent && <p className="-mt-2 text-[12px] text-negative">Necesitamos tu consentimiento para crear la credencial.</p>}
 
-      <Button type="submit" size="lg" variant="accent" className="mt-1">
-        Crear mi credencial
+      {serverError && (
+        <p role="alert" className="text-[13px] text-negative">
+          {serverError}
+        </p>
+      )}
+      <Button type="submit" size="lg" variant="accent" className="mt-1" disabled={busy}>
+        {busy ? "Guardando…" : "Crear mi credencial"}
       </Button>
+      <button type="button" onClick={() => void signOut()} className="press h-11 rounded-control text-[14px] text-muted">
+        Usar otra cuenta
+      </button>
     </form>
   );
 }
@@ -273,7 +339,8 @@ function Field({ label, htmlFor, hint, error, children }: { label: string; htmlF
 /* ------------------------------------------------------------------ credencial */
 
 function Credential({ profile }: { profile: Profile }) {
-  const reset = useAforo((s) => s.reset);
+  const deleteAccount = useAforo((s) => s.deleteAccount);
+  const signOut = useAforo((s) => s.signOut);
   const myTrainings = useAforo((s) => s.myTrainings);
   const approved = TRAINING_KINDS.filter((k) => myTrainings[k.id]?.status === "aprobada");
   const [tick, setTick] = useState(0);
@@ -382,31 +449,18 @@ function Credential({ profile }: { profile: Profile }) {
         <Link href="/reservar" className="press flex h-12 items-center justify-center rounded-control bg-accent text-[15px] font-medium text-white">
           Reservar un espacio
         </Link>
-        <button onClick={reset} className="press h-11 rounded-control text-[14px] text-negative">
-          Borrar mi cuenta (reinicia la demo)
+        <button onClick={() => void signOut()} className="press h-11 rounded-control text-[14px]">
+          Cerrar sesión
+        </button>
+        <button
+          onClick={() => {
+            if (globalThis.confirm("Se borran tu credencial, tus reservas e inscripciones. ¿Continuar?")) void deleteAccount();
+          }}
+          className="press h-11 rounded-control text-[14px] text-negative"
+        >
+          Borrar mis datos
         </button>
       </div>
     </MobileShell>
-  );
-}
-
-/* ------------------------------------------------------------------ logos */
-
-function GoogleG() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
-      <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z" />
-      <path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z" />
-      <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z" />
-      <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z" />
-    </svg>
-  );
-}
-
-function AppleLogo() {
-  return (
-    <svg width="16" height="18" viewBox="0 0 384 470" aria-hidden="true" fill="currentColor">
-      <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z" />
-    </svg>
   );
 }

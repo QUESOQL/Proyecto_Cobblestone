@@ -40,6 +40,8 @@ function Reservar() {
   const profile = useAforo((s) => s.profile);
   const myReservations = useAforo((s) => s.myReservations);
   const reserve = useAforo((s) => s.reserve);
+  const occupancy = useAforo((s) => s.occupancy);
+  const [busy, setBusy] = useState(false);
 
   const initialZone = (BOOKABLE.find((z) => z.id === params.get("zona"))?.id ?? "mesas") as ZoneId;
   const [zone, setZone] = useState<ZoneId>(initialZone);
@@ -59,7 +61,7 @@ function Reservar() {
   const days = useMemo(() => Array.from({ length: BOOKING_WINDOW_DAYS }, (_, i) => dayKey(i)), []);
   const units = unitsOfZone(zone);
   const unit = unitById(unitId);
-  const state = { myReservations: hydrated ? myReservations : [] };
+  const state = { myReservations: hydrated ? myReservations : [], occupancy };
 
   const rows = nextBlocks(day).map((b) => {
     const used = countFor(state, unit.id, day, b.id);
@@ -72,8 +74,10 @@ function Reservar() {
   // El hallazgo del día, calculado: qué bloques del centro de mesas están llenos hoy.
   const today = dayKey(0);
   const fullToday = BLOCKS.filter((b) => countFor(state, "mesas", today, b.id) >= unitById("mesas").capacity && isOpen(today, b.id));
-  const finding =
-    fullToday.length > 0
+  // Hasta que llegan los cupos del servidor no se afirma nada (si no, todo se vería libre).
+  const finding = !hydrated
+    ? "Cargando los cupos del día…"
+    : fullToday.length > 0
       ? `Hoy el centro de mesas está lleno de ${fullToday[0].start} a ${fullToday[fullToday.length - 1].end}.`
       : "Hoy quedan puestos en todos los bloques del centro de mesas.";
 
@@ -83,9 +87,11 @@ function Reservar() {
     setBlock(null);
   };
 
-  const confirm = () => {
-    if (!block) return;
-    const res = reserve(unit.id, day, block);
+  const confirm = async () => {
+    if (!block || busy) return;
+    setBusy(true);
+    const res = await reserve(unit.id, day, block);
+    setBusy(false);
     setSheet(false);
     if (res.ok) {
       setDone(res.id);
@@ -226,7 +232,8 @@ function Reservar() {
       <h2 className="mt-5 text-[14px] font-medium">
         Bloques · <span className="font-normal text-muted">{formatDay(day, "long")}</span>
       </h2>
-      <ul className="mt-2 flex flex-col gap-2" aria-label="Bloques horarios">
+      {!hydrated && <p className="mt-2 text-[14px] text-muted">Cargando cupos…</p>}
+      <ul className="mt-2 flex flex-col gap-2" aria-label="Bloques horarios" hidden={!hydrated}>
         {rows.map((r) => {
           const active = r.id === block;
           const status = !r.open
@@ -310,8 +317,8 @@ function Reservar() {
               <dt className="text-muted">Cupos</dt>
               <dd className="num text-right">{unit.exclusive ? "Uso exclusivo" : `Quedan ${selected.left} de ${unit.capacity}`}</dd>
             </dl>
-            <Button size="lg" variant="accent" onClick={confirm}>
-              Confirmar
+            <Button size="lg" variant="accent" onClick={confirm} disabled={busy}>
+              {busy ? "Reservando…" : "Confirmar"}
             </Button>
             <Button size="lg" variant="ghost" onClick={() => setSheet(false)}>
               Cancelar

@@ -1,7 +1,9 @@
 import { expect, test } from "@playwright/test";
-import { enroll, expectNoHorizontalScroll } from "./helpers";
+import { cleanup, enroll, expectNoHorizontalScroll } from "./helpers";
 
 test.describe("Pantalla 3 · Inicio del socio", () => {
+  test.afterEach(cleanup);
+
   test("muestra la próxima reserva, el Hub en vivo y permite inscribirse a una charla", async ({ page }) => {
     await enroll(page);
     await page.goto("/reservar");

@@ -1,15 +1,24 @@
 import { expect, test } from "@playwright/test";
-import { enroll, expectNoHorizontalScroll, freshStart, testRut } from "./helpers";
+import { cleanup, createUser, enroll, expectNoHorizontalScroll, freshStart, signIn, testRut } from "./helpers";
 
 test.describe("Pantalla 1 · Enrolamiento único y credencial", () => {
-  test("valida el RUT y no deja continuar sin consentimiento", async ({ page }) => {
+  test.afterEach(cleanup);
+
+  test("entra con su cuenta, valida el RUT y no deja continuar sin consentimiento", async ({ page }) => {
     await freshStart(page, "/registro");
     await expect(page.getByRole("heading", { name: "Entra al Hub sin llenar el formulario" })).toBeVisible();
     await expectNoHorizontalScroll(page);
 
-    await page.getByRole("button", { name: "Continuar con Google" }).click();
-    // Los datos del proveedor social llegan precargados.
-    await expect(page.getByLabel("Nombre completo")).toHaveValue("Valentina Muñoz Rojas");
+    // Contraseña equivocada: el mensaje es claro y no entra.
+    const user = await createUser();
+    await page.getByRole("tab", { name: "Ya tengo cuenta" }).click();
+    await page.getByLabel("Correo").fill(user.email);
+    await page.getByLabel("Contraseña").fill("no-es-esta");
+    await page.getByRole("button", { name: "Entrar", exact: true }).click();
+    await expect(page.getByText("Correo o contraseña incorrectos.")).toBeVisible();
+
+    await signIn(page, user);
+    await expect(page.getByRole("heading", { name: "Tus datos, una sola vez" })).toBeVisible();
 
     // Dígito verificador incorrecto.
     const wrong = testRut().slice(0, -1) + (testRut().endsWith("1") ? "2" : "1");
@@ -27,16 +36,22 @@ test.describe("Pantalla 1 · Enrolamiento único y credencial", () => {
     await expectNoHorizontalScroll(page);
   });
 
-  test("crea la credencial con NFC y QR dinámico", async ({ page }) => {
+  test("crea la credencial con NFC y QR dinámico, y la sesión se mantiene", async ({ page }) => {
     await enroll(page);
     await expect(page.getByRole("heading", { name: "Valentina Muñoz Rojas" })).toBeVisible();
     await expect(page.getByText("Activa", { exact: true })).toBeVisible();
     await expect(page.locator("section[aria-labelledby=qr-title] svg")).toBeVisible();
     await expect(page.getByText(/Cambia en \d+ s/)).toBeVisible();
+    // El RUT se muestra enmascarado: el completo nunca sale de la base.
+    await expect(page.getByText(/\d{2}\.\d{3}\.\*\*\*-[\dK]/)).toBeVisible();
 
     // La sesión persiste al recargar.
     await page.reload();
     await expect(page.getByRole("heading", { name: "Credencial NFC activa" })).toBeVisible();
     await page.screenshot({ path: "tests/screenshots/1-credencial-telefono.png", fullPage: true });
+
+    // Cerrar sesión vuelve a la pantalla de entrada.
+    await page.getByRole("button", { name: "Cerrar sesión" }).click();
+    await expect(page.getByRole("heading", { name: "Entra al Hub sin llenar el formulario" })).toBeVisible();
   });
 });

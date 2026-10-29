@@ -1,39 +1,68 @@
 "use client";
 
-import { useState } from "react";
-import { dayOffset, formatDay, formatMin, memberById } from "@/lib/data";
+import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
+import { dayOffset, formatDay, formatMin } from "@/lib/data";
 import { TRAINING_SESSIONS, trainingKind } from "@/lib/lab";
-import { ME_ID, sessionEnrolledCount, useAforo, useHydrated } from "@/lib/store";
+import { sessionEnrolledCount, useAforo, useHydrated } from "@/lib/store";
+import { supabase } from "@/lib/supabase";
 import { Avatar, Button, Pill, Tabs } from "@/components/ui";
 
 /*
  * Vista del equipo del Hub para las capacitaciones: por sesión, marca quién asistió y
- * aprueba. Aprobar habilita al instante las máquinas de ese tipo en la app de la persona.
+ * aprueba. Lee y escribe en Supabase (marcar_asistencia y aprobar_capacitacion solo
+ * funcionan con una cuenta de administración). Aprobar habilita al instante las máquinas
+ * de ese tipo en la app de la persona.
  */
+
+type Row = { personaId: string; name: string; segment: string; hue: number; attended: boolean; approved: boolean; me: boolean };
+
 export function TrainingAdmin() {
   const hydrated = useHydrated();
   const profile = useAforo((s) => s.profile);
-  const myTrainings = useAforo((s) => s.myTrainings);
-  const sessionMarks = useAforo((s) => s.sessionMarks);
-  const markAttendance = useAforo((s) => s.markAttendance);
-  const approveTraining = useAforo((s) => s.approveTraining);
+  const sessionCounts = useAforo((s) => s.sessionCounts);
+  const sync = useAforo((s) => s.sync);
 
-  const state = { myTrainings: hydrated ? myTrainings : {} };
   const sessions = TRAINING_SESSIONS.filter((s) => dayOffset(s.day) >= 0).sort((a, b) => a.day.localeCompare(b.day) || a.startMin - b.startMin);
-  // Por defecto, la sesión donde está inscrita la persona de la demo.
-  const mine = sessions.find((s) => Object.values(state.myTrainings).some((t) => t?.sessionId === s.id));
   const [picked, setPicked] = useState<string | null>(null);
-  const session = sessions.find((s) => s.id === picked) ?? mine ?? sessions[0];
-  const marks = (hydrated ? sessionMarks[session.id] : undefined) ?? {};
+  const [rows, setRows] = useState<Row[]>([]);
+  const [busy, setBusy] = useState<string | null>(null);
+  const isAdmin = profile?.role === "admin";
 
-  const meIn = profile && state.myTrainings[session.kind]?.sessionId === session.id;
-  const people = [
-    ...(meIn ? [{ id: ME_ID, name: profile.name, hue: 210, segment: profile.segment }] : []),
-    ...session.enrolledIds.map((id) => {
-      const m = memberById(id)!;
-      return { id, name: m.name, hue: m.hue, segment: m.segment };
-    }),
-  ];
+  // Por defecto, la primera sesión que viene.
+  const session = sessions.find((s) => s.id === picked) ?? sessions[0];
+
+  const load = useCallback(async () => {
+    if (!isAdmin) return;
+    const { data } = await supabase
+      .from("inscripciones_capacitacion")
+      .select("persona_id, asistio, aprobada, creada_at, personas!inscripciones_capacitacion_persona_id_fkey(nombre, segmento, tono, user_id)")
+      .eq("sesion_id", session.id)
+      .order("creada_at", { ascending: false });
+    setRows(
+      (data ?? []).map((r) => {
+        const p = r.personas as unknown as { nombre: string; segmento: string; tono: number; user_id: string | null };
+        return { personaId: r.persona_id, name: p.nombre, segment: p.segmento, hue: p.tono, attended: r.asistio, approved: r.aprobada, me: r.persona_id === profile?.id };
+      }),
+    );
+  }, [isAdmin, session.id, profile?.id]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  const act = async (personaId: string, fn: "marcar_asistencia" | "aprobar_capacitacion", attended?: boolean) => {
+    // Se ve al instante; después se confirma con lo que guardó el servidor.
+    setRows((rs) =>
+      rs.map((r) =>
+        r.personaId !== personaId ? r : fn === "marcar_asistencia" ? { ...r, attended: !!attended, approved: r.approved && !!attended } : { ...r, approved: true },
+      ),
+    );
+    setBusy(personaId);
+    await supabase.rpc(fn, fn === "marcar_asistencia" ? { p_sesion: session.id, p_persona: personaId, p_asistio: attended } : { p_sesion: session.id, p_persona: personaId });
+    await Promise.all([load(), sync()]);
+    setBusy(null);
+  };
 
   return (
     <section id="capacitaciones" aria-labelledby="train-title" className="mt-6 scroll-mt-20 overflow-hidden rounded-card border border-border bg-surface">
@@ -50,31 +79,38 @@ export function TrainingAdmin() {
           className="-mx-1 mt-3"
         />
         <p className="num mt-2 text-[13px] text-muted">
-          {formatDay(session.day, "long")} · {formatMin(session.startMin)}–{formatMin(session.endMin)} · {session.place} · {sessionEnrolledCount(state, session.id)} de{" "}
-          {session.capacity} inscritos
+          {formatDay(session.day, "long")} · {formatMin(session.startMin)}–{formatMin(session.endMin)} · {session.place} ·{" "}
+          {sessionEnrolledCount({ sessionCounts }, session.id)} de {session.capacity} inscritos
         </p>
       </div>
-      <div className="mt-3 overflow-x-auto">
-        <table aria-label="Inscritos en la sesión" className="w-full min-w-[560px] text-[14px]">
-          <thead>
-            <tr className="border-y border-border text-left text-[12px] text-muted">
-              <th className="px-5 py-2 font-normal">Persona</th>
-              <th className="px-3 py-2 font-normal">Asistió</th>
-              <th className="px-3 py-2 font-normal">Estado</th>
-              <th className="px-5 py-2 text-right font-normal">Aprobación</th>
-            </tr>
-          </thead>
-          <tbody>
-            {people.map((p) => {
-              const mark = marks[p.id] ?? {};
-              return (
-                <tr key={p.id} className="border-b border-border last:border-b-0">
+
+      {hydrated && !isAdmin ? (
+        <p className="m-5 rounded-card bg-raised p-4 text-[14px]">
+          Para marcar asistencia y aprobar, entra con una cuenta de administración.{" "}
+          <Link href="/registro" className="link-more">
+            Entrar
+          </Link>
+        </p>
+      ) : (
+        <div className="mt-3 overflow-x-auto">
+          <table aria-label="Inscritos en la sesión" className="w-full min-w-[560px] text-[14px]">
+            <thead>
+              <tr className="border-y border-border text-left text-[12px] text-muted">
+                <th className="px-5 py-2 font-normal">Persona</th>
+                <th className="px-3 py-2 font-normal">Asistió</th>
+                <th className="px-3 py-2 font-normal">Estado</th>
+                <th className="px-5 py-2 text-right font-normal">Aprobación</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((p) => (
+                <tr key={p.personaId} className="border-b border-border last:border-b-0">
                   <td className="px-5 py-2.5">
                     <span className="flex items-center gap-2.5">
                       <Avatar name={p.name} hue={p.hue} size={28} />
                       <span className="min-w-0">
                         <span className="block truncate">
-                          {p.name} {p.id === ME_ID && <span className="text-muted">(demo)</span>}
+                          {p.name} {p.me && <span className="text-muted">(tú)</span>}
                         </span>
                         <span className="block text-[12px] text-muted">{p.segment}</span>
                       </span>
@@ -84,30 +120,38 @@ export function TrainingAdmin() {
                     <input
                       type="checkbox"
                       className="size-5 accent-black"
-                      checked={!!mark.attended}
+                      checked={p.attended}
+                      disabled={busy === p.personaId}
                       aria-label={`Asistió ${p.name}`}
-                      onChange={(e) => markAttendance(session.id, p.id, e.target.checked)}
+                      onChange={(e) => void act(p.personaId, "marcar_asistencia", e.target.checked)}
                     />
                   </td>
                   <td className="px-3 py-2.5">
-                    {mark.approved ? <Pill tone="positive">Aprobada</Pill> : mark.attended ? <Pill tone="accent">Asistió</Pill> : <Pill>Inscrita</Pill>}
+                    {p.approved ? <Pill tone="positive">Aprobada</Pill> : p.attended ? <Pill tone="accent">Asistió</Pill> : <Pill>Inscrita</Pill>}
                   </td>
                   <td className="px-5 py-2.5 text-right">
                     <Button
                       variant="primary"
-                      disabled={!mark.attended || mark.approved}
-                      onClick={() => approveTraining(session.id, p.id)}
+                      disabled={!p.attended || p.approved || busy === p.personaId}
+                      onClick={() => void act(p.personaId, "aprobar_capacitacion")}
                       aria-label={`Aprobar a ${p.name}`}
                     >
-                      {mark.approved ? "Aprobada" : "Aprobar"}
+                      {p.approved ? "Aprobada" : "Aprobar"}
                     </Button>
                   </td>
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+              ))}
+              {rows.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="px-5 py-4 text-muted">
+                    Nadie inscrito todavía.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
     </section>
   );
 }

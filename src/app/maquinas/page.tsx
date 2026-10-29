@@ -73,6 +73,8 @@ function Maquinas() {
   const myTrainings = useAforo((s) => s.myTrainings);
   const myMachineBookings = useAforo((s) => s.myMachineBookings);
   const reserveMachine = useAforo((s) => s.reserveMachine);
+  const machineTaken = useAforo((s) => s.machineTaken);
+  const [busy, setBusy] = useState(false);
 
   const [space, setSpace] = useState<SpaceId>(params.get("espacio") === "textil" ? "textil" : "lab881");
   const [machineId, setMachineId] = useState<string | null>(params.get("maquina"));
@@ -89,7 +91,7 @@ function Maquinas() {
     return () => clearTimeout(t);
   }, [toast]);
 
-  const state = { myTrainings: hydrated ? myTrainings : {}, myMachineBookings: hydrated ? myMachineBookings : [] };
+  const state = { myTrainings: hydrated ? myTrainings : {}, myMachineBookings: hydrated ? myMachineBookings : [], machineTaken };
   const sp = SPACES[space];
   const machine = machineId ? machineById(machineId) : null;
   const canBook = machine && trainingStatus(state, machine.training) === "aprobada";
@@ -122,9 +124,11 @@ function Maquinas() {
     setStart(null);
   };
 
-  const confirm = () => {
-    if (!machine || !selected || !dayValue) return;
-    const res = reserveMachine(machine.id, dayValue, selected.startMin, hrs);
+  const confirm = async () => {
+    if (!machine || !selected || !dayValue || busy) return;
+    setBusy(true);
+    const res = await reserveMachine(machine.id, dayValue, selected.startMin, hrs);
+    setBusy(false);
     setSheet(false);
     if (res.ok) {
       setDone(res.id);
@@ -350,8 +354,8 @@ function Maquinas() {
                 </>
               )}
             </dl>
-            <Button size="lg" variant="primary" onClick={confirm}>
-              Confirmar
+            <Button size="lg" variant="primary" onClick={confirm} disabled={busy}>
+              {busy ? "Reservando…" : "Confirmar"}
             </Button>
             <Button size="lg" variant="ghost" onClick={() => setSheet(false)}>
               Cancelar

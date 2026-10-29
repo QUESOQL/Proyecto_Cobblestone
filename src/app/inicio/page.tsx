@@ -25,7 +25,7 @@ import {
   type ZoneId,
 } from "@/lib/data";
 import { TRAINING_KINDS, lowerFirst, machineById, sessionById } from "@/lib/lab";
-import { activeMachineBookings, activeMine, countFor, talkEnrolledCount, useAforo, useHydrated } from "@/lib/store";
+import { activeMachineBookings, activeMine, countFor, talkCount, useAforo, useHydrated } from "@/lib/store";
 import { Avatar, Button, CapacityTrack, MobileShell, Pill, Toast, Wordmark, cx } from "@/components/ui";
 
 function startsIn(day: string, startMin: number): string {
@@ -47,6 +47,8 @@ export default function InicioPage() {
   const myTrainings = useAforo((s) => s.myTrainings);
   const myMachineBookings = useAforo((s) => s.myMachineBookings);
   const cancelMachine = useAforo((s) => s.cancelMachine);
+  const occupancy = useAforo((s) => s.occupancy);
+  const talkCounts = useAforo((s) => s.talkCounts);
   const [toast, setToast] = useState<string | null>(null);
 
   const approved = hydrated ? TRAINING_KINDS.filter((k) => myTrainings[k.id]?.status === "aprobada") : [];
@@ -58,7 +60,7 @@ export default function InicioPage() {
     : [];
   const machines = hydrated ? activeMachineBookings({ myMachineBookings }) : [];
 
-  const state = { myReservations: hydrated ? myReservations : [] };
+  const state = { myReservations: hydrated ? myReservations : [], occupancy };
   const mine = hydrated
     ? activeMine(state).sort((a, b) => a.day.localeCompare(b.day) || blockById(a.block).startMin - blockById(b.block).startMin)
     : [];
@@ -248,7 +250,7 @@ export default function InicioPage() {
         <p className="text-[13px] text-muted">En la zona de charlas y el Edificio Empleo. Inscribirte te guarda el asiento.</p>
         <ul className="mt-2">
           {upcoming.map((t) => {
-            const n = talkEnrolledCount(t.id, hydrated ? enrolled : []);
+            const n = talkCount({ talkCounts }, t.id);
             const left = t.capacity - n;
             const isIn = hydrated && enrolled.includes(t.id);
             const trainer = trainerById(t.trainerId);
@@ -270,8 +272,8 @@ export default function InicioPage() {
                 <button
                   disabled={left <= 0 && !isIn}
                   aria-pressed={isIn}
-                  onClick={() => {
-                    const r = toggleTalk(t.id);
+                  onClick={async () => {
+                    const r = await toggleTalk(t.id);
                     setToast(r.ok ? (isIn ? "Ya no estás inscrita en la charla." : "Inscripción lista. Te avisamos el mismo día.") : (r.error ?? null));
                     setTimeout(() => setToast(null), 3000);
                   }}

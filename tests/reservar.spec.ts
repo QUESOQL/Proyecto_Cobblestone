@@ -1,7 +1,9 @@
 import { expect, test } from "@playwright/test";
-import { enroll, expectNoHorizontalScroll } from "./helpers";
+import { cleanup, enroll, expectNoHorizontalScroll } from "./helpers";
 
 test.describe("Pantalla 2 · Selección de espacio y bloque", () => {
+  test.afterEach(cleanup);
+
   test.beforeEach(async ({ page }) => {
     await enroll(page);
     await page.goto("/reservar");
