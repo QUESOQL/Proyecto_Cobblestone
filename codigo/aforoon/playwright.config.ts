@@ -7,6 +7,9 @@ import { defineConfig, devices } from "@playwright/test";
  */
 export default defineConfig({
   testDir: "./tests",
+  // Las pruebas usan el Supabase de .env.local: antes y después se borran las cuentas de prueba.
+  globalSetup: "./tests/limpieza.ts",
+  globalTeardown: "./tests/limpieza.ts",
   timeout: 45_000,
   fullyParallel: false,
   workers: 1,

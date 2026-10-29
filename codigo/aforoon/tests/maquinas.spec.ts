@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { enroll, expectNoHorizontalScroll } from "./helpers";
+import { cleanup, approveTraining, createAdmin, enroll, expectNoHorizontalScroll, signIn } from "./helpers";
 
 /** Elige la primera hora de inicio libre y confirma la reserva. */
 async function bookFirstFreeSlot(page: Page) {
@@ -22,7 +22,9 @@ async function bookFirstFreeSlot(page: Page) {
 }
 
 test.describe("Máquinas con capacitación obligatoria", () => {
-  test("sin capacitación no se reserva la cortadora; se inscribe, la aprueban y ahora sí", async ({ page }) => {
+  test.afterEach(cleanup);
+
+  test("sin capacitación no se reserva la cortadora; se inscribe, la aprueban y ahora sí", async ({ page, browser }) => {
     await enroll(page);
     await page.goto("/maquinas");
 
@@ -42,13 +44,19 @@ test.describe("Máquinas con capacitación obligatoria", () => {
     await page.goto("/maquinas");
     await expect(page.getByRole("region", { name: "Corte láser" })).toContainText("Inscrita para el");
 
-    // El equipo del Hub marca la asistencia y aprueba.
-    await page.goto("/admin#capacitaciones");
-    const admin = page.getByRole("region", { name: "Capacitaciones" });
-    await expect(admin.getByRole("button", { name: "Aprobar a Valentina Muñoz Rojas" })).toBeDisabled();
-    await admin.getByRole("checkbox", { name: "Asistió Valentina Muñoz Rojas" }).check();
-    await admin.getByRole("button", { name: "Aprobar a Valentina Muñoz Rojas" }).click();
-    await expect(admin.getByRole("row", { name: /Valentina Muñoz Rojas/ })).toContainText("Aprobada");
+    // El equipo del Hub, en su propio navegador y con su cuenta, marca la asistencia y aprueba.
+    const staff = await browser.newPage();
+    await signIn(staff, await createAdmin());
+    await expect(staff.getByRole("heading", { name: "Credencial NFC activa" })).toBeVisible();
+    await staff.goto("/admin#capacitaciones");
+    const admin = staff.getByRole("region", { name: "Capacitaciones" });
+    await admin.getByRole("tab", { name: /^Corte láser/ }).first().click();
+    const row = admin.getByRole("row", { name: /Valentina Muñoz Rojas/ });
+    await expect(row.getByRole("button", { name: "Aprobar a Valentina Muñoz Rojas" })).toBeDisabled();
+    await row.getByRole("checkbox", { name: "Asistió Valentina Muñoz Rojas" }).check();
+    await row.getByRole("button", { name: "Aprobar a Valentina Muñoz Rojas" }).click();
+    await expect(row).toContainText("Aprobada");
+    await staff.close();
 
     // Ahora sí: la cortadora se puede elegir y reservar.
     await page.goto("/maquinas");
@@ -65,13 +73,9 @@ test.describe("Máquinas con capacitación obligatoria", () => {
   });
 
   test("respeta el cupo anual por duración: dos trabajos de 10 a 18 h y no más", async ({ page }) => {
-    await enroll(page);
+    const user = await enroll(page);
     // Impresión 3D ya aprobada (el flujo de aprobación se prueba arriba).
-    await page.evaluate(() => {
-      const raw = JSON.parse(localStorage.getItem("aforoon-demo-v1")!);
-      raw.state.myTrainings = { impresion3d: { status: "aprobada", sessionId: "cap-3d-1" } };
-      localStorage.setItem("aforoon-demo-v1", JSON.stringify(raw));
-    });
+    await approveTraining(user, "cap-3d-1");
     await page.goto("/maquinas");
 
     const quota = page.getByRole("list", { name: "Cupo anual por duración" });

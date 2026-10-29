@@ -102,7 +102,7 @@ export default function RecepcionPage() {
       else if (machine && isLate(machine)) {
         // Pasados 20 minutos del inicio, la reserva de la máquina se cancela.
         res = "atrasado";
-        if (p.id === ME_ID) s.cancelMachine(machine.id, "atraso");
+        // En la demo local, solo se informa: la cancelación real la hace registrar_acceso en el servidor.
       } else if (machine && p.id === ME_ID && trainingStatus(s, machineById(machine.machineId).training) !== "aprobada") res = "sin_capacitacion";
       else if (!reservation && !machine && mode === "entrada") res = "sin_reserva";
       const event = s.recordEvent({ memberId: p.id, reservationId: reservation?.id, kind: mode, result: res, method, latency, atMin });
