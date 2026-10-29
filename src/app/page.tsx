@@ -229,7 +229,7 @@ export default function Landing() {
           <ul className="mt-10 grid gap-8 md:grid-cols-3 md:gap-4">
             {MORE.map((m, i) => (
               <li key={m.title} className="lp-rise" style={{ ["--i" as string]: i + 1 }}>
-                <ImageSlot slot={m.slot} ratio="16/10" sizes="(min-width: 768px) 380px, 100vw" />
+                <ImageSlot slot={m.slot} ratio="4/3" sizes="(min-width: 768px) 380px, 100vw" />
                 <h3 className="mt-4 text-[18px] font-medium">{m.title}</h3>
                 <p className="mt-1 text-[14px] leading-[1.5] text-slate">{m.text}</p>
                 <Link href={m.href} className="link-more mt-2 inline-block" aria-label={`Más sobre ${m.title}`}>

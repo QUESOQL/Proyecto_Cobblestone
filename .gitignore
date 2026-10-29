@@ -46,3 +46,6 @@ next-env.d.ts
 # Playwright
 tests/report/
 test-results/
+
+# Originales de las ilustraciones (las versiones WebP están en public/photos)
+/assets/fotos-originales/
