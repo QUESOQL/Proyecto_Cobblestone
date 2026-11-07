@@ -72,6 +72,25 @@ export async function createAdmin(): Promise<TestUser> {
   return u;
 }
 
+/** Persona de recepción con su PIN de turno. */
+export async function createRecepcionista(pin: string, nombre = "Rocío Recepción (prueba)"): Promise<TestUser> {
+  const u = await createUser();
+  await admin("/rest/v1/personas", {
+    method: "POST",
+    headers: { Prefer: "return=minimal" },
+    body: JSON.stringify({ user_id: u.id, nombre, rut_mascara: "22.222.***-2", segmento: "Empresa", rol: "recepcion" }),
+  });
+  await admin("/rest/v1/rpc/definir_pin", { method: "POST", body: JSON.stringify({ p_persona: await personaOf(u), p_pin: pin }) });
+  return u;
+}
+
+/** Cuenta del celular del guardia (terminal activo). */
+export async function createTerminal(nombre = "Recepción de prueba"): Promise<TestUser> {
+  const u = await createUser();
+  await admin("/rest/v1/terminales", { method: "POST", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ user_id: u.id, nombre }) });
+  return u;
+}
+
 /** Id de la persona de una cuenta. */
 export async function personaOf(user: TestUser): Promise<string> {
   const rows = await admin(`/rest/v1/personas?user_id=eq.${user.id}&select=id`);

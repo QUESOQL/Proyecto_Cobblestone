@@ -158,6 +158,8 @@ interface State {
   profile: Profile | null;
   /** Hay sesión iniciada, aunque la persona aún no complete su perfil. */
   signedIn: boolean;
+  /** Nombre que trae la cuenta (por ejemplo, de Google), para prellenar el registro. */
+  authName: string;
   myReservations: Reservation[];
   enrolledTalkIds: string[];
   myTrainings: Partial<Record<TrainingType, MyTraining>>;
@@ -192,6 +194,7 @@ interface State {
 const personal = {
   profile: null as Profile | null,
   signedIn: false,
+  authName: "",
   myReservations: [] as Reservation[],
   enrolledTalkIds: [] as string[],
   myTrainings: {} as State["myTrainings"],
@@ -246,7 +249,10 @@ async function loadPersonal(): Promise<typeof personal> {
     .select("id, nombre, rut_mascara, telefono, segmento, ocupacion, motivo, rol, consentimiento_at, creada_at")
     .eq("user_id", user.id)
     .maybeSingle();
-  if (!p) return { ...personal, signedIn: true };
+  if (!p) {
+    const meta = user.user_metadata ?? {};
+    return { ...personal, signedIn: true, authName: String(meta.full_name ?? meta.name ?? "") };
+  }
 
   const [res, talks, trainings, machines] = await Promise.all([
     supabase.from("reservas").select("id, unidad_id, dia, bloque_id, estado, entrada_at, salida_at, metodo").eq("persona_id", p.id),
@@ -262,6 +268,7 @@ async function loadPersonal(): Promise<typeof personal> {
 
   return {
     signedIn: true,
+    authName: p.nombre,
     profile: {
       id: p.id,
       name: p.nombre,

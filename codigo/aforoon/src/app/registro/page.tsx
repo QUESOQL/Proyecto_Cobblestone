@@ -77,6 +77,7 @@ function authMessage(m: string): string {
   if (/password should be at least/i.test(m)) return "La contraseña debe tener al menos 6 caracteres.";
   if (/email not confirmed/i.test(m)) return "Confirma tu correo con el enlace que te enviamos y vuelve a entrar.";
   if (/rate limit/i.test(m)) return "Demasiados intentos seguidos. Espera un momento y vuelve a intentar.";
+  if (/provider is not enabled|unsupported provider/i.test(m)) return "El inicio con Google todavía no está activado. Usa tu correo por ahora.";
   return "No pudimos entrar. Revisa tus datos e inténtalo de nuevo.";
 }
 
@@ -104,6 +105,25 @@ function Welcome() {
     else if (mode === "crear" && !res.data.session) setCheckMail(true);
   };
 
+  // Google devuelve a esta misma página; si algo falló, el motivo viene en la URL.
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search + window.location.hash.replace(/^#/, "&"));
+    const motivo = q.get("error_description");
+    if (motivo) setError(authMessage(motivo));
+  }, []);
+
+  const google = async () => {
+    setError(null);
+    setBusy(true);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/registro` },
+    });
+    // Si todo va bien, el navegador ya se fue a Google; solo se vuelve aquí si hubo un error.
+    setBusy(false);
+    if (error) setError(authMessage(error.message));
+  };
+
   return (
     <div className="enter flex flex-col">
       <div className="relative -mx-4 mb-5 h-[220px] overflow-hidden">
@@ -123,6 +143,12 @@ function Welcome() {
         </div>
       ) : (
         <form onSubmit={submit} className="mt-6 flex flex-col gap-4" noValidate aria-label={mode === "crear" ? "Crear cuenta" : "Entrar"}>
+          <Button type="button" size="lg" onClick={() => void google()} disabled={busy}>
+            <GoogleG /> Continuar con Google
+          </Button>
+          <p className="flex items-center gap-3 text-[13px] text-muted" aria-hidden="true">
+            <span className="h-px flex-1 bg-[var(--hair)]" /> o con tu correo <span className="h-px flex-1 bg-[var(--hair)]" />
+          </p>
           <div className="toggle self-start" role="tablist" aria-label="Cuenta">
             {(["crear", "entrar"] as const).map((m) => (
               <button
@@ -161,7 +187,6 @@ function Welcome() {
           <Button type="submit" size="lg" variant="primary" disabled={busy}>
             {busy ? "Un momento…" : mode === "crear" ? "Crear cuenta" : "Entrar"}
           </Button>
-          <p className="text-[12px] text-muted">Pronto también con Google.</p>
         </form>
       )}
     </div>
@@ -177,7 +202,9 @@ const ENROLL_ERRORS: Record<string, string> = {
 function DataForm() {
   const enroll = useAforo((s) => s.enroll);
   const signOut = useAforo((s) => s.signOut);
-  const [name, setName] = useState("");
+  // Si entró con Google, el nombre ya viene de su cuenta.
+  const authName = useAforo((s) => s.authName);
+  const [name, setName] = useState(authName);
   const [rut, setRut] = useState("");
   const [phone, setPhone] = useState("");
   const [segment, setSegment] = useState<Segment | null>(null);
@@ -462,5 +489,18 @@ function Credential({ profile }: { profile: Profile }) {
         </button>
       </div>
     </MobileShell>
+  );
+}
+
+/* ------------------------------------------------------------------ logo */
+
+function GoogleG() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+      <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z" />
+      <path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z" />
+      <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z" />
+      <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z" />
+    </svg>
   );
 }

@@ -411,7 +411,9 @@ function buildReservations(): Reservation[] {
               status = "completada";
               checkInMin = block.startMin + Math.floor(rnd() * (NOW_MIN - block.startMin));
             }
-          } else if (rnd() < 0.03) {
+          } else if (rnd() < 0.03 && !(unit.id === "mesas" && off === 0 && (block.id === "b10" || block.id === "b12"))) {
+            // Algunas reservas futuras se cancelan, salvo en el hallazgo del día: el centro de
+            // mesas lleno de 10:00 a 14:00 tiene que cumplirse cualquier día que se abra la demo.
             status = "cancelada";
           }
           out.push({

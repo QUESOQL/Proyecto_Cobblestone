@@ -1,9 +1,12 @@
 import { expect, test } from "@playwright/test";
-import { expectNoHorizontalScroll, freshStart } from "./helpers";
+import { cleanup, createRecepcionista, createTerminal, expectNoHorizontalScroll, freshStart } from "./helpers";
 
 test.describe("Pantalla 4 · Terminal de acceso", () => {
+  test.afterEach(cleanup);
+
   test("valida, rechaza, permite excepciones y funciona sin conexión", async ({ page }) => {
-    await freshStart(page, "/recepcion");
+    // Lecturas simuladas: el modo demo salta la cuenta del terminal y el PIN.
+    await freshStart(page, "/recepcion?demo=1");
     await expect(page.getByRole("heading", { name: "Acerca el teléfono o muestra el QR" })).toBeVisible();
     const insideText = await page.getByRole("heading", { name: "Dentro del Hub ahora" }).locator("..").innerText();
     const insideBefore = Number(insideText.match(/(\d+)\s*personas/)![1]);
@@ -52,5 +55,36 @@ test.describe("Pantalla 4 · Terminal de acceso", () => {
 
     await expectNoHorizontalScroll(page);
     await page.screenshot({ path: "tests/screenshots/4-terminal-tablet.png", fullPage: true });
+  });
+
+  test("el celular del guardia entra con su cuenta y abre el turno con PIN", async ({ page }) => {
+    const terminal = await createTerminal();
+    await createRecepcionista("4821");
+    await freshStart(page, "/recepcion");
+
+    // Una sola vez por celular: la cuenta del terminal.
+    await expect(page.getByRole("heading", { name: "Registrar este celular como terminal" })).toBeVisible();
+    await page.getByLabel("Correo del terminal").fill(terminal.email);
+    await page.getByLabel("Contraseña del terminal").fill(terminal.password);
+    await page.getByRole("button", { name: "Registrar terminal" }).click();
+
+    // En cada turno: el PIN. Uno equivocado no entra.
+    await expect(page.getByRole("heading", { name: "Iniciar turno" })).toBeVisible();
+    await page.getByLabel("PIN").fill("1111");
+    await page.getByRole("button", { name: "Iniciar turno" }).click();
+    await expect(page.getByText("PIN incorrecto.")).toBeVisible();
+    await page.getByLabel("PIN").fill("4821");
+    await page.getByRole("button", { name: "Iniciar turno" }).click();
+    await expect(page.getByText("Rocío Recepción (prueba)")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Acerca el teléfono o muestra el QR" })).toBeVisible();
+
+    // La sesión del terminal y el turno siguen al recargar.
+    await page.reload();
+    await expect(page.getByText("Rocío Recepción (prueba)")).toBeVisible();
+
+    // Cerrar el turno vuelve a pedir PIN, pero no la cuenta del terminal.
+    await page.getByRole("button", { name: "Cerrar turno" }).click();
+    await expect(page.getByRole("heading", { name: "Iniciar turno" })).toBeVisible();
+    await expectNoHorizontalScroll(page);
   });
 });

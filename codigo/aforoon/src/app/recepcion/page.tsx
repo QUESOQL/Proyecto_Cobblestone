@@ -23,6 +23,7 @@ import {
 import { ME_ID, allReservations, insideNow, isLate, trainingStatus, useAforo, useHydrated, type AccessEvent } from "@/lib/store";
 import { BASE_MACHINE_BOOKINGS, machineById, trainingKind, type MachineBooking } from "@/lib/lab";
 import { Avatar, Button, CapacityTrack, Pill, TopBar, Wordmark, cx } from "@/components/ui";
+import { InicioTurno, type Turno } from "@/components/recepcion/inicio-turno";
 
 type Mode = "entrada" | "salida";
 type Person = { id: string; name: string; rut: string; hue: number; segment: string; verified: boolean };
@@ -52,6 +53,11 @@ const RESULT_COPY: Record<AccessEvent["result"], { led: "ok" | "no"; title: stri
 };
 
 export default function RecepcionPage() {
+  return <InicioTurno>{(turno, cerrarTurno) => <Terminal turno={turno} cerrarTurno={cerrarTurno} />}</InicioTurno>;
+}
+
+/** El terminal (todavía con lecturas simuladas; la conexión real de lecturas viene en la fase 2). */
+function Terminal({ turno, cerrarTurno }: { turno: Turno; cerrarTurno: () => Promise<void> }) {
   const hydrated = useHydrated();
   const s = useAforo();
   const [mode, setMode] = useState<Mode>("entrada");
@@ -159,6 +165,16 @@ export default function RecepcionPage() {
               {state.offline ? <CloudOff size={16} aria-hidden="true" /> : <Wifi size={16} aria-hidden="true" />}
               {state.offline ? `Sin conexión · ${queued} en cola` : "En línea"}
             </button>
+            <div className="flex items-center gap-2 border-l border-[#333] pl-3">
+              <span className="hidden text-[13px] sm:inline">
+                Turno: <span className="font-medium">{turno.nombre}</span>
+              </span>
+              {!turno.demo && (
+                <button onClick={() => void cerrarTurno()} className="topbar-link press inline-flex">
+                  Cerrar turno
+                </button>
+              )}
+            </div>
           </>
         }
       />
