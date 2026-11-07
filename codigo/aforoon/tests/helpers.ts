@@ -26,6 +26,13 @@ async function admin(path: string, init: RequestInit = {}) {
   return res.status === 204 ? null : res.json().catch(() => null);
 }
 
+/**
+ * Las pruebas que reservan bloques de la tarde de hoy suponen un día hábil: en la demo el
+ * sábado solo abre hasta las 14:00 y el domingo está cerrado.
+ */
+export const esFinDeSemana = [0, 6].includes(new Date().getDay());
+export const MOTIVO_FIN_DE_SEMANA = "Necesita un día hábil: el fin de semana la demo cierra temprano o no abre";
+
 /** RUT de prueba válido (módulo 11), calculado igual que en la app. */
 export function testRut(body = 17482395): string {
   let sum = 0;

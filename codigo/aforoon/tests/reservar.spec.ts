@@ -1,8 +1,9 @@
 import { expect, test } from "@playwright/test";
-import { cleanup, enroll, expectNoHorizontalScroll } from "./helpers";
+import { cleanup, enroll, expectNoHorizontalScroll, esFinDeSemana, MOTIVO_FIN_DE_SEMANA } from "./helpers";
 
 test.describe("Pantalla 2 · Selección de espacio y bloque", () => {
   test.afterEach(cleanup);
+  test.skip(esFinDeSemana, MOTIVO_FIN_DE_SEMANA);
 
   test.beforeEach(async ({ page }) => {
     await enroll(page);

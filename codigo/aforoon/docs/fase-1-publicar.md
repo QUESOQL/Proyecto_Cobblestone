@@ -22,24 +22,25 @@ Crea las tablas `terminales`, `pines_recepcion` y `turnos`, y hace que un termin
 
 ## 2. Publicar en Vercel (10 minutos)
 
-El repositorio del equipo (`QUESOQL/Proyecto_Cobblestone`) es público y pertenece a la cuenta de
-GitHub **QUESOQL**. Para conectarlo, esa cuenta tiene que autorizar a Vercel. Si no la manejas tú,
-hay dos caminos: que la persona dueña haga estos pasos, o que hagas un *fork* en tu GitHub y lo
-conectes desde ahí.
+Vercel publica desde el repositorio propio **`LucianoTorretti/AforoOn`**, que tiene la app en la
+raíz. El repositorio del equipo (`QUESOQL/Proyecto_Cobblestone`, carpeta `codigo/aforoon`) sigue
+siendo el oficial del capstone; cada cambio se sube a los dos.
 
-1. Entra a <https://vercel.com> → **Sign Up** → **Continue with GitHub**, con plan **Hobby**.
-2. **Add New… → Project** → elige `Proyecto_Cobblestone` → **Import**.
-3. En **Root Directory** aprieta **Edit** y elige `codigo/aforoon` (ahí vive la app).
+1. Entra a <https://vercel.com> → **Sign Up** → **Continue with GitHub** (con la cuenta
+   LucianoTorretti), con plan **Hobby**.
+2. **Add New… → Project** → elige `AforoOn` → **Import**. Si no aparece, aprieta
+   **Adjust GitHub App Permissions** y dale acceso a ese repositorio.
+3. **Root Directory:** déjalo como está (la raíz).
 4. Framework: **Next.js** (lo detecta solo). No cambies los comandos de build.
 5. En **Environment Variables** agrega solo estas dos, copiadas de tu `.env.local`:
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
    **No** agregues `SUPABASE_SERVICE_ROLE_KEY`: la app no la usa y no debe salir de tu computador.
-6. **Deploy**. Al terminar tendrás una dirección del tipo `https://proyecto-cobblestone.vercel.app`.
+6. **Deploy**. Al terminar tendrás una dirección del tipo `https://aforoon.vercel.app`.
    Anótala: la llamaremos **TU_URL**.
 
-Desde ahí, cada vez que se suban cambios a `main` del repositorio del equipo, Vercel publica la versión nueva sola.
+Desde ahí, cada vez que se suban cambios a `main` de `LucianoTorretti/AforoOn`, Vercel publica la versión nueva sola.
 
 ## 3. Decirle a Supabase dónde vive la app (2 minutos)
 
