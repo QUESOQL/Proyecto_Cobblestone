@@ -130,19 +130,49 @@ export async function createSocio(nombre: string, { conReserva = false } = {}): 
   });
   socios.push(p.id);
   await admin("/rest/v1/rpc/cargar_ruts_demo", { method: "POST", body: JSON.stringify({ p_datos: [{ id: p.id, rut }] }) });
-  if (conReserva) {
-    const reloj = await admin("/rest/v1/rpc/reloj", { method: "POST", body: "{}" });
-    const bloques: { id: string; inicio: string; fin: string }[] = await admin("/rest/v1/bloques?select=id,inicio,fin");
-    const min = (t: string) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3, 5));
-    const bloque = bloques.find((b) => min(b.inicio) <= reloj.minuto && reloj.minuto < min(b.fin));
-    if (!bloque) throw new Error("El reloj de la demo está fuera de los bloques");
-    await admin("/rest/v1/reservas", {
-      method: "POST",
-      headers: { Prefer: "return=minimal" },
-      body: JSON.stringify({ persona_id: p.id, unidad_id: "mesas", dia: reloj.dia, bloque_id: bloque.id }),
-    });
-  }
+  if (conReserva) await reservarBloqueActual(p.id);
   return { id: p.id, rut };
+}
+
+/** Reserva en el centro de mesas en el bloque en curso según el reloj de la demo. */
+export async function reservarBloqueActual(persona: string) {
+  const reloj = await admin("/rest/v1/rpc/reloj", { method: "POST", body: "{}" });
+  const bloques: { id: string; inicio: string; fin: string }[] = await admin("/rest/v1/bloques?select=id,inicio,fin");
+  const min = (t: string) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3, 5));
+  const bloque = bloques.find((b) => min(b.inicio) <= reloj.minuto && reloj.minuto < min(b.fin));
+  if (!bloque) throw new Error("El reloj de la demo está fuera de los bloques");
+  await admin("/rest/v1/reservas", {
+    method: "POST",
+    headers: { Prefer: "return=minimal" },
+    body: JSON.stringify({ persona_id: persona, unidad_id: "mesas", dia: reloj.dia, bloque_id: bloque.id }),
+  });
+}
+
+/** Vecino con cuenta y perfil ya creados (sin pasar por el formulario de registro). */
+export async function createVecino(nombre: string): Promise<TestUser & { persona: string }> {
+  const u = await createUser();
+  await admin("/rest/v1/personas", {
+    method: "POST",
+    headers: { Prefer: "return=minimal" },
+    body: JSON.stringify({ user_id: u.id, nombre, rut_mascara: "33.333.***-3", segmento: "Startup", verificada: true }),
+  });
+  return { ...u, persona: await personaOf(u) };
+}
+
+/** Credenciales QR de una persona (estado y si ya se usaron), leídas con la clave secreta. */
+export async function credencialesDe(persona: string): Promise<{ codigo: string; estado: string; ultimo_t: number }[]> {
+  return admin(`/rest/v1/credenciales?persona_id=eq.${persona}&select=codigo,estado,ultimo_t&order=alta_at`);
+}
+
+/** Entra con la cuenta del terminal y abre el turno con el PIN. */
+export async function abrirTurno(page: Page, terminal: TestUser, pin: string) {
+  await freshStart(page, "/recepcion");
+  await page.getByLabel("Correo del terminal").fill(terminal.email);
+  await page.getByLabel("Contraseña del terminal").fill(terminal.password);
+  await page.getByRole("button", { name: "Registrar terminal" }).click();
+  await page.getByLabel("PIN").fill(pin);
+  await page.getByRole("button", { name: "Iniciar turno" }).click();
+  await expect(page.getByRole("heading", { name: "Buscar por RUT" })).toBeVisible();
 }
 
 /**
@@ -188,7 +218,7 @@ export async function enroll(page: Page): Promise<TestUser> {
   await page.getByLabel("Ocupación").fill("Diseñadora independiente");
   await page.getByRole("checkbox").check();
   await page.getByRole("button", { name: "Crear mi credencial" }).click();
-  await expect(page.getByRole("heading", { name: "Credencial NFC activa" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Tu QR de acceso" })).toBeVisible();
   return user;
 }
 

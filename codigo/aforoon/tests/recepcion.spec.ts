@@ -1,16 +1,5 @@
-import { expect, test, type Page } from "@playwright/test";
-import { cleanup, createRecepcionista, createSocio, createTerminal, expectNoHorizontalScroll, freshStart, type TestUser } from "./helpers";
-
-/** Entra con la cuenta del terminal y abre el turno con el PIN. */
-async function abrirTurno(page: Page, terminal: TestUser, pin: string) {
-  await freshStart(page, "/recepcion");
-  await page.getByLabel("Correo del terminal").fill(terminal.email);
-  await page.getByLabel("Contraseña del terminal").fill(terminal.password);
-  await page.getByRole("button", { name: "Registrar terminal" }).click();
-  await page.getByLabel("PIN").fill(pin);
-  await page.getByRole("button", { name: "Iniciar turno" }).click();
-  await expect(page.getByRole("heading", { name: "Buscar por RUT" })).toBeVisible();
-}
+import { expect, test } from "@playwright/test";
+import { abrirTurno, cleanup, createRecepcionista, createSocio, createTerminal, expectNoHorizontalScroll, freshStart } from "./helpers";
 
 test.describe("Pantalla 4 · Terminal de acceso", () => {
   test.afterEach(cleanup);

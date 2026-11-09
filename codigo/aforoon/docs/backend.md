@@ -58,6 +58,7 @@ Cada una se aplica pegándola completa en Supabase → **SQL Editor** → **New 
 | `0007_recepcion_real.sql` | `buscar_por_rut` (por huella, sin exponer el RUT), `puerta_ahora` (bloque, por llegar, dentro, últimos), `vista_acceso`, `cargar_ruts_demo`; las reservas aceptan el método `rut`. |
 | `0008_panel_admin.sql` | `panel_admin()`: todas las cifras del panel en una llamada; `exportar_dia()` para el CSV. Solo rol admin. |
 | `0009_orden_accesos.sql` | `accesos.registrado_at` para ordenar los accesos aunque el reloj de la demo esté fijo; `estado_real()`: una reserva confirmada sin llegada con el bloque terminado cuenta como "no llegó". |
+| `0010_qr_firmado.sql` | QR firmado AF2: tabla `credenciales` (solo la clave pública, hasta 2 teléfonos por persona), `enrolar_credencial_qr`, `estado_credencial_qr` (hora del servidor y si el cid sigue activo), `clave_qr` y `acceso_qr` (credencial activa, ±30 s y un solo uso, en la misma transacción que el registro). |
 
 ## Cuentas del equipo
 
@@ -73,9 +74,23 @@ Con `scripts/equipo.mjs` (usa la clave secreta de `.env.local`; corre en el comp
 
 ## Estado
 
-- Hecho: migraciones 0001–0009, demo cargada, app del socio conectada, inicio con Google, terminal con PIN de
-  turno, recepción real por RUT, panel de administración con datos reales.
-- Siguiente: fase 3, QR firmado en la credencial y lectura con la cámara del celular del guardia.
+- Hecho: migraciones 0001–0010, demo cargada, app del socio conectada, inicio con Google, terminal con PIN de
+  turno, recepción real por RUT, panel de administración con datos reales, QR firmado AF2 en la credencial
+  (`/registro` y `/credencial`) leído con la cámara del celular del guardia (`/recepcion` → Escanear QR).
+- Siguiente: fase 4, lector ESP32 + PN532 por Bluetooth; fase 6, validar sin internet con la copia del día.
+
+## QR firmado (fase 3)
+
+- El formato es el del informe v4, sección 4.1: `AF2.<cid>.<t>.<firma>`, 127 caracteres (`src/lib/af2.ts`).
+- El teléfono del socio crea un par ECDSA P-256 con la clave privada no exportable, lo guarda en IndexedDB y
+  registra solo la pública (`src/lib/credencial-qr.ts`). Si la credencial se revocó o se borraron los datos del
+  navegador, se vuelve a enrolar sola al abrir la credencial con internet.
+- **Diferencia con el informe:** la firma la verifica el celular del guardia con la clave pública, no una Edge
+  Function. El terminal ya puede registrar a cualquier persona por RUT, así que no se le da más confianza; la base
+  revisa lo que no puede quedar en sus manos (credencial activa, hora y uso único). No hay nada que desplegar
+  aparte de la migración, y es lo mismo que necesita la fase 6 para validar sin internet.
+- La cámara usa `BarcodeDetector` (Chrome en Android) o `jsqr` donde no existe
+  (`src/components/recepcion/lector-qr.tsx`). Necesita HTTPS: funciona en Vercel, no por IP local.
 
 ## Después del backend
 

@@ -49,7 +49,7 @@ test.describe("Máquinas con capacitación obligatoria", () => {
     const equipoCtx = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale: "es-CL", timezoneId: "America/Santiago", baseURL: "http://localhost:3000" });
     const staff = await equipoCtx.newPage();
     await signIn(staff, await createAdmin());
-    await expect(staff.getByRole("heading", { name: "Credencial NFC activa" })).toBeVisible();
+    await expect(staff.getByRole("heading", { name: "Tu QR de acceso" })).toBeVisible();
     await staff.goto("/admin#capacitaciones");
     const admin = staff.getByRole("region", { name: "Capacitaciones" });
     await admin.getByRole("tab", { name: /^Corte láser/ }).first().click();

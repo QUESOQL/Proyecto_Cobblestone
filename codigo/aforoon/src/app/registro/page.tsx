@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { QRCodeSVG } from "qrcode.react";
+import { useEffect, useState } from "react";
+import { QrCredencial } from "@/components/qr-credencial";
 import { Check, Mail, Nfc, ShieldCheck } from "lucide-react";
 import { HUB, SEGMENTS, rutDv, type Segment } from "@/lib/data";
 import { useAforo, useHydrated, type Profile } from "@/lib/store";
@@ -13,7 +13,6 @@ import { Avatar, Button, GoogleG, MobileShell, Pill, Wordmark, cx } from "@/comp
 import { authMessage } from "@/lib/auth-mensajes";
 
 const REASONS = ["Trabajar en el cowork", "Capacitación", "Charlas", "Asesoría de empleo", "Reunión de trabajo"];
-const QR_PERIOD = 30;
 
 /* ------------------------------------------------------------------ RUT */
 
@@ -368,15 +367,6 @@ function Credential({ profile }: { profile: Profile }) {
   const signOut = useAforo((s) => s.signOut);
   const myTrainings = useAforo((s) => s.myTrainings);
   const approved = TRAINING_KINDS.filter((k) => myTrainings[k.id]?.status === "aprobada");
-  const [tick, setTick] = useState(0);
-  useEffect(() => {
-    const t = setInterval(() => setTick((x) => x + 1), 1000);
-    return () => clearInterval(t);
-  }, []);
-  const left = QR_PERIOD - (tick % QR_PERIOD);
-  const window = Math.floor(tick / QR_PERIOD);
-  // El QR dinámico cambia cada 30 s: una captura de pantalla no sirve para entrar.
-  const token = useMemo(() => `AFORO:1:${profile.rut.replace(/\D/g, "").slice(-6)}:${Date.now().toString(36).slice(0, -4)}${window}`, [profile.rut, window]);
   const hue = 210;
 
   return (
@@ -387,22 +377,24 @@ function Credential({ profile }: { profile: Profile }) {
           <div className="min-w-0">
             <h1 className="truncate text-[24px] font-normal leading-[1.3]">{profile.name}</h1>
             <p className="text-[13px] text-muted">
-              {profile.segment} · {profile.occupation}
+              {[profile.segment, profile.occupation].filter(Boolean).join(" · ")}
             </p>
           </div>
         </div>
 
-        <section aria-labelledby="nfc-title" className="flex items-center gap-3 rounded-card border border-border p-4">
-          <span className="flex size-11 flex-none items-center justify-center rounded-full bg-accent-soft text-accent">
-            <Nfc size={22} strokeWidth={1.6} aria-hidden="true" />
-          </span>
-          <div className="min-w-0 flex-1">
-            <h2 id="nfc-title" className="text-[15px] font-medium">
-              Credencial NFC activa
+        <section aria-labelledby="qr-title" className="rounded-card border border-border p-4">
+          <div className="flex items-baseline justify-between gap-3">
+            <h2 id="qr-title" className="text-[15px] font-medium">
+              Tu QR de acceso
             </h2>
-            <p className="text-[13px] leading-[18px] text-muted">Acerca tu teléfono al lector de la puerta. No necesitas abrir la app.</p>
+            <Link href="/credencial" className="text-[13px] underline underline-offset-4">
+              Pantalla completa
+            </Link>
           </div>
-          <Pill tone="positive">Activa</Pill>
+          <p className="mt-0.5 text-[13px] text-muted">Muéstralo en recepción. Cambia cada 30 segundos y sirve una sola vez.</p>
+          <div className="mt-4">
+            <QrCredencial persona={profile.id} size={196} />
+          </div>
         </section>
 
         <section aria-labelledby="badges-title" className="rounded-card bg-raised p-4">
@@ -427,27 +419,17 @@ function Credential({ profile }: { profile: Profile }) {
           )}
         </section>
 
-        <section aria-labelledby="qr-title" className="rounded-card border border-border p-4">
-          <div className="flex items-baseline justify-between">
-            <h2 id="qr-title" className="text-[15px] font-medium">
-              QR dinámico
+        <section aria-labelledby="nfc-title" className="flex items-center gap-3 rounded-card border border-border p-4">
+          <span className="flex size-11 flex-none items-center justify-center rounded-full bg-raised text-muted">
+            <Nfc size={22} strokeWidth={1.6} aria-hidden="true" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <h2 id="nfc-title" className="text-[15px] font-medium">
+              Tarjeta y tag de la puerta
             </h2>
-            <span className="num text-[12px] text-muted" aria-live="off">
-              Cambia en {left} s
-            </span>
+            <p className="text-[13px] leading-[18px] text-muted">Pronto podrás entrar también con una tarjeta en el lector o tocando el tag de la puerta con tu teléfono.</p>
           </div>
-          <p className="mt-0.5 text-[13px] text-muted">Si tu teléfono no tiene NFC, muestra este código en el lector.</p>
-          <div className="mt-4 flex justify-center">
-            <div className="relative rounded-card bg-surface p-3" style={{ boxShadow: "inset 0 0 0 1px var(--border)" }}>
-              <QRCodeSVG value={token} size={196} level="M" fgColor="#111827" bgColor="#ffffff" key={window} className="enter" />
-            </div>
-          </div>
-          <div className="mt-4 h-1 overflow-hidden rounded-full bg-accent-track" aria-hidden="true">
-            <div
-              className="h-full bg-accent"
-              style={{ width: `${(left / QR_PERIOD) * 100}%`, transition: left === QR_PERIOD ? "none" : "width 1000ms linear" }}
-            />
-          </div>
+          <Pill>Pronto</Pill>
         </section>
 
         <dl className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-card bg-raised p-4 text-[13px]">

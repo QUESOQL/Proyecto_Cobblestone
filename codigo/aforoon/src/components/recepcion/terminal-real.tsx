@@ -1,19 +1,23 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Search, UserCheck } from "lucide-react";
+import { Camera, Search, UserCheck } from "lucide-react";
 import { formatMin } from "@/lib/data";
+import { leerAF2, verificarAF2 } from "@/lib/af2";
 import { supabase, toSantiago } from "@/lib/supabase";
 import { Avatar, Button, CapacityTrack, Field, Pill, TopBar, Wordmark, cx } from "@/components/ui";
 import type { Turno } from "./inicio-turno";
+import { LectorQR } from "./lector-qr";
 
 /*
- * Terminal real de recepción (fase 2): registra accesos en Supabase con registrar_acceso,
- * a nombre del turno abierto. Mientras no exista el QR firmado (fase 3), la persona se
- * identifica por RUT o desde la lista de quienes tienen reserva en el bloque en curso.
+ * Terminal real de recepción: registra accesos en Supabase a nombre del turno abierto.
+ * La persona se identifica con el QR firmado de su credencial (fase 3: la cámara lee el
+ * QR, este celular verifica la firma con la clave pública y acceso_qr() revisa la hora y
+ * que no se haya usado), por RUT, o desde la lista de quienes tienen reserva en el bloque.
  */
 
 type Sentido = "entrada" | "salida";
+type Metodo = "nfc" | "qr" | "rut";
 type Resultado = "aprobado" | "sin_reserva" | "no_enrolado" | "excepcion" | "sin_capacitacion" | "atrasado";
 
 interface PersonaVista {
@@ -29,6 +33,7 @@ interface VistaAcceso {
   acceso_id: string;
   resultado: Resultado;
   sentido: Sentido;
+  metodo: Metodo;
   latencia: number | null;
   persona: PersonaVista;
   destino: string | null;
@@ -71,6 +76,18 @@ function motivo(v: VistaAcceso): string {
   }
 }
 
+const METODO: Record<Metodo, string> = { qr: "QR", rut: "RUT", nfc: "Tarjeta" };
+
+/** Un QR que no sirve: el guardia ve rojo y qué pedirle a la persona. */
+const RECHAZOS: Record<string, string> = {
+  no_af2: "No es un QR de AforoON. Pídele que abra su credencial en la app.",
+  firma_invalida: "El código no es válido. Pídele que abra de nuevo su credencial.",
+  qr_desconocido: "El código no es válido. Pídele que abra de nuevo su credencial.",
+  qr_vencido: "El código venció. Pídele que muestre el QR actualizado (cambia cada 30 segundos).",
+  qr_reutilizado: "Ese código ya se usó. Pídele que muestre el QR actualizado.",
+  qr_revocado: "Esa credencial se reemplazó en otro teléfono. Pídele que abra la app en su teléfono actual.",
+};
+
 const ERRORES: Record<string, string> = {
   sin_turno: "El turno se cerró. Vuelve a ingresar tu PIN.",
   sin_permiso: "Esta cuenta no puede registrar accesos.",
@@ -85,7 +102,12 @@ export function TerminalReal({ turno, cerrarTurno }: { turno: Turno; cerrarTurno
   const [error, setError] = useState<string | null>(null);
   const [rut, setRut] = useState("");
   const [encontrada, setEncontrada] = useState<PersonaVista | null | "no">(null);
+  const [camara, setCamara] = useState(false);
+  const [avisoCamara, setAvisoCamara] = useState<string | null>(null);
+  const [rechazo, setRechazo] = useState<string | null>(null);
   const t0 = useRef(0);
+  // Claves públicas ya consultadas en este turno (una lectura repetida no vuelve a pedirla).
+  const claves = useRef(new Map<string, JsonWebKey>());
 
   const cargar = useCallback(async () => {
     const { data } = await supabase.rpc("puerta_ahora");
@@ -104,10 +126,60 @@ export function TerminalReal({ turno, cerrarTurno }: { turno: Turno; cerrarTurno
     if (codigo === "sin_turno") await cerrarTurno();
   };
 
-  const registrar = async (persona: PersonaVista) => {
-    setOcupado(persona.persona_id);
+  const limpiar = () => {
     setError(null);
     setVista(null);
+    setRechazo(null);
+  };
+
+  const abrirCamara = () => {
+    limpiar();
+    setAvisoCamara(null);
+    setCamara(true);
+  };
+
+  /** Lo que leyó la cámara: verificar la firma aquí y registrar en la base. */
+  const leerQR = async (texto: string, desde: number) => {
+    setCamara(false);
+    limpiar();
+    setOcupado("qr");
+    const rechazar = (codigo: string) => {
+      setOcupado(null);
+      if (RECHAZOS[codigo]) setRechazo(RECHAZOS[codigo]);
+      else void fallar(codigo);
+    };
+
+    const lectura = leerAF2(texto);
+    if (!lectura) return rechazar("no_af2");
+    let clave = claves.current.get(lectura.cid);
+    if (!clave) {
+      const { data, error } = await supabase.rpc("clave_qr", { p_cid: lectura.cid });
+      if (error) return rechazar(error.message);
+      clave = data as JsonWebKey;
+      claves.current.set(lectura.cid, clave);
+    }
+    if (!(await verificarAF2(clave, lectura))) return rechazar("firma_invalida");
+
+    const { data, error } = await supabase.rpc("acceso_qr", {
+      p_cid: lectura.cid,
+      p_t: lectura.t,
+      p_sentido: sentido,
+      p_latencia: Math.round((performance.now() - desde) / 100) / 10,
+    });
+    if (error) {
+      if (error.message === "qr_revocado") claves.current.delete(lectura.cid);
+      return rechazar(error.message);
+    }
+    const latencia = Math.round((performance.now() - desde) / 100) / 10;
+    setVista({ ...(data as VistaAcceso), latencia });
+    setOcupado(null);
+    void cargar();
+  };
+
+  const registrar = async (persona: PersonaVista) => {
+    setOcupado(persona.persona_id);
+    setCamara(false);
+    limpiar();
     t0.current = performance.now();
     const { data, error } = await supabase.rpc("registrar_acceso", {
       p_persona: persona.persona_id,
@@ -131,7 +203,7 @@ export function TerminalReal({ turno, cerrarTurno }: { turno: Turno; cerrarTurno
   const excepcion = async () => {
     if (!vista) return;
     setOcupado(vista.persona.persona_id);
-    const { data, error } = await supabase.rpc("permitir_excepcion", { p_persona: vista.persona.persona_id, p_metodo: "rut" });
+    const { data, error } = await supabase.rpc("permitir_excepcion", { p_persona: vista.persona.persona_id, p_metodo: vista.metodo });
     if (error) {
       setOcupado(null);
       return fallar(error.message);
@@ -196,6 +268,7 @@ export function TerminalReal({ turno, cerrarTurno }: { turno: Turno; cerrarTurno
                       onClick={() => {
                         setSentido(m);
                         setVista(null);
+                        setRechazo(null);
                       }}
                       className="toggle-option press h-11 px-5 capitalize"
                     >
@@ -211,12 +284,55 @@ export function TerminalReal({ turno, cerrarTurno }: { turno: Turno; cerrarTurno
                     {error}
                   </p>
                 )}
-                {!vista && (
+                {!vista && !rechazo && !camara && (
+                  <div className="flex flex-col items-start gap-4">
+                    <div>
+                      <h2 id="resultado-titulo" className="text-[24px] leading-[1.3]">
+                        {ocupado === "qr" ? "Validando el QR…" : ocupado ? "Registrando…" : "Escanea el QR de la credencial"}
+                      </h2>
+                      <p className="mt-1 text-[14px] text-muted">También puedes buscar por RUT o elegir de la lista. Pronto, la tarjeta en el lector.</p>
+                    </div>
+                    {avisoCamara && (
+                      <p role="status" className="text-[14px] text-[var(--pill-warning-ink)]">
+                        {avisoCamara}
+                      </p>
+                    )}
+                    {!ocupado && (
+                      <Button variant="primary" size="lg" onClick={abrirCamara}>
+                        <Camera size={18} aria-hidden="true" /> Escanear QR
+                      </Button>
+                    )}
+                  </div>
+                )}
+                {camara && (
                   <div>
-                    <h2 id="resultado-titulo" className="text-[24px] leading-[1.3]">
-                      {ocupado ? "Registrando…" : "Busca por RUT o elige de la lista"}
+                    <h2 id="resultado-titulo" className="sr-only">
+                      Leyendo QR
                     </h2>
-                    <p className="mt-1 text-[14px] text-muted">Pronto también con el QR del teléfono y la tarjeta en el lector.</p>
+                    <LectorQR
+                      onLectura={(texto, desde) => void leerQR(texto, desde)}
+                      onCerrar={(aviso) => {
+                        setCamara(false);
+                        setAvisoCamara(aviso ?? null);
+                      }}
+                    />
+                  </div>
+                )}
+                {rechazo && (
+                  <div className="enter flex flex-col gap-4">
+                    <div className="rounded-card bg-[var(--pill-negative-bg)] px-4 py-5 text-center text-[var(--pill-negative-ink)]">
+                      <p id="resultado-titulo" className="text-[26px] font-medium uppercase leading-[1.2]">
+                        Rojo · no pasa
+                      </p>
+                      <p className="num mt-1 text-[13px] opacity-80">QR no válido</p>
+                    </div>
+                    <p className="card !p-4 text-[15px]">{rechazo}</p>
+                    <div className="flex flex-wrap gap-2">
+                      <Button variant="primary" onClick={abrirCamara}>
+                        <Camera size={16} aria-hidden="true" /> Escanear de nuevo
+                      </Button>
+                      <Button onClick={() => setRechazo(null)}>Listo</Button>
+                    </div>
                   </div>
                 )}
                 {vista && copia && (
@@ -231,7 +347,7 @@ export function TerminalReal({ turno, cerrarTurno }: { turno: Turno; cerrarTurno
                         {copia.titulo}
                       </p>
                       <p className="num mt-1 text-[13px] opacity-80">
-                        {vista.sentido === "salida" ? "Salida" : "Entrada"} · RUT{vista.latencia != null ? ` · ${vista.latencia.toLocaleString("es-CL")} s` : ""}
+                        {vista.sentido === "salida" ? "Salida" : "Entrada"} · {METODO[vista.metodo]}{vista.latencia != null ? ` · ${vista.latencia.toLocaleString("es-CL")} s` : ""}
                       </p>
                     </div>
                     <div className="flex items-center gap-4">
@@ -248,6 +364,11 @@ export function TerminalReal({ turno, cerrarTurno }: { turno: Turno; cerrarTurno
                       {vista.resultado === "sin_reserva" && (
                         <Button variant="primary" onClick={() => void excepcion()} disabled={!!ocupado}>
                           Permitir como excepción
+                        </Button>
+                      )}
+                      {vista.metodo === "qr" && (
+                        <Button variant={vista.resultado === "sin_reserva" ? "secondary" : "primary"} onClick={abrirCamara}>
+                          <Camera size={16} aria-hidden="true" /> Escanear otro
                         </Button>
                       )}
                       <Button onClick={() => setVista(null)}>Listo</Button>

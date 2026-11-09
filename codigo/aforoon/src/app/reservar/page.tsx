@@ -120,7 +120,7 @@ function Reservar() {
             </div>
           )}
           <p className="text-[14px] leading-[20px] text-muted">
-            Te avisamos 30 minutos antes. En la puerta, acerca tu teléfono al lector o muestra tu QR dinámico.
+            Te avisamos 30 minutos antes. En la puerta, muestra tu QR de acceso en recepción.
           </p>
           <div className="mt-2 flex w-full flex-col gap-2.5">
             <Button size="lg" variant="accent" onClick={() => router.push("/inicio")}>

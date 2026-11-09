@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowRight, Nfc, Star } from "lucide-react";
+import { ArrowRight, QrCode, Star } from "lucide-react";
 import {
   BLOCKS,
   CURRENT_BLOCK,
@@ -130,8 +130,8 @@ export default function InicioPage() {
             <p className="num mt-3 text-[22px] font-medium leading-[28px]">{blockLabel(next.block)}</p>
             <p className="text-[13px] text-muted">{formatDay(next.day, "long")}</p>
             <div className="mt-4 flex gap-2">
-              <Link href="/registro" className="press flex h-11 flex-1 items-center justify-center gap-2 rounded-control bg-primary text-[14px] font-medium text-white">
-                <Nfc size={17} aria-hidden="true" /> Cómo entrar
+              <Link href="/credencial" className="press flex h-11 flex-1 items-center justify-center gap-2 rounded-control bg-primary text-[14px] font-medium text-white">
+                <QrCode size={17} aria-hidden="true" /> Mostrar mi QR
               </Link>
               <Button
                 onClick={() => {

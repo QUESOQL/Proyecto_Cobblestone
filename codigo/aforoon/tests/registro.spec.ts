@@ -36,18 +36,20 @@ test.describe("Pantalla 1 · Enrolamiento único y credencial", () => {
     await expectNoHorizontalScroll(page);
   });
 
-  test("crea la credencial con NFC y QR dinámico, y la sesión se mantiene", async ({ page }) => {
+  test("crea la credencial con su QR firmado, y la sesión se mantiene", async ({ page }) => {
     await enroll(page);
     await expect(page.getByRole("heading", { name: "Valentina Muñoz Rojas" })).toBeVisible();
-    await expect(page.getByText("Activa", { exact: true })).toBeVisible();
-    await expect(page.locator("section[aria-labelledby=qr-title] svg")).toBeVisible();
+    await expect(page.getByRole("img", { name: "Código QR de tu credencial" })).toBeVisible();
+    // La tarjeta NFC todavía no existe: la credencial no la promete como activa.
+    await expect(page.getByRole("heading", { name: "Tarjeta y tag de la puerta" })).toBeVisible();
+    await expect(page.getByText("Pronto", { exact: true })).toBeVisible();
     await expect(page.getByText(/Cambia en \d+ s/)).toBeVisible();
     // El RUT se muestra enmascarado: el completo nunca sale de la base.
     await expect(page.getByText(/\d{2}\.\d{3}\.\*\*\*-[\dK]/)).toBeVisible();
 
     // La sesión persiste al recargar.
     await page.reload();
-    await expect(page.getByRole("heading", { name: "Credencial NFC activa" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Tu QR de acceso" })).toBeVisible();
     await page.screenshot({ path: "tests/screenshots/1-credencial-telefono.png", fullPage: true });
 
     // Cerrar sesión vuelve a la pantalla de entrada.
