@@ -340,7 +340,7 @@ function Sidebar({ className, onNavigate, demo, usuario }: { className?: string;
     { label: "Charlas", icon: Mic },
   ];
   return (
-    <aside className={cx("min-h-full flex-col px-3 py-5 lg:sticky lg:top-[var(--bar)] lg:h-[calc(100dvh-var(--bar))]", className)}>
+    <aside className={cx("min-h-full flex-col px-3 py-5 lg:sticky lg:top-[var(--bar)] lg:h-[calc(100dvh-var(--bar))] lg:min-h-0 lg:self-start lg:overflow-y-auto", className)}>
       <div className="flex h-10 items-center justify-between rounded-control border border-border bg-surface px-3">
         <span className="min-w-0">
           <span className="block truncate text-[13px] font-medium">{HUB.name}</span>
