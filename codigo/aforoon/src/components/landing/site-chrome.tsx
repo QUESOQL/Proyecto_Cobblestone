@@ -123,7 +123,16 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-14 flex flex-col gap-2 border-t border-[#333333] pt-6 text-[12px] leading-[1.67] text-[var(--ash)] md:flex-row md:justify-between">
-          <span>Equipo Cobblestone · Proyecto Capstone Intermedio 2026, Universidad Mayor</span>
+          <span>
+            Equipo Cobblestone · Proyecto Capstone Intermedio 2026, Universidad Mayor ·{" "}
+            <Link href="/privacidad" className="underline underline-offset-2">
+              Privacidad
+            </Link>{" "}
+            ·{" "}
+            <Link href="/terminos" className="underline underline-offset-2">
+              Términos
+            </Link>
+          </span>
           <span>
             Información del Hub:{" "}
             <a href="https://providencia.cl/provi/site/artic/20191001/pags/20191001171155.html" className="underline underline-offset-2">

@@ -330,7 +330,15 @@ function DataForm() {
           <span className="font-medium">Acepto el tratamiento de mis datos.</span>{" "}
           <span className="text-muted">
             Tu RUT se guarda cifrado y solo se usa para validar tu ingreso. Recepción ve tu nombre y foto, nunca el RUT completo.
-            Puedes borrar tu cuenta cuando quieras (Ley 21.719).
+            Puedes borrar tu cuenta cuando quieras (Ley 21.719). Más detalle en la{" "}
+            <Link href="/privacidad" target="_blank" className="underline">
+              política de privacidad
+            </Link>{" "}
+            y las{" "}
+            <Link href="/terminos" target="_blank" className="underline">
+              condiciones del servicio
+            </Link>
+            .
           </span>
         </span>
       </label>

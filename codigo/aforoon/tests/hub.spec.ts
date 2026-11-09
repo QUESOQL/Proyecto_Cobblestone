@@ -33,4 +33,18 @@ test.describe("Páginas del Hub", () => {
     await page.goto("/hub/ingaming");
     await expect(page.getByRole("region", { name: "Datos clave" }).getByText("Por confirmar").first()).toBeVisible();
   });
+
+  test("las páginas de privacidad y términos están publicadas y enlazadas", async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("contentinfo").getByRole("link", { name: "Privacidad" }).click();
+    await expect(page).toHaveURL(/\/privacidad$/);
+    await expect(page.getByRole("heading", { level: 1, name: "Política de privacidad" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Cómo protegemos tu RUT/ })).toBeVisible();
+    await expectNoHorizontalScroll(page);
+
+    await page.goto("/terminos");
+    await expect(page.getByRole("heading", { level: 1, name: "Condiciones del servicio" })).toBeVisible();
+    await expect(page.getByText(/15 reservas al año/)).toBeVisible();
+    await expectNoHorizontalScroll(page);
+  });
 });
