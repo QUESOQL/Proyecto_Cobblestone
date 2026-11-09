@@ -45,7 +45,9 @@ test.describe("Máquinas con capacitación obligatoria", () => {
     await expect(page.getByRole("region", { name: "Corte láser" })).toContainText("Inscrita para el");
 
     // El equipo del Hub, en su propio navegador y con su cuenta, marca la asistencia y aprueba.
-    const staff = await browser.newPage();
+    // Contexto propio y pantalla de escritorio, como el computador del Hub.
+    const equipoCtx = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale: "es-CL", timezoneId: "America/Santiago", baseURL: "http://localhost:3000" });
+    const staff = await equipoCtx.newPage();
     await signIn(staff, await createAdmin());
     await expect(staff.getByRole("heading", { name: "Credencial NFC activa" })).toBeVisible();
     await staff.goto("/admin#capacitaciones");
@@ -56,7 +58,7 @@ test.describe("Máquinas con capacitación obligatoria", () => {
     await row.getByRole("checkbox", { name: "Asistió Valentina Muñoz Rojas" }).check();
     await row.getByRole("button", { name: "Aprobar a Valentina Muñoz Rojas" }).click();
     await expect(row).toContainText("Aprobada");
-    await staff.close();
+    await equipoCtx.close();
 
     // Ahora sí: la cortadora se puede elegir y reservar.
     await page.goto("/maquinas");

@@ -1,8 +1,7 @@
-# Backend de AforoON: plan
+# Backend de AforoON
 
-Hoy toda la app vive en el navegador (`localStorage`, `src/lib/store.ts`). Este plan la
-lleva a una base de datos real en **Supabase** (PostgreSQL + inicio de sesión + permisos
-por fila), sin cambiar las pantallas.
+La app usa una base de datos real en **Supabase** (PostgreSQL + inicio de sesión + permisos
+por fila). Las reglas viven en funciones SQL; la app solo las llama.
 
 ## Decisiones
 
@@ -47,22 +46,41 @@ error que la app ya sabe mostrar (`cupo_agotado`, `sin_capacitacion`, `cupo_anua
 - Nadie escribe tablas directamente: toda escritura pasa por las funciones de reglas.
 - Ocupación agregada (cupos por bloque) por funciones que no exponen quién reservó.
 
-## Pasos
+## Migraciones posteriores
 
-1. **Aplicar las migraciones** en Supabase (SQL Editor o conexión directa). ← siguiente
-2. **Cargar la demo** (`scripts/seed-demo.mjs`, usa la clave secreta de `.env.local`).
-3. **Conectar la app:** instalar `@supabase/supabase-js` y `@supabase/ssr`; reemplazar el
-   estado local de `store.ts` por llamadas a las funciones, pantalla por pantalla
-   (reservar → inicio → máquinas y capacitaciones → recepción → admin).
-4. **Inicio de sesión:** `/registro` con correo (enlace mágico); después Google.
-5. **Roles:** marcar cuentas de recepción y administración; proteger `/recepcion` y `/admin`.
-6. **Pruebas:** las de Playwright contra una base de prueba, más pruebas de las funciones SQL.
-7. **Publicar** en Vercel con las variables de entorno.
+Cada una se aplica pegándola completa en Supabase → **SQL Editor** → **New query** → **Run**, en orden.
+
+| Migración | Qué agrega |
+|---|---|
+| `0004_reloj_demo.sql` | Reloj de la demo (`ajustes.hora_demo` = 10:24): app y servidor ven la misma hora. |
+| `0005_borrar_personas.sql` | Borrar una persona no rompe lo que aprobó o registró (quedan sin autor). |
+| `0006_terminales_turnos.sql` | Cuenta del celular del guardia (`terminales`), PIN de turno por recepcionista, `iniciar_turno` / `cerrar_turno`; cada acceso queda con autor y terminal. |
+| `0007_recepcion_real.sql` | `buscar_por_rut` (por huella, sin exponer el RUT), `puerta_ahora` (bloque, por llegar, dentro, últimos), `vista_acceso`, `cargar_ruts_demo`; las reservas aceptan el método `rut`. |
+| `0008_panel_admin.sql` | `panel_admin()`: todas las cifras del panel en una llamada; `exportar_dia()` para el CSV. Solo rol admin. |
+| `0009_orden_accesos.sql` | `accesos.registrado_at` para ordenar los accesos aunque el reloj de la demo esté fijo; `estado_real()`: una reserva confirmada sin llegada con el bloque terminado cuenta como "no llegó". |
+
+## Cuentas del equipo
+
+Con `scripts/equipo.mjs` (usa la clave secreta de `.env.local`; corre en el computador, nunca en Vercel):
+
+- `node scripts/equipo.mjs lista` — cuentas con rol de recepción o administración, y terminales.
+- `node scripts/equipo.mjs rol <correo> admin` — da acceso al panel `/admin` (la persona debe haber entrado una vez a la app).
+- `node scripts/equipo.mjs rol <correo> recepcion` y `pin <correo> <PIN>` — recepcionista con PIN de turno.
+- `node scripts/equipo.mjs terminal "<nombre>"` — cuenta para el celular del guardia (la contraseña queda en `.env.terminal.local`).
+
+**Entrar al panel:** `/admin` pide entrar con Google o correo y solo muestra el panel a cuentas con rol admin
+(la base igual rechaza a cualquier otra). `/admin?demo=1` y `/recepcion?demo=1` muestran las versiones con datos de ejemplo.
+
+## Estado
+
+- Hecho: migraciones 0001–0009, demo cargada, app del socio conectada, inicio con Google, terminal con PIN de
+  turno, recepción real por RUT, panel de administración con datos reales.
+- Siguiente: fase 3, QR firmado en la credencial y lectura con la cámara del celular del guardia.
 
 ## Después del backend
 
+
 - Lista de espera, recordatorios, ficha con atrasos y sanciones, vencimiento de capacitaciones.
 - Pantallas del admin: Socios, Espacios y aforo, Charlas.
-- QR firmado verificable sin conexión en el terminal.
 - Descarga y borrado de datos personales (Ley 21.719).
 - CI en GitHub Actions.
