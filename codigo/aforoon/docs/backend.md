@@ -59,6 +59,7 @@ Cada una se aplica pegándola completa en Supabase → **SQL Editor** → **New 
 | `0008_panel_admin.sql` | `panel_admin()`: todas las cifras del panel en una llamada; `exportar_dia()` para el CSV. Solo rol admin. |
 | `0009_orden_accesos.sql` | `accesos.registrado_at` para ordenar los accesos aunque el reloj de la demo esté fijo; `estado_real()`: una reserva confirmada sin llegada con el bloque terminado cuenta como "no llegó". |
 | `0010_qr_firmado.sql` | QR firmado AF2: tabla `credenciales` (solo la clave pública, hasta 2 teléfonos por persona), `enrolar_credencial_qr`, `estado_credencial_qr` (hora del servidor y si el cid sigue activo), `clave_qr` y `acceso_qr` (credencial activa, ±30 s y un solo uso, en la misma transacción que el registro). |
+| `0011_lectores.sql` | Lectores ESP32 por Bluetooth: tabla `lectores` (la clave HMAC de cada uno, en Vault), `crear_lector` (solo con la clave secreta, vía `equipo.mjs lector`) y `clave_lector` para que el celular del guardia responda el desafío del lector. |
 
 ## Cuentas del equipo
 
@@ -68,16 +69,19 @@ Con `scripts/equipo.mjs` (usa la clave secreta de `.env.local`; corre en el comp
 - `node scripts/equipo.mjs rol <correo> admin` — da acceso al panel `/admin` (la persona debe haber entrado una vez a la app).
 - `node scripts/equipo.mjs rol <correo> recepcion` y `pin <correo> <PIN>` — recepcionista con PIN de turno.
 - `node scripts/equipo.mjs terminal "<nombre>"` — cuenta para el celular del guardia (la contraseña queda en `.env.terminal.local`).
+- `node scripts/equipo.mjs lector AforoON-Lector-01` — da de alta un lector ESP32 o le cambia la clave (queda en `.env.lector.local`; cómo grabarla en `firmware/lector-esp32/README.md`).
 
 **Entrar al panel:** `/admin` pide entrar con Google o correo y solo muestra el panel a cuentas con rol admin
 (la base igual rechaza a cualquier otra). `/admin?demo=1` y `/recepcion?demo=1` muestran las versiones con datos de ejemplo.
 
 ## Estado
 
-- Hecho: migraciones 0001–0010, demo cargada, app del socio conectada, inicio con Google, terminal con PIN de
+- Hecho: migraciones 0001–0011, demo cargada, app del socio conectada, inicio con Google, terminal con PIN de
   turno, recepción real por RUT, panel de administración con datos reales, QR firmado AF2 en la credencial
-  (`/registro` y `/credencial`) leído con la cámara del celular del guardia (`/recepcion` → Escanear QR).
-- Siguiente: fase 4, lector ESP32 + PN532 por Bluetooth; fase 6, validar sin internet con la copia del día.
+  (`/registro` y `/credencial`) leído con la cámara del celular del guardia (`/recepcion` → Escanear QR), firmware del lector ESP32 + PN532
+  (`firmware/lector-esp32`) y su enlace por Bluetooth con `/recepcion` (Conectar lector).
+- Siguiente: probar el lector armado; fase 5, tarjetas NTAG 424 DNA (verificar el CMAC y asignarlas a personas);
+  fase 6, validar sin internet con la copia del día.
 
 ## QR firmado (fase 3)
 

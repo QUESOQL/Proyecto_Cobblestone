@@ -23,7 +23,7 @@ export default defineConfig({
   },
   projects: [
     { name: "telefono", use: { ...devices["Pixel 7"], channel: "chrome" }, testMatch: /(registro|reservar|inicio|maquinas|qr)\.spec\.ts/ },
-    { name: "tablet", use: { viewport: { width: 1024, height: 768 }, hasTouch: true }, testMatch: /recepcion\.spec\.ts/ },
+    { name: "tablet", use: { viewport: { width: 1024, height: 768 }, hasTouch: true }, testMatch: /(recepcion|lector)\.spec\.ts/ },
     { name: "escritorio", use: { viewport: { width: 1440, height: 900 } }, testMatch: /(admin|portada|capturas|hub)\.spec\.ts/ },
   ],
   webServer: {

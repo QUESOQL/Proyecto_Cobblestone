@@ -49,3 +49,7 @@ test-results/
 
 # Originales de las ilustraciones (las versiones WebP están en public/photos)
 /assets/fotos-originales/
+
+# PlatformIO (firmware del lector)
+firmware/**/.pio/
+firmware/**/.vscode/

@@ -8,6 +8,8 @@ import { supabase, toSantiago } from "@/lib/supabase";
 import { Avatar, Button, CapacityTrack, Field, Pill, TopBar, Wordmark, cx } from "@/components/ui";
 import type { Turno } from "./inicio-turno";
 import { LectorQR } from "./lector-qr";
+import { PanelLector, useLector } from "./panel-lector";
+import { ERRORES_LECTURA, type Color, type LecturaBLE } from "@/lib/lector/protocolo-ble";
 
 /*
  * Terminal real de recepción: registra accesos en Supabase a nombre del turno abierto.
@@ -88,6 +90,12 @@ const RECHAZOS: Record<string, string> = {
   qr_revocado: "Esa credencial se reemplazó en otro teléfono. Pídele que abra la app en su teléfono actual.",
 };
 
+/** El color que se enciende en el anillo del lector para un resultado. */
+function colorDe(v: VistaAcceso): Color {
+  if (!COPIA[v.resultado].pasa) return "rojo";
+  return v.sentido === "salida" ? "salida" : "verde";
+}
+
 const ERRORES: Record<string, string> = {
   sin_turno: "El turno se cerró. Vuelve a ingresar tu PIN.",
   sin_permiso: "Esta cuenta no puede registrar accesos.",
@@ -105,6 +113,8 @@ export function TerminalReal({ turno, cerrarTurno }: { turno: Turno; cerrarTurno
   const [camara, setCamara] = useState(false);
   const [avisoCamara, setAvisoCamara] = useState<string | null>(null);
   const [rechazo, setRechazo] = useState<string | null>(null);
+  // Una tarjeta leída por el lector: hasta la fase 5 todavía no identifica a nadie.
+  const [tarjeta, setTarjeta] = useState<{ titulo: string; texto: string } | null>(null);
   const t0 = useRef(0);
   // Claves públicas ya consultadas en este turno (una lectura repetida no vuelve a pedirla).
   const claves = useRef(new Map<string, JsonWebKey>());
@@ -130,6 +140,31 @@ export function TerminalReal({ turno, cerrarTurno }: { turno: Turno; cerrarTurno
     setError(null);
     setVista(null);
     setRechazo(null);
+    setTarjeta(null);
+  };
+
+  /** Lo que llega del lector ESP32 por Bluetooth. */
+  const alLeerTarjeta = (l: LecturaBLE) => {
+    setCamara(false);
+    limpiar();
+    if (l.tipo === "error") {
+      setTarjeta({ titulo: "No se pudo leer la tarjeta", texto: ERRORES_LECTURA[l.codigo] ?? "Pídele que la acerque de nuevo y la deje quieta un segundo." });
+      lector.enviar(l.seq, "rojo");
+      return;
+    }
+    const detalle = l.tipo === "sun" ? `UID ${l.uid} · lectura n.º ${l.contador}` : `UID ${l.uid}`;
+    setTarjeta({
+      titulo: l.tipo === "sun" ? "Tarjeta AforoON leída" : "Tarjeta leída",
+      texto: `${detalle}. Las tarjetas se asignan a cada persona en la próxima etapa; por ahora identifícala con su QR o su RUT.`,
+    });
+    lector.enviar(l.seq, "ambar");
+  };
+  const lector = useLector(alLeerTarjeta);
+
+  /** Muestra el resultado en pantalla y en el anillo del lector (si está conectado). */
+  const mostrar = (v: VistaAcceso) => {
+    setVista(v);
+    lector.enviar(0, colorDe(v));
   };
 
   const abrirCamara = () => {
@@ -145,8 +180,10 @@ export function TerminalReal({ turno, cerrarTurno }: { turno: Turno; cerrarTurno
     setOcupado("qr");
     const rechazar = (codigo: string) => {
       setOcupado(null);
-      if (RECHAZOS[codigo]) setRechazo(RECHAZOS[codigo]);
-      else void fallar(codigo);
+      if (RECHAZOS[codigo]) {
+        setRechazo(RECHAZOS[codigo]);
+        lector.enviar(0, "rojo");
+      } else void fallar(codigo);
     };
 
     const lectura = leerAF2(texto);
@@ -171,7 +208,7 @@ export function TerminalReal({ turno, cerrarTurno }: { turno: Turno; cerrarTurno
       return rechazar(error.message);
     }
     const latencia = Math.round((performance.now() - desde) / 100) / 10;
-    setVista({ ...(data as VistaAcceso), latencia });
+    mostrar({ ...(data as VistaAcceso), latencia });
     setOcupado(null);
     void cargar();
   };
@@ -193,7 +230,7 @@ export function TerminalReal({ turno, cerrarTurno }: { turno: Turno; cerrarTurno
     }
     const latencia = Math.round((performance.now() - t0.current) / 100) / 10;
     const { data: v } = await supabase.rpc("vista_acceso", { p_acceso: (data as { acceso_id: string }).acceso_id });
-    setVista(v ? { ...(v as VistaAcceso), latencia } : null);
+    if (v) mostrar({ ...(v as VistaAcceso), latencia });
     setOcupado(null);
     setEncontrada(null);
     setRut("");
@@ -209,7 +246,7 @@ export function TerminalReal({ turno, cerrarTurno }: { turno: Turno; cerrarTurno
       return fallar(error.message);
     }
     const { data: v } = await supabase.rpc("vista_acceso", { p_acceso: data as string });
-    setVista(v as VistaAcceso);
+    if (v) mostrar(v as VistaAcceso);
     setOcupado(null);
     void cargar();
   };
@@ -284,13 +321,13 @@ export function TerminalReal({ turno, cerrarTurno }: { turno: Turno; cerrarTurno
                     {error}
                   </p>
                 )}
-                {!vista && !rechazo && !camara && (
+                {!vista && !rechazo && !tarjeta && !camara && (
                   <div className="flex flex-col items-start gap-4">
                     <div>
                       <h2 id="resultado-titulo" className="text-[24px] leading-[1.3]">
                         {ocupado === "qr" ? "Validando el QR…" : ocupado ? "Registrando…" : "Escanea el QR de la credencial"}
                       </h2>
-                      <p className="mt-1 text-[14px] text-muted">También puedes buscar por RUT o elegir de la lista. Pronto, la tarjeta en el lector.</p>
+                      <p className="mt-1 text-[14px] text-muted">También puedes buscar por RUT o elegir de la lista.</p>
                     </div>
                     {avisoCamara && (
                       <p role="status" className="text-[14px] text-[var(--pill-warning-ink)]">
@@ -316,6 +353,23 @@ export function TerminalReal({ turno, cerrarTurno }: { turno: Turno; cerrarTurno
                         setAvisoCamara(aviso ?? null);
                       }}
                     />
+                  </div>
+                )}
+                {tarjeta && (
+                  <div className="enter flex flex-col gap-4">
+                    <div className="rounded-card bg-[var(--pill-warning-bg)] px-4 py-5 text-center text-[var(--pill-warning-ink)]">
+                      <p id="resultado-titulo" className="text-[26px] font-medium uppercase leading-[1.2]">
+                        Ámbar · revisar
+                      </p>
+                      <p className="num mt-1 text-[13px] opacity-80">{tarjeta.titulo} · lector ESP32</p>
+                    </div>
+                    <p className="card !p-4 text-[15px]">{tarjeta.texto}</p>
+                    <div className="flex flex-wrap gap-2">
+                      <Button variant="primary" onClick={abrirCamara}>
+                        <Camera size={16} aria-hidden="true" /> Escanear QR
+                      </Button>
+                      <Button onClick={() => setTarjeta(null)}>Listo</Button>
+                    </div>
                   </div>
                 )}
                 {rechazo && (
@@ -436,6 +490,7 @@ export function TerminalReal({ turno, cerrarTurno }: { turno: Turno; cerrarTurno
 
           {/* Columna lateral */}
           <aside className="flex min-w-0 flex-col gap-6">
+            <PanelLector lector={lector} />
             <section aria-labelledby="dentro-titulo" className="rounded-card border border-border bg-surface p-5">
               <h2 id="dentro-titulo" className="text-[14px] text-muted">
                 Dentro del Hub ahora

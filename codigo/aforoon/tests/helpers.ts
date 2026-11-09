@@ -164,6 +164,17 @@ export async function credencialesDe(persona: string): Promise<{ codigo: string;
   return admin(`/rest/v1/credenciales?persona_id=eq.${persona}&select=codigo,estado,ultimo_t&order=alta_at`);
 }
 
+/**
+ * Lector BLE de prueba: lo da de alta (o le cambia la clave) y devuelve la clave, como
+ * scripts/equipo.mjs lector. desactivarLector() lo deja desactivado al terminar.
+ */
+export async function crearLector(nombre: string): Promise<string> {
+  return admin("/rest/v1/rpc/crear_lector", { method: "POST", body: JSON.stringify({ p_nombre: nombre }) });
+}
+export async function desactivarLector(nombre: string) {
+  await admin(`/rest/v1/lectores?nombre=eq.${nombre}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ activo: false }) });
+}
+
 /** Entra con la cuenta del terminal y abre el turno con el PIN. */
 export async function abrirTurno(page: Page, terminal: TestUser, pin: string) {
   await freshStart(page, "/recepcion");
