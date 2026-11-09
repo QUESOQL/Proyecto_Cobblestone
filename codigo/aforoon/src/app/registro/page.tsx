@@ -78,7 +78,11 @@ function authMessage(m: string): string {
   if (/email not confirmed/i.test(m)) return "Confirma tu correo con el enlace que te enviamos y vuelve a entrar.";
   if (/rate limit/i.test(m)) return "Demasiados intentos seguidos. Espera un momento y vuelve a intentar.";
   if (/provider is not enabled|unsupported provider/i.test(m)) return "El inicio con Google todavía no está activado. Usa tu correo por ahora.";
-  return "No pudimos entrar. Revisa tus datos e inténtalo de nuevo.";
+  // Google o Supabase rechazaron el canje del código: casi siempre es el secreto del cliente.
+  if (/exchange external code|invalid_client|unauthorized_client/i.test(m))
+    return "Google rechazó el inicio de sesión: revisa el ID y el secreto del cliente configurados en Supabase.";
+  // Mensaje original al final, para poder diagnosticar errores que no conocemos.
+  return `No pudimos entrar. Inténtalo de nuevo. (Detalle: ${m})`;
 }
 
 function Welcome() {

@@ -58,7 +58,13 @@ const [cmd, ...args] = process.argv.slice(2);
 if (cmd === "terminal") {
   const nombre = args.join(" ").trim();
   if (!nombre) throw new Error('Falta el nombre: node scripts/equipo.mjs terminal "Recepción principal"');
-  const slug = nombre.normalize("NFD").replace(/[^a-zA-Z0-9]+/g, "-").replace(/^-|-$/g, "").toLowerCase();
+  // "Recepción principal" → "recepcion-principal" (sin tildes ni símbolos).
+  const slug = nombre
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-zA-Z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+    .toLowerCase();
   const email = `terminal-${slug}@aforoon.app`;
   const password = randomBytes(18).toString("base64url");
   const u = await api("POST", "/auth/v1/admin/users", { email, password, email_confirm: true, user_metadata: { terminal: nombre } });
