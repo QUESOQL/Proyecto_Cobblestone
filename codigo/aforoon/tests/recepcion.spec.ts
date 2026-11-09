@@ -1,5 +1,16 @@
-import { expect, test } from "@playwright/test";
-import { cleanup, createRecepcionista, createTerminal, expectNoHorizontalScroll, freshStart } from "./helpers";
+import { expect, test, type Page } from "@playwright/test";
+import { cleanup, createRecepcionista, createSocio, createTerminal, expectNoHorizontalScroll, freshStart, type TestUser } from "./helpers";
+
+/** Entra con la cuenta del terminal y abre el turno con el PIN. */
+async function abrirTurno(page: Page, terminal: TestUser, pin: string) {
+  await freshStart(page, "/recepcion");
+  await page.getByLabel("Correo del terminal").fill(terminal.email);
+  await page.getByLabel("Contraseña del terminal").fill(terminal.password);
+  await page.getByRole("button", { name: "Registrar terminal" }).click();
+  await page.getByLabel("PIN").fill(pin);
+  await page.getByRole("button", { name: "Iniciar turno" }).click();
+  await expect(page.getByRole("heading", { name: "Buscar por RUT" })).toBeVisible();
+}
 
 test.describe("Pantalla 4 · Terminal de acceso", () => {
   test.afterEach(cleanup);
@@ -76,7 +87,7 @@ test.describe("Pantalla 4 · Terminal de acceso", () => {
     await page.getByLabel("PIN").fill("4821");
     await page.getByRole("button", { name: "Iniciar turno" }).click();
     await expect(page.getByText("Rocío Recepción (prueba)")).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Acerca el teléfono o muestra el QR" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Buscar por RUT" })).toBeVisible();
 
     // La sesión del terminal y el turno siguen al recargar.
     await page.reload();
@@ -86,5 +97,50 @@ test.describe("Pantalla 4 · Terminal de acceso", () => {
     await page.getByRole("button", { name: "Cerrar turno" }).click();
     await expect(page.getByRole("heading", { name: "Iniciar turno" })).toBeVisible();
     await expectNoHorizontalScroll(page);
+  });
+  test("recepción real: busca por RUT, deja pasar con reserva y permite excepciones", async ({ page }) => {
+    const terminal = await createTerminal();
+    await createRecepcionista("4821");
+    const conReserva = await createSocio("Camila Prueba Reserva", { conReserva: true });
+    const sinReserva = await createSocio("Tomás Prueba Sin Reserva");
+    await abrirTurno(page, terminal, "4821");
+
+    // Quien tiene reserva aparece en la lista del bloque.
+    await expect(page.getByRole("list", { name: "Personas por llegar" })).toContainText("Camila Prueba Reserva");
+
+    // 1. Con reserva: verde, con su destino. El RUT nunca se muestra completo.
+    await page.getByLabel("RUT", { exact: true }).fill(conReserva.rut);
+    await page.getByRole("button", { name: "Buscar RUT" }).click();
+    await page.getByRole("button", { name: "Registrar entrada", exact: true }).click();
+    await expect(page.getByText("Verde · pasa")).toBeVisible();
+    await expect(page.getByText(/^Va a Mesas/)).toBeVisible();
+    const cuerpo = conReserva.rut.slice(0, -1);
+    const dv = conReserva.rut.slice(-1);
+    await expect(page.locator("body")).toContainText(`***-${dv}`);
+    await expect(page.locator("body")).not.toContainText(`${cuerpo.slice(-3)}-${dv}`);
+    await expect(page.getByRole("list", { name: "Personas por llegar" })).not.toContainText("Camila Prueba Reserva");
+    await page.getByRole("button", { name: "Listo" }).click();
+
+    // 2. Sin reserva: rojo, y el guardia permite la excepción.
+    await page.getByLabel("RUT", { exact: true }).fill(sinReserva.rut);
+    await page.getByRole("button", { name: "Buscar RUT" }).click();
+    await page.getByRole("button", { name: "Registrar entrada", exact: true }).click();
+    await expect(page.getByText("Rojo · no pasa")).toBeVisible();
+    await expect(page.getByText(/Sin reserva en este bloque/)).toBeVisible();
+    await page.getByRole("button", { name: "Permitir como excepción" }).click();
+    await expect(page.getByText("Verde · ingreso por excepción")).toBeVisible();
+
+    // El registro muestra ambos accesos.
+    const registro = page.getByRole("heading", { name: "Registro de accesos" }).locator("..");
+    await expect(registro).toContainText("Camila Prueba Reserva");
+    await expect(registro).toContainText("Excepción");
+
+    // 3. Un RUT sin persona.
+    await page.getByLabel("RUT", { exact: true }).fill("9.876.543-3");
+    await page.getByRole("button", { name: "Buscar RUT" }).click();
+    await expect(page.getByText("No hay nadie registrado con ese RUT.")).toBeVisible();
+
+    await expectNoHorizontalScroll(page);
+    await page.screenshot({ path: "tests/screenshots/4-terminal-real.png", fullPage: true });
   });
 });

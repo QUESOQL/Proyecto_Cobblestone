@@ -114,12 +114,44 @@ export async function approveTraining(user: TestUser, sessionId: string) {
   });
 }
 
+/** Socios sin cuenta creados por la prueba (como los de la demo); cleanup() los borra. */
+const socios: string[] = [];
+
+/**
+ * Socio verificado con RUT buscable (cifrado y con huella, vía cargar_ruts_demo) y, si se
+ * pide, una reserva en el bloque en curso según el reloj de la demo.
+ */
+export async function createSocio(nombre: string, { conReserva = false } = {}): Promise<{ id: string; rut: string }> {
+  const rut = randomRut();
+  const [p] = await admin("/rest/v1/personas?select=id", {
+    method: "POST",
+    headers: { Prefer: "return=representation" },
+    body: JSON.stringify({ nombre, rut_mascara: "1.***", segmento: "Emprendimiento", verificada: true }),
+  });
+  socios.push(p.id);
+  await admin("/rest/v1/rpc/cargar_ruts_demo", { method: "POST", body: JSON.stringify({ p_datos: [{ id: p.id, rut }] }) });
+  if (conReserva) {
+    const reloj = await admin("/rest/v1/rpc/reloj", { method: "POST", body: "{}" });
+    const bloques: { id: string; inicio: string; fin: string }[] = await admin("/rest/v1/bloques?select=id,inicio,fin");
+    const min = (t: string) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3, 5));
+    const bloque = bloques.find((b) => min(b.inicio) <= reloj.minuto && reloj.minuto < min(b.fin));
+    if (!bloque) throw new Error("El reloj de la demo está fuera de los bloques");
+    await admin("/rest/v1/reservas", {
+      method: "POST",
+      headers: { Prefer: "return=minimal" },
+      body: JSON.stringify({ persona_id: p.id, unidad_id: "mesas", dia: reloj.dia, bloque_id: bloque.id }),
+    });
+  }
+  return { id: p.id, rut };
+}
+
 /**
  * Borra las cuentas que creó la prueba. Borrar a la persona arrastra sus reservas,
  * inscripciones y accesos. En orden de creación: primero quien se inscribió, después quien
  * la aprobó. Cada archivo de pruebas la registra con test.afterEach(cleanup).
  */
 export async function cleanup() {
+  while (socios.length) await admin(`/rest/v1/personas?id=eq.${socios.shift()}`, { method: "DELETE" });
   while (created.length) {
     const id = created.shift()!;
     await admin(`/rest/v1/personas?user_id=eq.${id}`, { method: "DELETE" });

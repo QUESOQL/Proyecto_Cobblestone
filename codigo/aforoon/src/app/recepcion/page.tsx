@@ -24,6 +24,7 @@ import { ME_ID, allReservations, insideNow, isLate, trainingStatus, useAforo, us
 import { BASE_MACHINE_BOOKINGS, machineById, trainingKind, type MachineBooking } from "@/lib/lab";
 import { Avatar, Button, CapacityTrack, Pill, TopBar, Wordmark, cx } from "@/components/ui";
 import { InicioTurno, type Turno } from "@/components/recepcion/inicio-turno";
+import { TerminalReal } from "@/components/recepcion/terminal-real";
 
 type Mode = "entrada" | "salida";
 type Person = { id: string; name: string; rut: string; hue: number; segment: string; verified: boolean };
@@ -53,7 +54,14 @@ const RESULT_COPY: Record<AccessEvent["result"], { led: "ok" | "no"; title: stri
 };
 
 export default function RecepcionPage() {
-  return <InicioTurno>{(turno, cerrarTurno) => <Terminal turno={turno} cerrarTurno={cerrarTurno} />}</InicioTurno>;
+  // ?demo=1 muestra la terminal simulada (datos de ejemplo locales); un turno real registra en Supabase.
+  return (
+    <InicioTurno>
+      {(turno, cerrarTurno) =>
+        turno.demo ? <Terminal turno={turno} cerrarTurno={cerrarTurno} /> : <TerminalReal turno={turno} cerrarTurno={cerrarTurno} />
+      }
+    </InicioTurno>
+  );
 }
 
 /** El terminal (todavía con lecturas simuladas; la conexión real de lecturas viene en la fase 2). */

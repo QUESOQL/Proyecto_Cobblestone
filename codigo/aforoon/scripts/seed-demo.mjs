@@ -165,6 +165,18 @@ await insert(
   })),
 );
 
+// RUT de ejemplo cifrados y con huella (0007), para que recepción pueda buscarlos por RUT.
+if (DRY) console.log("  ruts de ejemplo: (sin escribir)");
+else {
+  const res = await fetch(`${URL}/rest/v1/rpc/cargar_ruts_demo`, {
+    method: "POST",
+    headers: { apikey: KEY, Authorization: `Bearer ${KEY}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ p_datos: data.MEMBERS.map((m) => ({ id: memberUuid(m.id), rut: m.rut })) }),
+  });
+  if (res.ok) console.log(`  ruts de ejemplo: ${await res.json()}`);
+  else console.log(`  ruts de ejemplo: no se cargaron (¿falta aplicar la migración 0007?) ${res.status}`);
+}
+
 await insert(
   "reservas",
   data.BASE_RESERVATIONS.map((r) => ({
