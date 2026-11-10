@@ -6,8 +6,8 @@ import { ImageSlot } from "./image-slot";
 import { SLOTS } from "./slots";
 
 /*
- * "AforoON para cada uno": la tira de pestañas de Uber, con el único color de la interfaz
- * (el teal pálido) marcando la pestaña activa.
+ * "AforoON para cada uno": la tira de pestañas de Uber
+ * (la activa en gris; bajo el puntero, un marco negro).
  */
 const ROLES = [
   {

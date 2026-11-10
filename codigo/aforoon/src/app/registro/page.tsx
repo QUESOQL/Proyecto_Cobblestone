@@ -116,7 +116,7 @@ function Welcome() {
   return (
     <div className="enter flex flex-col">
       <div className="relative -mx-4 mb-5 h-[220px] overflow-hidden">
-        <Image src="/hub/fachada.jpg" alt="Entrada del Edificio Cowork del Hub Providencia" fill priority sizes="440px" className="object-cover object-[50%_40%]" />
+        <Image src="/photos/Fachada.webp" alt="Ilustración del Edificio Cowork del Hub Providencia" fill priority sizes="440px" className="object-cover object-[50%_22%]" />
       </div>
       <h1 className="text-[28px] leading-[1.22]">Entra al Hub sin llenar el formulario</h1>
       <p className="mt-2 text-[15px] leading-[22px] text-muted">

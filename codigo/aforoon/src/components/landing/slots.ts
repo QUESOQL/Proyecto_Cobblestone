@@ -18,9 +18,9 @@ import {
 
 /*
  * Todos los espacios de imagen de la landing, en un solo lugar.
- * Las imágenes definitivas serán ilustraciones planas al estilo de Uber (color solo dentro
- * de la ilustración). Mientras no existan, cada espacio muestra una foto de referencia
- * (`ref`) o un panel "Imagen pendiente" con la idea de lo que va ahí.
+ * Las imágenes son ilustraciones planas (color solo dentro de la ilustración), en
+ * public/photos. Un espacio sin imagen muestra una foto de referencia (`ref`) o un panel
+ * "Imagen pendiente" con la idea de lo que va ahí.
  *
  * Para poner la imagen final: guárdala en public/landing/<id>.png (o .jpg) y escribe esa
  * ruta en `src`. `src` gana sobre `ref`.
@@ -47,7 +47,7 @@ export const SLOTS = {
     idea: "Una vecina acerca el teléfono al lector de la puerta del Hub, en Los Jesuitas 881, y la luz se pone verde.",
     alt: "Fachada del Hub Providencia en Los Jesuitas 881",
     icon: Smartphone,
-    ref: "/hub/fachada.jpg",
+    src: "/photos/Fachada.webp",
   }),
 
   // Lab881, en el orden en que aparecen al hacer scroll.
@@ -93,21 +93,21 @@ export const SLOTS = {
     idea: "El cowork general lleno: mesas largas, notebooks y un perro durmiendo bajo una mesa (el espacio es pet friendly).",
     alt: "Cowork general del Hub Providencia",
     icon: Users,
-    ref: "/hub/cowork.jpg",
+    src: "/photos/Cowork.webp",
   }),
   cardOficinas: slot({
     id: "card-oficinas",
     idea: "Una oficina cerrada con un equipo reunido alrededor de la mesa redonda.",
     alt: "Oficina del Edificio Cowork",
     icon: Users,
-    ref: "/hub/oficina.jpg",
+    src: "/photos/Oficina.webp",
   }),
   cardCharlas: slot({
     id: "card-charlas",
     idea: "La zona de charlas con el público sentado frente a las pantallas.",
     alt: "Charla en el Hub con el público frente al escenario",
     icon: Presentation,
-    ref: "/hub/charlas.jpg",
+    src: "/photos/Charlas.webp",
   }),
   cardLab: slot({
     id: "card-lab",
@@ -128,7 +128,7 @@ export const SLOTS = {
     idea: "El Castillito Sermini, sede del Departamento de Empleo, con sus almenas.",
     alt: "Edificio Empleo, el Castillito Sermini",
     icon: Users,
-    ref: "/hub/empleo.jpg",
+    src: "/photos/Empleo.webp",
   }),
 
   // Cowork textil.
@@ -176,25 +176,28 @@ export const SLOTS = {
     idea: "La zona infantil y la zona de descanso del cowork general, con una familia trabajando cerca.",
     alt: "Zona infantil del cowork general",
     icon: Users,
+    src: "/photos/CoworkZonaInfantil.webp",
   }),
   oficinasSet: slot({
     id: "oficinas-set",
     idea: "Dos personas grabando un podcast en el set audiovisual, con luces y micrófonos.",
     alt: "Set audiovisual del Hub",
     icon: Monitor,
-    ref: "/hub/set.jpg",
+    src: "/photos/SetAudiovisual.webp",
   }),
   charlasTaller: slot({
     id: "charlas-taller",
     idea: "Un taller de emprendimiento en marcha: una capacitadora frente a la pantalla y vecinos tomando notas.",
     alt: "Taller en la zona de charlas",
     icon: Presentation,
+    src: "/photos/ZonaCharlasTaller.webp",
   }),
   empleoAsesoria: slot({
     id: "empleo-asesoria",
     idea: "Una asesora del Departamento de Empleo revisando un CV junto a una vecina, en una mesa del Castillito Sermini.",
     alt: "Asesoría de empleo en el Castillito Sermini",
     icon: Users,
+    src: "/photos/AsesoriaEmpleo.webp",
   }),
 
   // "También en el Hub".

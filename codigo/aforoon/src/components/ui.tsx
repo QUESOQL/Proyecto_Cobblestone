@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ComponentProps, ReactNode } from "react";
@@ -12,17 +13,11 @@ export function cx(...c: (string | false | null | undefined)[]) {
 /* ------------------------------------------------------------------ marca */
 
 /**
- * La marca de AforoON: un anillo de aforo con el punto "ON" encendido.
- * Toma el color del texto, así sirve igual sobre la barra negra y sobre blanco.
+ * El logotipo de AforoON (la A blanca sobre negro, public/icons/marca.png). Es el mismo de
+ * la pestaña del navegador y del ícono en la pantalla de inicio del teléfono.
  */
-export function Mark({ size = 20 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
-      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeOpacity="0.35" strokeWidth="3" />
-      <path d="M12 3a9 9 0 0 1 8.2 12.7" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-      <circle cx="12" cy="12" r="3.2" fill="currentColor" />
-    </svg>
-  );
+export function Mark({ size = 24 }: { size?: number }) {
+  return <Image src="/icons/marca.png" alt="" aria-hidden="true" width={size} height={size} className="flex-none rounded-[22%]" />;
 }
 
 export function Wordmark({ sub }: { sub?: string }) {
@@ -142,7 +137,7 @@ export function Field({ label, hint, children, className }: { label: string; hin
   );
 }
 
-/** Tira de pestañas: la activa en teal pálido, el único color de la interfaz. */
+/** Tira de pestañas: la activa en gris; bajo el puntero, un marco negro. */
 export function Tabs<T extends string>({
   items,
   value,
@@ -235,7 +230,7 @@ export function MobileShell({
                   key={href}
                   href={href}
                   aria-current={active ? "page" : undefined}
-                  className={cx("press flex h-14 flex-col items-center justify-center gap-1 text-[12px]", active ? "text-text" : "text-muted")}
+                  className={cx("press hover-raise flex h-14 flex-col items-center justify-center gap-1 text-[12px]", active ? "text-text" : "text-muted")}
                 >
                   <Icon size={20} strokeWidth={active ? 2 : 1.6} aria-hidden="true" />
                   <span className={active ? "font-medium" : undefined}>{label}</span>

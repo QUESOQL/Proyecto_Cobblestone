@@ -186,28 +186,28 @@ export const ZONES: Zone[] = [
     name: "Centro de mesas",
     building: "Edificio Cowork · piso 1",
     description: "Mesas compartidas con enchufe y wifi. El puesto no se asigna: llegas y te sientas.",
-    photo: "/hub/cowork.jpg",
+    photo: "/photos/Cowork.webp",
   },
   {
     id: "oficinas",
     name: "Oficinas y set",
     building: "Edificio Cowork · piso 1",
     description: "Cuatro oficinas cerradas y el set audiovisual, de uso exclusivo por bloque.",
-    photo: "/hub/oficina.jpg",
+    photo: "/photos/Oficina.webp",
   },
   {
     id: "salas",
     name: "Edificio Empleo",
     building: "Departamento de Empleo",
     description: "Salas de capacitación y sala de entrevistas con capacitadores.",
-    photo: "/hub/empleo.jpg",
+    photo: "/photos/Empleo.webp",
   },
   {
     id: "charlas",
     name: "Zona de charlas",
     building: "Edificio Cowork · piso 1",
     description: "El cupo se toma al inscribirse en una charla.",
-    photo: "/hub/charlas.jpg",
+    photo: "/photos/Charlas.webp",
   },
 ];
 

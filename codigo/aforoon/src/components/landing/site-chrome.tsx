@@ -49,7 +49,7 @@ export function SiteNav() {
     <header className="topbar">
       <nav aria-label="Principal" className="lp-wrap flex h-[var(--bar)] items-center justify-between gap-4">
         <Link href="/" className="flex items-center gap-2 text-[20px] font-bold">
-          <Mark />
+          <Mark size={28} />
           AforoON
         </Link>
         <ul className="hidden items-center gap-1 md:flex">
@@ -94,7 +94,7 @@ export function SiteFooter() {
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="flex items-center gap-2 text-[20px] font-bold">
-              <Mark /> AforoON
+              <Mark size={28} /> AforoON
             </p>
             <p className="mt-3 max-w-[40ch] text-[14px] leading-[1.5] text-[var(--ash)]">
               Hub Providencia · Los Jesuitas 881. Lunes a jueves de 8:30 a 18:00, viernes hasta las 17:00. hub@providencia.cl

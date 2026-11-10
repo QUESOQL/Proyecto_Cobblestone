@@ -4,8 +4,9 @@
  * Sistema de diseño de AforoON — estilo "quiosco de transporte" de Uber (DESIGN.md).
  * Lienzo blanco, bandas negras (barra superior, barras fijas, pie), tarjetas gris niebla,
  * bordes de 1 px y ninguna sombra de elevación. La interfaz no tiene color: el negro hace
- * de acción y de selección. Las únicas excepciones son el teal pálido de la pestaña activa
- * y los colores de estado (verde pasa, rojo no pasa), que cargan información.
+ * de acción y de selección, y los grises marcan lo elegido y lo que está bajo el puntero.
+ * La única excepción son los colores de estado (verde pasa, rojo no pasa), que cargan
+ * información.
  * Radios binarios: 8 px para todo; píldora solo en el botón de la barra y los selectores.
  */
 :root {
@@ -18,7 +19,8 @@
   --ash: #afafaf;
   --slate: #5e5e5e;
   --hair: #e2e2e2;
-  --teal: #9dcdd6;
+  /* Un gris más que la niebla: lo elegido y lo que está bajo el puntero. */
+  --mist-strong: #ebebeb;
   --bar: 56px;
 
   /* Roles que usan las pantallas. */
@@ -165,7 +167,7 @@ h3 {
 /* Hover solo en dispositivos con puntero fino, para no dejar estados pegados en el teléfono. */
 @media (hover: hover) and (pointer: fine) {
   .hover-raise:hover {
-    background-color: var(--raised);
+    background-color: var(--mist-strong);
   }
 }
 
@@ -253,7 +255,8 @@ h3 {
   text-underline-offset: 3px;
 }
 
-/* Tarjeta gris niebla: sin borde, sin sombra. */
+/* Tarjeta gris niebla: sin borde, sin sombra. Si toda la tarjeta es un enlace (card-link),
+ * se oscurece un poco bajo el puntero y se hunde al apretarla. */
 .card {
   border-radius: 8px;
   background: var(--mist);
@@ -264,8 +267,18 @@ h3 {
     padding: 24px;
   }
 }
+.card-link {
+  transition: background-color 150ms ease, transform 140ms var(--ease-out);
+}
+.card-link:active {
+  transform: scale(0.99);
+}
+.card-link .link-more {
+  text-decoration-thickness: 1px;
+  transition: text-decoration-thickness 150ms ease;
+}
 
-/* Pestañas: el teal pálido marca la activa (el único color de la interfaz). */
+/* Pestañas: la activa en gris; bajo el puntero, un marco negro. */
 .tabs {
   display: flex;
   overflow-x: auto;
@@ -281,7 +294,8 @@ h3 {
   transition: background-color 150ms ease;
 }
 .tab[aria-selected="true"] {
-  background: var(--teal);
+  background: var(--hair);
+  font-weight: 500;
 }
 @media (min-width: 768px) {
   .tab {
@@ -350,6 +364,37 @@ h3 {
   .btn--invert:hover:not(:disabled),
   .btn--quiet:hover:not(:disabled) {
     background: var(--hair);
+  }
+  .tab:hover:not([aria-selected="true"]) {
+    box-shadow: inset 0 0 0 1px var(--black);
+  }
+  .toggle-option:hover:not([aria-selected="true"]):not([aria-checked="true"]) {
+    box-shadow: inset 0 0 0 1px var(--black);
+  }
+  .card-link:hover {
+    background: var(--mist-strong);
+  }
+
+  /* App del socio: todo lo que se aprieta avisa que está bajo el puntero. */
+  .press.border:hover:not(:disabled):not([aria-checked="true"]) {
+    border-color: var(--black);
+  }
+  .press.bg-raised:hover:not(:disabled) {
+    background-color: var(--mist-strong);
+  }
+  .press.bg-black:hover:not(:disabled),
+  .press.bg-primary:hover:not(:disabled),
+  .press.bg-accent:hover:not(:disabled) {
+    background-color: var(--charcoal);
+  }
+  /* Filas de una lista (espacios, máquinas): un fondo gris que sobresale un poco del texto. */
+  .press[role="radio"]:not(.border):hover {
+    background-color: var(--mist-strong);
+    box-shadow: 0 0 0 6px var(--mist-strong);
+    border-radius: 4px;
+  }
+  .card-link:hover .link-more {
+    text-decoration-thickness: 2px;
   }
   .bottom-bar:hover {
     background: #1a1a1a;

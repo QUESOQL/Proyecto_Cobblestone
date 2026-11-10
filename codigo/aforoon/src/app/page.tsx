@@ -154,15 +154,16 @@ export default function Landing() {
           </p>
           <ul className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {HUB.map((c, i) => (
-              <li key={c.title} className="card lp-card lp-rise" style={{ ["--i" as string]: (i % 3) + 1 }}>
-                <div className="flex flex-col">
-                  <h3 className="text-[16px] font-medium">{c.title}</h3>
-                  <p className="mt-1 flex-1 text-[14px] leading-[1.5] text-slate">{c.text}</p>
-                  <Link href={c.link.href} className="link-more mt-3 self-start">
-                    {c.link.label}
-                  </Link>
-                </div>
-                <ImageSlot slot={c.slot} ratio="1/1" compact sizes="104px" className="self-start" />
+              <li key={c.title} className="lp-rise flex" style={{ ["--i" as string]: (i % 3) + 1 }}>
+                {/* Toda la tarjeta lleva a la página del espacio. */}
+                <Link href={c.link.href} className="card card-link lp-card w-full">
+                  <div className="flex flex-col">
+                    <h3 className="text-[16px] font-medium">{c.title}</h3>
+                    <p className="mt-1 flex-1 text-[14px] leading-[1.5] text-slate">{c.text}</p>
+                    <span className="link-more mt-3 self-start">{c.link.label}</span>
+                  </div>
+                  <ImageSlot slot={c.slot} ratio="1/1" compact sizes="104px" className="self-start" />
+                </Link>
               </li>
             ))}
           </ul>
@@ -228,12 +229,12 @@ export default function Landing() {
           </h2>
           <ul className="mt-10 grid gap-8 md:grid-cols-3 md:gap-4">
             {MORE.map((m, i) => (
-              <li key={m.title} className="lp-rise" style={{ ["--i" as string]: i + 1 }}>
-                <ImageSlot slot={m.slot} ratio="4/3" sizes="(min-width: 768px) 380px, 100vw" />
-                <h3 className="mt-4 text-[18px] font-medium">{m.title}</h3>
-                <p className="mt-1 text-[14px] leading-[1.5] text-slate">{m.text}</p>
-                <Link href={m.href} className="link-more mt-2 inline-block" aria-label={`Más sobre ${m.title}`}>
-                  Más información
+              <li key={m.title} className="lp-rise flex" style={{ ["--i" as string]: i + 1 }}>
+                <Link href={m.href} className="card card-link flex w-full flex-col !p-3 md:!p-4">
+                  <ImageSlot slot={m.slot} ratio="4/3" sizes="(min-width: 768px) 380px, 100vw" />
+                  <h3 className="mt-4 px-1 text-[18px] font-medium">{m.title}</h3>
+                  <p className="mt-1 flex-1 px-1 text-[14px] leading-[1.5] text-slate">{m.text}</p>
+                  <span className="link-more mt-3 mb-1 self-start px-1">Más información</span>
                 </Link>
               </li>
             ))}
