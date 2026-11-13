@@ -110,6 +110,7 @@ En la carpeta [`/sesiones`](./sesiones) se encuentra el registro detallado de ca
 * 📄 **[Sesión 07: Pitch de Avance y Presentación de Prototipo Visual](./sesiones/Sesion7.md)** — Sesión online donde se expuso el pitch breve del proyecto y se presentaron las vistas preliminares de la interfaz de la aplicación.
 * 📄 **[Sesion 08: Cierre de Unidad 2, Pitch y Entrega de Informe](./sesiones/Sesion8.md)** — Exposición oral del avance a cargo de Diego Ayala, entrega del informe escrito según plantilla oficial y revisión del repositorio.
 * 📄 **[Sesión 09: Retroalimentación Unidad 2, Planificación y Dinámica Grupal](./sesiones/Sesion9.md)** — Entrega de notas y feedback de las presentaciones, revisión del calendario de noviembre y desafío práctico de construcción de torre de fideos.
+* 📄 **[Sesión 10: Taller Práctico de Prototipado y Avance de Hardware](./sesiones/Sesion10.md)** — Sesión presencial de trabajo intensivo con computadores y materiales, logrando el prototipo casi finalizado a falta de la integración definitiva de la tecnología NFC.
 
 ---
 
