@@ -108,6 +108,7 @@ En la carpeta [`/sesiones`](./sesiones) se encuentra el registro detallado de ca
 * 📄 **[Sesión 05: Coordinación de Entrega 2 y Contingencia](./sesiones/Sesion5.md)** — Definición de lineamientos para la Entrega 2 y plan de acción frente al paro universitario.
 * 📄 **[Sesión 06: Visita Técnica Coordinada al Hub Providencia](./sesiones/Sesion6.md)** — Salida a terreno organizada por el profesor para toda la sección durante el paro, enfocada en evaluar accesos, iluminación y flujos en ambos edificios.
 * 📄 **[Sesión 07: Pitch de Avance y Presentación de Prototipo Visual](./sesiones/Sesion7.md)** — Sesión online donde se expuso el pitch breve del proyecto y se presentaron las vistas preliminares de la interfaz de la aplicación.
+* 📄 **[Sesion 08: Cierre de Unidad 2, Pitch y Entrega de Informe](./sesiones/Sesion8.md)** — Exposición oral del avance a cargo de Diego Ayala, entrega del informe escrito según plantilla oficial y revisión del repositorio.
 
 ---
 
