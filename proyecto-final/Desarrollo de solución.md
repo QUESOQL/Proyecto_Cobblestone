@@ -1,49 +1,53 @@
-# 📢 Pitch de Avance y Estado de Desarrollo — Equipo Cobblestone
+# 📢 Estado de Desarrollo de la Solución y Preparación Feria Capstone — Equipo Cobblestone
 
 **Asignatura:** Proyecto Capstone Intermedio  
 **Equipo 04:** Cobblestone (Fernando Alarcón, Diego Ayala, Víctor Santana, Luciano Torretti)  
 **Desafío:** 01 — Edificios Inteligentes: Caracterización de Usuarios del Hub Providencia  
-**Enfoque:** Preparación para la **Entrega 2 (Solución y Desarrollo Conceptual)**
+**Enfoque Actual:** Unidad 3 — Prototipado Funcional (Integración final de tecnología NFC y preparación para Feria Capstone del 3 de diciembre)  
 
 ---
 
-## 📌 1. ¿En qué estamos? (Punto de la Propuesta)
+## 📌 1. ¿En qué estamos? (Estado Actual del Proyecto)
 
-Tras completar la fase de diagnóstico (salida a terreno en los edificios de Cowork y Empleo del Hub Providencia) y elaborar el **Estado del Arte y Benchmarking**, hemos definido y cerrado la propuesta conceptual de nuestra solución.
+Tras completar con éxito las fases de diagnóstico en terreno (edificios Cowork y Empleo del Hub Providencia) y aprobar el **Cierre de Unidad 2** (con la entrega del informe técnico, el benchmarking de tres alternativas y la presentación oral del pitch), el equipo se encuentra en la recta final de la **Unidad 3 (Ejecución y Prototipado)**.
 
----
-
-## 💡 2. Nuestra Solución
-
-Proponemos un **sistema integrado de caracterización rápida y control de acceso** que reemplaza el formulario QR repetitivo actual por un flujo ágil y seguro:
-
-* **Doble opción de acceso:** Registro mediante **credenciales digitales (NFC)** en smartphones para usuarios frecuentes y **código QR dinámico** como opción alternativa.
-* **Enrolamiento único:** El usuario ingresa sus datos (Nombre, RUT, Ocupación, Contacto, Motivo) una sola vez a través de una aplicación móvil.
-* **Dispositivo físico (Hardware de captura):** Terminal en puerta equipado con sensor NFC, cámara, pantalla de previsualización e indicadores LED (verde para acceso validado, rojo para denegado).
-* **Base de Datos y Dashboard Administrativo:** Registro en tiempo real de entradas, salidas y ocupación de espacios para entregar métricas concretas a la Municipalidad.
+Actualmente, **la arquitectura base del prototipo está construida y operativa** (microcontrolador ESP32, API REST, base de datos relacional y vistas del Frontend), restando únicamente la **integración y calibración definitiva del módulo lector NFC** para ejecutar las pruebas de estrés y demostración en vivo.
 
 ---
 
-## 🚀 3. Avances Concretos y Trabajo Actual (Enfoque Entrega 2)
+## 💡 2. Nuestra Solución (Arquitectura Validada)
 
-El equipo está priorizando los entregables conceptuales, de diseño y arquitectura de la solución:
+Implementamos un **sistema integrado de caracterización rápida y control de acceso** que reemplaza el formulario QR estático repetitivo por un flujo ágil, seguro y medible en menos de **7 segundos**:
 
-1. **Definición de la Arquitectura Mínima:**
-   * **Entradas:** ID por persona mediante Smartphone.
-   * **Procesamiento:** Mapeo del flujo de validación mediante NFC o QR.
-   * **Salidas:** Definición de la lógica para indicadores LED (Verde/Rojo) y alertas de estado.
-   * **Conectividad:** Modelo de transmisión de eventos vía Wi-Fi/Internet hacia la base de datos.
-
-2. **Diseño y Simulación del Frontend:**
-   * Creación de los wireframes/prototipos de pantalla para simular la **aplicación móvil** (lo que ve el usuario al enrolarse y seleccionar espacios) para validar la experiencia UI/UX antes de programar.
-
-3. **Modelado de Datos:**
-   * Estructuración del esquema de la base de datos relacional para capturar las variables clave solicitadas por la contraparte (Nombre, Motivo, Hora de entrada y salida).
+- **Doble opción de acceso:** Validación rápida mediante **credenciales digitales (NFC)** en smartphones para usuarios frecuentes, respaldada por **código QR dinámico** como alternativa universal.
+- **Enrolamiento único:** El usuario ingresa sus datos (Nombre, RUT, Ocupación, Contacto y Motivo de visita) una sola vez mediante la WebApp, obteniendo su pase digital.
+- **Terminal físico (Hardware de captura):** Dispositivo en punto de acceso basado en **ESP32**, equipado con lector NFC (PN532), cámara/lectura QR, pantalla de estado e indicadores LED (verde para acceso validado, rojo para denegado).
+- **Base de Datos y Dashboard Municipal:** Registro en tiempo real de entradas, salidas, frecuencias de retorno y ocupación de espacios para entregar métricas estratégicas a la administración del Hub Providencia.
 
 ---
 
-## 🎯 4. Lo que falta para completar la Entrega 2 (Próxima semana)
+## 🚀 3. Avances Concretos Logrados (Prototipo PoC)
 
-* **Finalizar prototipo visual:** Consolidar los bocetos interactivos/wireframes de la aplicación móvil (Frontend).
-* **Documentar diagramas:** Diagrama de bloques de la arquitectura técnica y diagrama de flujo del usuario al ingresar.
-* **Ajustar el Pitch:** Ensayar la presentación breve de la solución para responder al feedback del profesor en la entrega.
+El equipo ha consolidado los componentes principales de la prueba de concepto (PoC) durante las sesiones prácticas de noviembre:
+
+1. **Hardware Base Ensamblado (Terminal ESP32):**
+   * Circuito físico montado con microcontrolador ESP32, protoboard, alimentación regulada e indicadores LED de respuesta visual operativos.
+   * Firmware base cargado y probado para comunicación vía Wi-Fi mediante peticiones HTTP hacia el servidor.
+
+2. **Backend y Base de Datos Operativos:**
+   * Esquema relacional implementado con las tablas de `Usuarios`, `RegistrosAcceso` y `Espacios`.
+   * Endpoints de la API RESTful activos para recibir marcajes, validar credenciales y almacenar el historial de eventos.
+
+3. **Frontend y Dashboard Administrativo:**
+   * Interfaz de usuario (WebApp) desarrollada para el flujo de enrolamiento rápido, selección de espacio y despliegue de credencial digital.
+   * Estructura visual del Dashboard lista para desplegar métricas clave (afluencia total, horarios punta y distribución por perfil).
+
+---
+
+## 🎯 4. Pasos Finales hacia la Feria Capstone (3 de Diciembre)
+
+Con el prototipo casi finalizado, las tareas inmediatas para cerrar el desarrollo son:
+
+- **Integración y calibración NFC:** Acoplar físicamente y programar la lectura del módulo NFC (PN532) en el terminal ESP32.
+- **Pruebas de integración y estrés:** Validar de extremo a extremo el flujo completo (`Credencial NFC/QR` $\rightarrow$ `ESP32` $\rightarrow$ `API/BD` $\rightarrow$ `Dashboard`), verificando el cumplimiento de nuestros KPIs: **latencia $< 7\text{ segundos}$** y **tasa de éxito $\ge 95\%$**.
+- **Preparación de Pitch Final e Informe:** Consolidar los resultados reales de las pruebas para la exposición en la **Feria Capstone (3 de diciembre)** y el **Informe Final ante comisión (7 al 12 de diciembre)**.
