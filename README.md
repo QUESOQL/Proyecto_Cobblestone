@@ -28,9 +28,9 @@ Puedes revisar el detalle de la arquitectura técnica, el análisis comparativo 
 
 | Integrante | Carrera o Especialidad | Rol en el Proyecto | Usuario de GitHub |
 | :--- | :--- | :--- | :--- |
-| **Fernando Alarcón** | Ingeniería Civil Industrial | Análisis de datos de categorización, informes y estructuración | *QUESOQL* |
-| **Diego Ayala** | Ingeniería Civil Electrónica | Evaluación de hardware, configurador de tecnología y pitch | *(Usuario de Diego)* |
-| **Víctor Santana** | Ingeniería Civil Informática | Desarrollador Backend, base de datos y seguridad | *(Usuario de Víctor)* |
+| **Fernando Alarcón** | Ingeniería Civil Industrial | Análisis de datos de categorización, informes y estructuración | *claude* |
+| **Diego Ayala** | Ingeniería Civil Electrónica | Evaluación de hardware, configurador de tecnología y pitch | *Diego-Ayala-UM* |
+| **Víctor Santana** | Ingeniería Civil Informática | Desarrollador Backend, base de datos y seguridad | *QUESOQL* |
 | **Luciano Torretti** | Ingeniería Civil Informática | Desarrollador Frontend e interfaz de interacción humano-máquina | *LucianoTorretti* |
 
 ---
