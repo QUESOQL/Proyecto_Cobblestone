@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import "./landing.css";
 import { DoorRace } from "@/components/landing/door-race";
-import { HeroForm } from "@/components/landing/hero-form";
+import { AforoAhora } from "@/components/landing/aforo-ahora";
 import { ImageSlot } from "@/components/landing/image-slot";
 import { LabScroll } from "@/components/landing/lab-scroll";
 import { Reveal } from "@/components/landing/reveal";
@@ -101,7 +101,8 @@ export default function Landing() {
 
       <main>
         {/* ------------------------------------------------------------ portada */}
-        <section aria-labelledby="hero-title" className="lp-wrap grid gap-10 pb-16 pt-10 md:grid-cols-2 md:items-center md:gap-16 md:pb-24 md:pt-16">
+        {/* Teléfono: título, fachada y aforo en una columna. Desde 768 px: título junto a la fachada y el aforo a todo el ancho debajo. */}
+        <section aria-labelledby="hero-title" className="lp-wrap grid gap-8 pb-16 pt-10 md:grid-cols-2 md:items-center md:gap-x-10 md:gap-y-10 md:pb-24 md:pt-16 lg:gap-x-16">
           <div className="flex flex-col gap-6">
             <p className="lp-place">
               Los Jesuitas 881, Providencia <span className="lp-place-note">Gratis</span>
@@ -112,9 +113,11 @@ export default function Landing() {
             <p className="lp-sub max-w-[44ch]">
               AforoON es la credencial del Hub: te registras una vez, reservas viendo el cupo real y en la puerta solo acercas el teléfono.
             </p>
-            <HeroForm />
           </div>
-          <ImageSlot slot={SLOTS.hero} ratio="1/1" priority sizes="(min-width: 768px) 560px, 100vw" />
+          <ImageSlot slot={SLOTS.hero} ratio="1/1" priority sizes="(min-width: 768px) 50vw, 100vw" className="mx-auto w-full max-w-[560px] md:max-w-none" />
+          <div className="md:col-span-2">
+            <AforoAhora />
+          </div>
         </section>
 
         {/* ------------------------------------------------------------ Lab881 */}

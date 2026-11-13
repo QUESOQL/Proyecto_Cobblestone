@@ -70,7 +70,7 @@ test.describe("Fase 4 · Lector de tarjetas por Bluetooth", () => {
       await page.getByLabel("RUT", { exact: true }).fill(socio.rut);
       await page.getByRole("button", { name: "Buscar RUT" }).click();
       await page.getByRole("button", { name: "Registrar entrada", exact: true }).click();
-      await expect(page.getByText("Verde · pasa")).toBeVisible();
+      await expect(page.getByText("Habilitado · pasa")).toBeVisible();
       await expect.poll(resultados).toContainEqual([0, 1, 20]);
       await page.screenshot({ path: "tests/screenshots/7-terminal-lector-tablet.png", fullPage: true });
 

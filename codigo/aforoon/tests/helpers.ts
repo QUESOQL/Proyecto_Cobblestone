@@ -134,6 +134,37 @@ export async function createSocio(nombre: string, { conReserva = false } = {}): 
   return { id: p.id, rut };
 }
 
+/** Inscribe a una persona en la próxima sesión de capacitación y devuelve el id de la sesión. */
+export async function inscribirEnProximaSesion(persona: string, sesion?: string): Promise<string> {
+  if (!sesion) {
+    const reloj = await admin("/rest/v1/rpc/reloj", { method: "POST", body: "{}" });
+    const [s] = await admin(`/rest/v1/sesiones_capacitacion?select=id&dia=gte.${reloj.dia}&order=dia,inicio&limit=1`);
+    sesion = s.id as string;
+  }
+  await admin("/rest/v1/inscripciones_capacitacion", {
+    method: "POST",
+    headers: { Prefer: "return=minimal" },
+    body: JSON.stringify({ sesion_id: sesion, persona_id: persona }),
+  });
+  return sesion!;
+}
+
+type Inscripcion = { sesion_id: string; persona_id: string; asistio: boolean; aprobada: boolean; aprobada_at: string | null; aprobada_por: string | null; vence_at: string | null };
+
+/** Cómo están las inscripciones de una sesión (para dejarlas igual después de una prueba). */
+export async function fotoInscripciones(sesion: string): Promise<Inscripcion[]> {
+  return admin(`/rest/v1/inscripciones_capacitacion?sesion_id=eq.${sesion}&select=sesion_id,persona_id,asistio,aprobada,aprobada_at,aprobada_por,vence_at`);
+}
+export async function restaurarInscripciones(filas: Inscripcion[]) {
+  for (const f of filas) {
+    await admin(`/rest/v1/inscripciones_capacitacion?sesion_id=eq.${f.sesion_id}&persona_id=eq.${f.persona_id}`, {
+      method: "PATCH",
+      headers: { Prefer: "return=minimal" },
+      body: JSON.stringify({ asistio: f.asistio, aprobada: f.aprobada, aprobada_at: f.aprobada_at, aprobada_por: f.aprobada_por, vence_at: f.vence_at }),
+    });
+  }
+}
+
 /** Reserva en el centro de mesas en el bloque en curso según el reloj de la demo. */
 export async function reservarBloqueActual(persona: string) {
   const reloj = await admin("/rest/v1/rpc/reloj", { method: "POST", body: "{}" });

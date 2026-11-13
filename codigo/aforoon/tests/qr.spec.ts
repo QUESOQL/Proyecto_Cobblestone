@@ -80,7 +80,7 @@ test.describe("Fase 3 · QR firmado y cámara del guardia", () => {
       await abrirTurno(guardia, terminal, "4821");
 
       await guardia.getByRole("button", { name: "Escanear QR" }).click();
-      await expect(guardia.getByText("Verde · pasa")).toBeVisible({ timeout: 15_000 });
+      await expect(guardia.getByText("Habilitado · pasa")).toBeVisible({ timeout: 15_000 });
       await expect(guardia.getByText("Ignacia Prueba QR").first()).toBeVisible();
       await expect(guardia.getByText(/^Va a Mesas/)).toBeVisible();
       const detalle = await guardia.getByText(/Entrada · QR · [\d,]+ s/).innerText();
@@ -91,7 +91,7 @@ test.describe("Fase 3 · QR firmado y cámara del guardia", () => {
 
       // 4. El mismo código otra vez (una captura de pantalla): rojo.
       await guardia.getByRole("button", { name: "Escanear otro" }).click();
-      await expect(guardia.getByText("Rojo · no pasa")).toBeVisible({ timeout: 15_000 });
+      await expect(guardia.getByText("Denegado · no pasa")).toBeVisible({ timeout: 15_000 });
       await expect(guardia.getByText(/Ese código ya se usó|El código venció/)).toBeVisible();
 
       // 5. Un código con la firma alterada: rojo, aunque el cid exista.

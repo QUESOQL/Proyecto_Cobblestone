@@ -16,7 +16,7 @@ test.describe("Pantalla 4 · Terminal de acceso", () => {
     // 1. Socio con reserva: verde.
     await queue.getByRole("button", { name: /Acercar NFC/ }).first().click();
     await expect(page.getByText("Acceso validado")).toBeVisible();
-    await expect(page.getByText("Verde · pasa")).toBeVisible();
+    await expect(page.getByText("Habilitado · pasa")).toBeVisible();
     const latency = await page.getByText(/\d+(,\d)? s · NFC/).innerText();
     expect(parseFloat(latency.replace(",", "."))).toBeLessThan(7);
     await expect(page.getByRole("heading", { name: "Dentro del Hub ahora" }).locator("..")).toContainText(`${insideBefore + 1}`);
@@ -27,10 +27,10 @@ test.describe("Pantalla 4 · Terminal de acceso", () => {
     let sawDenied = false;
     for (let i = 0; i < n && !sawDenied; i++) {
       await queue.getByRole("button", { name: /Leer QR/ }).nth(Math.min(i, (await queue.getByRole("button", { name: /Leer QR/ }).count()) - 1)).click();
-      await expect(page.getByText(/Verde · pasa|Rojo · no pasa/)).toBeVisible();
+      await expect(page.getByText(/Habilitado · pasa|Denegado · no pasa/)).toBeVisible();
       if (await page.getByText("Sin reserva para este bloque").isVisible()) {
         sawDenied = true;
-        await expect(page.getByText("Rojo · no pasa")).toBeVisible();
+        await expect(page.getByText("Denegado · no pasa")).toBeVisible();
         await page.getByRole("button", { name: "Permitir como excepción" }).click();
         await expect(page.getByText("Ingreso por excepción", { exact: true })).toBeVisible();
       }
@@ -41,7 +41,7 @@ test.describe("Pantalla 4 · Terminal de acceso", () => {
     // 3. Sin conexión: la lectura queda en cola y se sincroniza al volver.
     await page.getByRole("button", { name: "En línea" }).click();
     await queue.getByRole("button", { name: /Acercar NFC/ }).first().click();
-    await expect(page.getByText(/Verde · pasa|Rojo · no pasa/)).toBeVisible();
+    await expect(page.getByText(/Habilitado · pasa|Denegado · no pasa/)).toBeVisible();
     await expect(page.getByRole("button", { name: /Sin conexión · 1 en cola/ })).toBeVisible();
     await expect(page.getByText("En cola para sincronizar")).toBeVisible();
     await page.getByRole("button", { name: /Sin conexión/ }).click();
@@ -101,7 +101,7 @@ test.describe("Pantalla 4 · Terminal de acceso", () => {
     await page.getByLabel("RUT", { exact: true }).fill(conReserva.rut);
     await page.getByRole("button", { name: "Buscar RUT" }).click();
     await page.getByRole("button", { name: "Registrar entrada", exact: true }).click();
-    await expect(page.getByText("Verde · pasa")).toBeVisible();
+    await expect(page.getByText("Habilitado · pasa")).toBeVisible();
     await expect(page.getByText(/^Va a Mesas/)).toBeVisible();
     const cuerpo = conReserva.rut.slice(0, -1);
     const dv = conReserva.rut.slice(-1);
@@ -114,10 +114,10 @@ test.describe("Pantalla 4 · Terminal de acceso", () => {
     await page.getByLabel("RUT", { exact: true }).fill(sinReserva.rut);
     await page.getByRole("button", { name: "Buscar RUT" }).click();
     await page.getByRole("button", { name: "Registrar entrada", exact: true }).click();
-    await expect(page.getByText("Rojo · no pasa")).toBeVisible();
+    await expect(page.getByText("Denegado · no pasa")).toBeVisible();
     await expect(page.getByText(/Sin reserva en este bloque/)).toBeVisible();
     await page.getByRole("button", { name: "Permitir como excepción" }).click();
-    await expect(page.getByText("Verde · ingreso por excepción")).toBeVisible();
+    await expect(page.getByText("Habilitado · ingreso por excepción")).toBeVisible();
 
     // El registro muestra ambos accesos.
     const registro = page.getByRole("heading", { name: "Registro de accesos" }).locator("..");

@@ -350,7 +350,7 @@ function ResultPanel({ reading, result, offline, onException }: { reading: Perso
           />
         </div>
         <p className="text-[13px] font-medium md:text-center">
-          {led === "ok" ? "Verde · pasa" : led === "no" ? "Rojo · no pasa" : led === "reading" ? "Leyendo…" : "Esperando credencial"}
+          {led === "ok" ? "Habilitado · pasa" : led === "no" ? "Denegado · no pasa" : led === "reading" ? "Leyendo…" : "Esperando credencial"}
         </p>
       </div>
 

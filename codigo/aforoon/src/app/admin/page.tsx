@@ -11,6 +11,7 @@ import { BarChart, BarList } from "@/components/charts";
 import { Avatar, Pill, Tabs, TopBar, Wordmark, cx } from "@/components/ui";
 import { TrainingAdmin } from "@/components/training-admin";
 import { IngresoAdmin } from "@/components/admin/ingreso-admin";
+import { EspaciosMasUsados, MaquinasMasUsadas, useUsoRecursos } from "@/components/admin/uso-recursos";
 
 const ZONE_TABS: { id: ZoneId; label: string }[] = [
   { id: "mesas", label: "Centro de mesas" },
@@ -92,6 +93,7 @@ function Panel({ datos, demo = false, exportar, usuario, aviso }: { datos: Panel
   const mesasLlenas = datos.zonas.mesas.bars.filter((b) => b.value >= datos.zonas.mesas.cap).map((b) => b.label);
   const peak = datos.horas.reduce((a, b) => (b.value > a.value ? b : a), datos.horas[0]);
   const segTotal = datos.segmentos.reduce((a, r) => a + r.value, 0);
+  const uso = useUsoRecursos(datos.dia, datos.minuto);
 
   const exportCsv = async () => {
     const rows = [COLUMNAS_CSV, ...(await exportar())];
@@ -171,51 +173,90 @@ function Panel({ datos, demo = false, exportar, usuario, aviso }: { datos: Panel
             ))}
           </section>
 
-          <div className="mt-6 grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_384px]">
-            {/* Gráfico principal */}
-            <section aria-labelledby="occ-title" className="min-w-0 rounded-card border border-border bg-surface p-5">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
+          {/* Gráficos. La barra de zona queda fija mientras se recorren y se suelta al salir de ellos. */}
+          <div className="mt-6">
+            <div className="sticky top-[var(--bar)] z-20 -mx-4 mb-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-border bg-ground/95 px-4 py-3 backdrop-blur md:-mx-8 md:px-8">
+              <div className="min-w-0">
+                <p className="text-[12px] font-medium tracking-[0.06em] text-muted uppercase">Zona</p>
+                <p className="text-[13px] text-muted">
+                  <span className="font-medium text-text">{zoneById(zone).name}</span> · {zoneFinding}
+                </p>
+              </div>
+              <Tabs items={ZONE_TABS} value={zone} onChange={setZone} label="Zona" className="max-w-full" />
+            </div>
+
+            {/* Ocupación de la zona y sus espacios más usados, a la misma altura. */}
+            <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
+              <section aria-labelledby="occ-title" className="min-w-0 rounded-card border border-border bg-surface p-5">
+                <div className="flex flex-wrap items-baseline justify-between gap-3">
                   <h2 id="occ-title" className="text-[20px] font-normal">
                     Ocupación por bloque · hoy
                   </h2>
-                  <p className="mt-0.5 text-[13px] text-muted">{zoneFinding}</p>
+                  <div className="flex gap-4 text-[12px] text-muted">
+                    <span className="flex items-center gap-1.5">
+                      <span className="size-2 bg-accent" aria-hidden="true" /> Bloque iniciado
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="size-2 bg-accent-track" aria-hidden="true" /> Reservado a futuro
+                    </span>
+                  </div>
                 </div>
-                <Tabs items={ZONE_TABS} value={zone} onChange={setZone} label="Zona" className="max-w-full" />
-              </div>
-              <div className="mt-3 flex gap-4 text-[12px] text-muted">
-                <span className="flex items-center gap-1.5">
-                  <span className="size-2 bg-accent" aria-hidden="true" /> Bloque iniciado
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="size-2 bg-accent-track" aria-hidden="true" /> Reservado a futuro
-                </span>
-              </div>
-              <div className="mt-2">
-                <BarChart
-                  key={zone}
-                  bars={zoneBars}
-                  height={340}
-                  reference={{ value: zCap, label: `Aforo ${zCap}` }}
-                  ariaLabel={`Ocupación por bloque hoy en ${zoneById(zone).name}`}
-                />
-              </div>
-            </section>
-
-            {/* Riel: quiénes vienen + incidencias */}
-            <div className="flex min-w-0 flex-col gap-6">
-              <section aria-labelledby="seg-title" className="rounded-card border border-border bg-surface p-5">
-                <div className="flex items-baseline justify-between">
-                  <h2 id="seg-title" className="text-[18px] font-normal">
-                    Quiénes vienen
-                  </h2>
-                  <span className="num text-[12px] text-muted">{segTotal} socios · 7 días</span>
-                </div>
-                <div className="mt-2">
-                  <BarList rows={datos.segmentos} total={segTotal} />
+                <div className="mt-3">
+                  <BarChart
+                    key={zone}
+                    bars={zoneBars}
+                    height={300}
+                    reference={{ value: zCap, label: `Aforo ${zCap}` }}
+                    ariaLabel={`Ocupación por bloque hoy en ${zoneById(zone).name}`}
+                  />
                 </div>
               </section>
+              <EspaciosMasUsados zona={zone} nombreZona={zoneById(zone).name} uso={uso} />
+            </div>
 
+            {/* Cuándo y quiénes: tres columnas. */}
+            <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
+              <section aria-labelledby="week-title" className="min-w-0 rounded-card border border-border bg-surface p-5">
+                <h2 id="week-title" className="text-[18px] font-normal">
+                  Entradas por día
+                </h2>
+                <p className="num mt-0.5 text-[13px] text-muted">
+                  Hoy van {datos.entradasHoy}; el {formatDay(datos.semanaPasada.dia, "long").toLowerCase()} hubo {datos.semanaPasada.n}. Domingo cerrado.
+                </p>
+                <div className="mt-3">
+                  <BarChart bars={datos.semana} height={180} ariaLabel="Entradas por día, últimos 7 días" />
+                </div>
+              </section>
+              <section aria-labelledby="peak-title" className="min-w-0 rounded-card border border-border bg-surface p-5">
+                <h2 id="peak-title" className="text-[18px] font-normal">
+                  Horas punta
+                </h2>
+                <p className="num mt-0.5 text-[13px] text-muted">
+                  Promedio de entradas por hora, últimos {datos.diasPasados} días abiertos.
+                  {peak.value > 0 ? ` La punta es de ${peak.label}:00 a ${peak.label}:59.` : " Aún no hay entradas registradas."}
+                </p>
+                <div className="mt-3">
+                  <BarChart bars={datos.horas} height={180} ariaLabel="Entradas promedio por hora" />
+                </div>
+              </section>
+              <div className="lg:col-span-2 xl:col-span-1">
+                <section aria-labelledby="seg-title" className="rounded-card border border-border bg-surface p-5">
+                  <div className="flex items-baseline justify-between">
+                    <h2 id="seg-title" className="text-[18px] font-normal">
+                      Quiénes vienen
+                    </h2>
+                    <span className="num text-[12px] text-muted">{segTotal} socios · 7 días</span>
+                  </div>
+                  <div className="mt-2">
+                    <BarList rows={datos.segmentos} total={segTotal} />
+                  </div>
+                </section>
+              </div>
+            </div>
+
+            {/* Máquinas y lo pendiente del día. */}
+            <div className="mt-6 grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
+              <MaquinasMasUsadas uso={uso} />
               <section aria-labelledby="inc-title">
                 <h2 id="inc-title" className="mb-2 text-[18px] font-normal">
                   Para revisar hoy
@@ -241,33 +282,6 @@ function Panel({ datos, demo = false, exportar, usuario, aviso }: { datos: Panel
                 </Link>
               </section>
             </div>
-          </div>
-
-          {/* Semana y horas punta, a igual ancho */}
-          <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <section aria-labelledby="week-title" className="min-w-0 rounded-card border border-border bg-surface p-5">
-              <h2 id="week-title" className="text-[18px] font-normal">
-                Entradas por día
-              </h2>
-              <p className="num mt-0.5 text-[13px] text-muted">
-                Hoy van {datos.entradasHoy}; el {formatDay(datos.semanaPasada.dia, "long").toLowerCase()} hubo {datos.semanaPasada.n}. Domingo cerrado.
-              </p>
-              <div className="mt-3">
-                <BarChart bars={datos.semana} height={180} ariaLabel="Entradas por día, últimos 7 días" />
-              </div>
-            </section>
-            <section aria-labelledby="peak-title" className="min-w-0 rounded-card border border-border bg-surface p-5">
-              <h2 id="peak-title" className="text-[18px] font-normal">
-                Horas punta
-              </h2>
-              <p className="num mt-0.5 text-[13px] text-muted">
-                Promedio de entradas por hora, últimos {datos.diasPasados} días abiertos.
-                {peak.value > 0 ? ` La punta es de ${peak.label}:00 a ${peak.label}:59.` : " Aún no hay entradas registradas."}
-              </p>
-              <div className="mt-3">
-                <BarChart bars={datos.horas} height={180} ariaLabel="Entradas promedio por hora" />
-              </div>
-            </section>
           </div>
 
           {/* Charlas */}

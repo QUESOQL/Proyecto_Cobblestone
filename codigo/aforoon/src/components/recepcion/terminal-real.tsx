@@ -52,12 +52,12 @@ interface Puerta {
 }
 
 const COPIA: Record<Resultado, { titulo: string; pasa: boolean; tono: "positive" | "negative" | "warning" | "accent" }> = {
-  aprobado: { titulo: "Verde · pasa", pasa: true, tono: "positive" },
-  excepcion: { titulo: "Verde · ingreso por excepción", pasa: true, tono: "accent" },
-  sin_reserva: { titulo: "Rojo · no pasa", pasa: false, tono: "negative" },
-  no_enrolado: { titulo: "Rojo · no pasa", pasa: false, tono: "warning" },
-  sin_capacitacion: { titulo: "Rojo · no pasa", pasa: false, tono: "negative" },
-  atrasado: { titulo: "Rojo · no pasa", pasa: false, tono: "negative" },
+  aprobado: { titulo: "Habilitado · pasa", pasa: true, tono: "positive" },
+  excepcion: { titulo: "Habilitado · ingreso por excepción", pasa: true, tono: "accent" },
+  sin_reserva: { titulo: "Denegado · no pasa", pasa: false, tono: "negative" },
+  no_enrolado: { titulo: "Denegado · no pasa", pasa: false, tono: "warning" },
+  sin_capacitacion: { titulo: "Denegado · no pasa", pasa: false, tono: "negative" },
+  atrasado: { titulo: "Denegado · no pasa", pasa: false, tono: "negative" },
 };
 
 /** Lo que el guardia necesita saber, en una frase. */
@@ -376,7 +376,7 @@ export function TerminalReal({ turno, cerrarTurno }: { turno: Turno; cerrarTurno
                   <div className="enter flex flex-col gap-4">
                     <div className="rounded-card bg-[var(--pill-negative-bg)] px-4 py-5 text-center text-[var(--pill-negative-ink)]">
                       <p id="resultado-titulo" className="text-[26px] font-medium uppercase leading-[1.2]">
-                        Rojo · no pasa
+                        Denegado · no pasa
                       </p>
                       <p className="num mt-1 text-[13px] opacity-80">QR no válido</p>
                     </div>

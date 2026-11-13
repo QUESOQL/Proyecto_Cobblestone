@@ -168,9 +168,23 @@ export function Tabs<T extends string>({
  * La pista de aforo: el elemento propio de AforoON. La pista es el tinte, lo ocupado es
  * el azul pleno. Cuando se llena, todo pasa a gris: ya no es una opción.
  */
-export function CapacityTrack({ used, capacity, className, label }: { used: number; capacity: number; className?: string; label?: string }) {
-  const full = used >= capacity;
+export function CapacityTrack({
+  used,
+  capacity,
+  className,
+  label,
+  fullTone = "inactive",
+}: {
+  used: number;
+  capacity: number;
+  className?: string;
+  label?: string;
+  /** Lleno: gris ("ya no es una opción", al reservar) o rojo ("está lleno ahora", en la portada). */
+  fullTone?: "inactive" | "negative";
+}) {
+  const full = capacity > 0 && used >= capacity;
   const pct = capacity === 0 ? 0 : Math.min(100, (used / capacity) * 100);
+  const lleno = fullTone === "negative" ? "bg-negative" : "bg-[var(--inactive)]";
   return (
     <div
       role="meter"
@@ -181,7 +195,7 @@ export function CapacityTrack({ used, capacity, className, label }: { used: numb
       className={cx("h-1.5 w-full overflow-hidden rounded-full", full ? "bg-raised" : "bg-accent-track", className)}
     >
       <div
-        className={cx("h-full rounded-full", full ? "bg-[var(--inactive)]" : "bg-accent")}
+        className={cx("h-full rounded-full", full ? lleno : "bg-accent")}
         style={{ width: `${pct}%`, transition: "width 300ms var(--ease-out)" }}
       />
     </div>

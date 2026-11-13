@@ -54,7 +54,9 @@ test.describe("Máquinas con capacitación obligatoria", () => {
     const admin = staff.getByRole("region", { name: "Capacitaciones" });
     await admin.getByRole("tab", { name: /^Corte láser/ }).first().click();
     const row = admin.getByRole("row", { name: /Valentina Muñoz Rojas/ });
-    await expect(row.getByRole("button", { name: "Aprobar a Valentina Muñoz Rojas" })).toBeDisabled();
+    // Sin asistencia no se puede aprobar.
+    await expect(row).toContainText("Falta la asistencia");
+    await expect(row.getByRole("button", { name: "Aprobar a Valentina Muñoz Rojas" })).toHaveCount(0);
     await row.getByRole("checkbox", { name: "Asistió Valentina Muñoz Rojas" }).check();
     await row.getByRole("button", { name: "Aprobar a Valentina Muñoz Rojas" }).click();
     await expect(row).toContainText("Aprobada");
