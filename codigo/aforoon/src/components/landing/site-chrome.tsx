@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Mark } from "@/components/ui";
+import { BotonHover } from "@/components/boton-hover";
 
 /*
  * Barra superior, pie y barra fija inferior de las páginas públicas (landing y /hub/*).
@@ -78,9 +79,7 @@ export function SiteNav() {
           <Link href="/admin" className="topbar-link hidden md:inline-flex">
             Administración
           </Link>
-          <Link href="/registro" className="pill-btn">
-            Entrar
-          </Link>
+          <BotonHover href="/registro">Entrar</BotonHover>
         </div>
       </nav>
     </header>
