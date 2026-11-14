@@ -86,9 +86,9 @@ function CuentaTerminal({ persona, onListo }: { persona?: string; onListo: () =>
   };
 
   return (
-    <form onSubmit={entrar} className="flex flex-col gap-4" aria-label="Registrar este celular como terminal">
+    <form onSubmit={entrar} className="flex flex-col gap-4" aria-label="Registrar este teléfono como terminal">
       <Smartphone size={36} strokeWidth={1.5} aria-hidden="true" />
-      <h1 className="text-[28px] leading-[1.22]">Registrar este celular como terminal</h1>
+      <h1 className="text-[28px] leading-[1.22]">Registrar este teléfono como terminal</h1>
       <p className="text-[14px] text-muted">
         Se hace una sola vez. Usa la cuenta del terminal que te entregó la administración del Hub; después basta el PIN de cada turno.
       </p>

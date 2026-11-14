@@ -73,7 +73,7 @@ export const HUB_PAGES: HubPage[] = [
         "15 reservas al año por persona: 6 de 1 a 2 h, 4 de 3 a 5 h, 3 de 6 a 9 h y 2 de 10 a 18 h.",
         "Hasta 18 horas por trabajo. Las impresiones largas pueden seguir de noche.",
         "Si llegas 20 minutos tarde, la reserva se cancela y queda anotado en tu ficha.",
-        "Atrasos repetidos: advertencia, amonestación, suspensión de un mes y suspensión definitiva.",
+        "Retrasos repetidos: advertencia, amonestación, suspensión de un mes y suspensión definitiva.",
       ],
     },
     faq: [

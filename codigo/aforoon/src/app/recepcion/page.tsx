@@ -50,7 +50,7 @@ const RESULT_COPY: Record<AccessEvent["result"], { led: "ok" | "no"; title: stri
   sin_reserva: { led: "no", title: "Sin reserva para este bloque", tone: "negative" },
   no_enrolado: { led: "no", title: "Credencial no enrolada", tone: "warning" },
   sin_capacitacion: { led: "no", title: "Capacitación no vigente", tone: "negative" },
-  atrasado: { led: "no", title: "Reserva cancelada por atraso", tone: "negative" },
+  atrasado: { led: "no", title: "Reserva cancelada por retraso", tone: "negative" },
 };
 
 export default function RecepcionPage() {
@@ -431,7 +431,7 @@ function ResultPanel({ reading, result, offline, onException }: { reading: Perso
               <p className="text-[13px] text-muted">La capacitación de esta máquina ya no está aprobada. Puede inscribirse de nuevo desde la app.</p>
             )}
             {result.event.result === "atrasado" && (
-              <p className="text-[13px] text-muted">Llegó más de 20 minutos tarde: la reserva se canceló y el atraso queda en su ficha.</p>
+              <p className="text-[13px] text-muted">Llegó más de 20 minutos tarde: la reserva se canceló y el retraso queda en su ficha.</p>
             )}
             {result.event.result === "no_enrolado" && (
               <div className="flex flex-wrap items-center gap-3">

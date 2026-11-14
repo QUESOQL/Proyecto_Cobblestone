@@ -69,7 +69,7 @@ export default function CredencialPage() {
               <QrCredencial persona={profile.id} size={272} />
             </div>
             <p className="mt-4 flex items-center gap-2 text-[13px] text-muted">
-              <Sun size={16} aria-hidden="true" /> Sube el brillo para que la cámara lo lea al tiro.
+              <Sun size={16} aria-hidden="true" /> Sube el brillo para que la cámara lo lea de inmediato.
             </p>
           </>
         )}

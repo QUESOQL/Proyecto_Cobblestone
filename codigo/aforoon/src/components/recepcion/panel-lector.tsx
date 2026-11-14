@@ -74,7 +74,7 @@ export function PanelLector({ lector }: { lector: ReturnType<typeof useLector> }
         </p>
       )}
       {!disponible ? (
-        <p className="mt-3 text-[13px] text-muted">Este navegador no tiene Bluetooth. Usa Chrome en el celular Android del guardia.</p>
+        <p className="mt-3 text-[13px] text-muted">Este navegador no tiene Bluetooth. Usa Chrome en el teléfono Android del guardia.</p>
       ) : estado === "conectado" ? (
         <Button className="mt-3" onClick={() => lector.desconectar()}>
           Desconectar

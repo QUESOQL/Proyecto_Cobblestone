@@ -108,6 +108,60 @@
   font-weight: 500;
 }
 
+/* Con el fondo de partículas: los bloques de texto con título y descripción llevan un panel
+ * gris niebla translúcido (las partículas se ven un poco a través). El panel calza con la
+ * grilla: mismo borde que las tarjetas y el ancho o el alto de lo que tiene al lado o debajo.
+ * Los títulos sueltos van sin panel. */
+.lp.lp--particulas,
+.lp--particulas #lab {
+  background: transparent;
+}
+.lp--particulas {
+  --panel: rgb(246 246 246 / 0.72);
+  --panel-fuerte: rgb(232 232 232 / 0.8);
+}
+.lp--particulas .lp-texto {
+  border-radius: 8px;
+  background: var(--panel);
+  padding: 20px;
+}
+/* Paneles de título a todo el ancho: el texto también usa todo el ancho del panel. */
+.lp--particulas .lp-texto--ancho > * {
+  max-width: none;
+}
+/* Todo lo que ya era gris niebla queda igual de translúcido. */
+.lp--particulas :is(.card, .lp-ahora, .lp-dato, .lp-slot, .lp-banda) {
+  background: var(--panel);
+}
+@media (hover: hover) {
+  .lp--particulas .card-link:hover {
+    background: var(--panel-fuerte);
+  }
+}
+@media (min-width: 768px) {
+  .lp--particulas .lp-texto {
+    padding: 24px;
+  }
+  /* Tan alto como la imagen de al lado, con el texto centrado. */
+  .lp--particulas .lp-texto--alto {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-self: stretch;
+  }
+  .lp--particulas .lp-texto--alto > .btn {
+    align-self: flex-start;
+  }
+  /* Preguntas: el título ocupa solo su ancho y las respuestas quedan cerca. */
+  .lp--particulas .lp-faq {
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: 48px;
+  }
+  .lp--particulas .lp-lab-sticky {
+    background: transparent;
+  }
+}
+
 /* "Ahora en el Hub": el aforo del bloque en curso, en una tarjeta gris niebla. */
 .lp-ahora {
   border-radius: 8px;

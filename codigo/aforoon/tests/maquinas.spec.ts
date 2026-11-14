@@ -2,6 +2,18 @@ import { expect, test, type Page } from "@playwright/test";
 import { cleanup, approveTraining, createAdmin, enroll, expectNoHorizontalScroll, signIn } from "./helpers";
 
 /** Elige la primera hora de inicio libre y confirma la reserva. */
+/** Sube el contador de duración hasta las horas pedidas. */
+async function setHours(page: Page, hours: number) {
+  const grupo = page.getByRole("group", { name: "Duración del trabajo" });
+  const texto = `${hours} ${hours === 1 ? "hora" : "horas"}`;
+  for (let i = 0; i < 18; i++) {
+    const actual = parseInt((await grupo.getByRole("status").textContent()) ?? "", 10);
+    if (actual === hours) break;
+    await grupo.getByRole("button", { name: actual < hours ? "Una hora más" : "Una hora menos" }).click();
+  }
+  await expect(grupo.getByRole("status")).toHaveText(texto);
+}
+
 async function bookFirstFreeSlot(page: Page) {
   const slots = page.getByRole("list", { name: "Horas de inicio" });
   // Si el día elegido no tiene horas libres, prueba los siguientes días abiertos.
@@ -87,19 +99,20 @@ test.describe("Máquinas con capacitación obligatoria", () => {
 
     for (const machine of ["Impresora 3D 1", "Impresora 3D 2"]) {
       await page.getByRole("radio", { name: new RegExp(machine) }).click();
-      await page.getByLabel("Duración del trabajo").selectOption("10");
+      await setHours(page, 10);
       await bookFirstFreeSlot(page);
       await page.getByRole("button", { name: "Reservar otra máquina" }).click();
     }
 
-    // Sin cupos en el tramo largo: la duración aparece deshabilitada antes de elegir hora.
+    // Sin cupos en el tramo largo: la duración lo avisa y no deja elegir hora.
     await expect(quota.getByRole("listitem").filter({ hasText: "10 a 18 h" })).toContainText("0");
     await page.getByRole("radio", { name: /Impresora 3D rápida/ }).click();
-    const select = page.getByLabel("Duración del trabajo");
-    await expect(select.locator('option[value="10"]')).toHaveAttribute("disabled", "");
-    await expect(select.locator('option[value="18"]')).toHaveAttribute("disabled", "");
-    await expect(select.locator('option[value="9"]')).not.toHaveAttribute("disabled");
-    await expect(select.locator('option[value="10"]')).toHaveText(/sin cupos este año/);
+    const duracion = page.getByRole("group", { name: "Duración del trabajo" });
+    await setHours(page, 9);
+    await expect(duracion).not.toContainText("Sin cupos este año");
+    await setHours(page, 10);
+    await expect(duracion).toContainText("Sin cupos este año");
+    await expect(page.getByRole("list", { name: "Horas de inicio" }).getByRole("button").and(page.locator(":enabled"))).toHaveCount(0);
     await expectNoHorizontalScroll(page);
   });
 });

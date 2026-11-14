@@ -76,7 +76,7 @@ export function RoleTabs() {
         aria-labelledby={`tab-${r.id}`}
         className="mt-8 grid gap-8 md:grid-cols-2 md:items-center md:gap-16"
       >
-        <div>
+        <div className="lp-texto lp-texto--alto">
           <h3 className="lp-heading-sm">{r.title}</h3>
           <ul className="mt-5 flex flex-col">
             {r.points.map((p) => (

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useState } from "react";
-import { CircleCheck, Info, Lock } from "lucide-react";
+import { CircleCheck, Info, Lock, Minus, Plus } from "lucide-react";
 import { dayKey, formatDay, formatMin } from "@/lib/data";
 import {
   LATE_CANCEL_MIN,
@@ -31,7 +31,7 @@ import {
   useHydrated,
   type TrainingStatus,
 } from "@/lib/store";
-import { Button, Card, Field, MobileShell, Pill, Sheet, Tabs, Toast, Wordmark, cx } from "@/components/ui";
+import { Button, Card, MobileShell, Pill, Sheet, Tabs, Toast, Wordmark, cx } from "@/components/ui";
 
 /*
  * Reserva de máquinas del Lab881 y del Cowork textil.
@@ -108,6 +108,8 @@ function Maquinas() {
 
   // Si cambia el día y la duración elegida ya no cabe, se usa la mayor posible.
   const hrs = Math.min(hours, durations.length);
+  /** Cupo anual del tramo al que pertenece la duración elegida (si el espacio tiene cupo). */
+  const tramo = sp.yearlyQuota ? (quota.find((q) => q.id === bucketOf(hrs).id) ?? null) : null;
 
   const slots =
     machine && dayValue
@@ -253,31 +255,50 @@ function Maquinas() {
             })}
           </div>
 
-          <Field
-            label="Duración del trabajo"
-            hint={machine.runsOvernight ? "Las impresiones largas pueden seguir de noche." : "El trabajo debe terminar antes del cierre."}
-            className="mt-4"
-          >
-            <select
-              className="input"
-              value={hrs}
-              onChange={(e) => {
-                setHours(Number(e.target.value));
-                setStart(null);
-              }}
-            >
-              {durations.map((h) => {
-                const q = sp.yearlyQuota ? quota.find((x) => x.id === bucketOf(h).id)! : null;
-                const out = q !== null && q.left <= 0;
-                return (
-                  <option key={h} value={h} disabled={out}>
-                    {h} {h === 1 ? "hora" : "horas"}
-                    {q ? (out ? " · sin cupos este año" : ` · tramo ${q.label}, quedan ${q.left}`) : ""}
-                  </option>
-                );
-              })}
-            </select>
-          </Field>
+          {/* Duración: un contador de horas; el cupo del tramo va en una sola línea debajo. */}
+          <div role="group" aria-labelledby="dur-title" className="mt-4">
+            <h3 id="dur-title" className="text-[14px] font-medium">
+              Duración del trabajo
+            </h3>
+            <div className="mt-2 flex h-[52px] items-center rounded-card border border-border bg-surface">
+              <button
+                type="button"
+                aria-label="Una hora menos"
+                disabled={hrs <= 1}
+                onClick={() => {
+                  setHours(hrs - 1);
+                  setStart(null);
+                }}
+                className="press flex h-full w-14 flex-none items-center justify-center disabled:text-[var(--inactive)]"
+              >
+                <Minus size={18} aria-hidden="true" />
+              </button>
+              <output aria-live="polite" className="num flex-1 text-center text-[16px] font-medium">
+                {hrs} {hrs === 1 ? "hora" : "horas"}
+              </output>
+              <button
+                type="button"
+                aria-label="Una hora más"
+                disabled={hrs >= durations.length}
+                onClick={() => {
+                  setHours(hrs + 1);
+                  setStart(null);
+                }}
+                className="press flex h-full w-14 flex-none items-center justify-center disabled:text-[var(--inactive)]"
+              >
+                <Plus size={18} aria-hidden="true" />
+              </button>
+            </div>
+            <p className={cx("mt-1.5 text-[12px]", tramo && tramo.left <= 0 ? "text-[var(--negative)]" : "text-muted")}>
+              {tramo
+                ? tramo.left <= 0
+                  ? `Sin cupos este año para trabajos de ${tramo.label}.`
+                  : `Te ${tramo.left === 1 ? "queda 1 reserva" : `quedan ${tramo.left} reservas`} de ${tramo.label} este año.`
+                : machine.runsOvernight
+                  ? "Las impresiones largas pueden seguir de noche."
+                  : "El trabajo debe terminar antes del cierre."}
+            </p>
+          </div>
 
           <h3 className="mt-4 text-[14px] font-medium">
             Hora de inicio · <span className="font-normal text-muted">{formatDay(dayValue, "long")}</span>

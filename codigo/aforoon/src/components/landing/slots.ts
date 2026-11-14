@@ -90,7 +90,7 @@ export const SLOTS = {
   // Tarjetas "Qué hay en el Hub".
   cardCowork: slot({
     id: "card-cowork",
-    idea: "El cowork general lleno: mesas largas, notebooks y un perro durmiendo bajo una mesa (el espacio es pet friendly).",
+    idea: "El cowork general lleno: mesas largas, portátiles y un perro durmiendo bajo una mesa (el espacio es pet friendly).",
     alt: "Cowork general del Hub Providencia",
     icon: Users,
     src: "/photos/Cowork.webp",

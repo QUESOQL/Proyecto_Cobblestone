@@ -112,6 +112,7 @@ export function LabScroll() {
             className="lp-lab-step"
             style={{ color: i === active ? "var(--black)" : "var(--iron)" }}
           >
+            <div className="lp-texto">
             <h3 className="lp-heading-sm">{s.title}</h3>
             <p className="mt-2 max-w-[42ch] text-[16px] leading-[1.5]">{s.text}</p>
             <dl className="mt-5 max-w-[42ch]">
@@ -122,6 +123,7 @@ export function LabScroll() {
                 </div>
               ))}
             </dl>
+            </div>
           </li>
         ))}
       </ol>

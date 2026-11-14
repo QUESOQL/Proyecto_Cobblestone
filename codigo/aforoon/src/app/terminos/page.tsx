@@ -56,7 +56,7 @@ export default function Terminos() {
               </li>
               <li>El uso de las máquinas es gratuito; tú aportas el material de tu proyecto.</li>
               <li>
-                Si llegas 20 minutos tarde, la reserva se cancela y el atraso queda registrado. Los atrasos repetidos llevan a una
+                Si llegas 20 minutos tarde, la reserva se cancela y el retraso queda registrado. Los retrasos repetidos llevan a una
                 advertencia, una amonestación, una suspensión de un mes y, finalmente, la suspensión definitiva.
               </li>
             </ul>

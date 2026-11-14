@@ -63,7 +63,7 @@ test.describe("Pantalla 4 · Terminal de acceso", () => {
     await freshStart(page, "/recepcion");
 
     // Una sola vez por celular: la cuenta del terminal.
-    await expect(page.getByRole("heading", { name: "Registrar este celular como terminal" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Registrar este teléfono como terminal" })).toBeVisible();
     await page.getByLabel("Correo del terminal").fill(terminal.email);
     await page.getByLabel("Contraseña del terminal").fill(terminal.password);
     await page.getByRole("button", { name: "Registrar terminal" }).click();

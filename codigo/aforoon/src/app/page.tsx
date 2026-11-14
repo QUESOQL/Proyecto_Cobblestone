@@ -3,6 +3,7 @@ import { ArrowRight } from "lucide-react";
 import "./landing.css";
 import { DoorRace } from "@/components/landing/door-race";
 import { AforoAhora } from "@/components/landing/aforo-ahora";
+import { FondoParticulas } from "@/components/landing/fondo-particulas";
 import { ImageSlot } from "@/components/landing/image-slot";
 import { LabScroll } from "@/components/landing/lab-scroll";
 import { Reveal } from "@/components/landing/reveal";
@@ -88,13 +89,14 @@ const FAQ = [
   },
   {
     q: "¿Qué pasa si reservo y no llego?",
-    a: "El cupo se libera al terminar el bloque. Si sabes que no vas, cancelas desde la app y queda libre al tiro.",
+    a: "El cupo se libera al terminar el bloque. Si sabes que no vas, cancelas desde la app y queda libre de inmediato.",
   },
 ];
 
 export default function Landing() {
   return (
-    <div className="lp">
+    <div className="lp lp--particulas">
+      <FondoParticulas />
       <Reveal />
 
       <SiteNav />
@@ -103,7 +105,7 @@ export default function Landing() {
         {/* ------------------------------------------------------------ portada */}
         {/* Teléfono: título, fachada y aforo en una columna. Desde 768 px: título junto a la fachada y el aforo a todo el ancho debajo. */}
         <section aria-labelledby="hero-title" className="lp-wrap grid gap-8 pb-16 pt-10 md:grid-cols-2 md:items-center md:gap-x-10 md:gap-y-10 md:pb-24 md:pt-16 lg:gap-x-16">
-          <div className="flex flex-col gap-6">
+          <div className="lp-texto lp-texto--alto flex flex-col gap-6">
             <p className="lp-place">
               Los Jesuitas 881, Providencia <span className="lp-place-note">Gratis</span>
             </p>
@@ -123,19 +125,21 @@ export default function Landing() {
         {/* ------------------------------------------------------------ Lab881 */}
         <section id="lab" aria-labelledby="lab-title" className="bg-[var(--white)]">
           <div className="lp-wrap pt-4 md:pt-8" data-reveal>
-            <p className="lp-eyebrow lp-rise">Innovación · Lab881</p>
-            <h2 id="lab-title" className="lp-heading lp-rise mt-2 max-w-[22ch]" style={{ ["--i" as string]: 1 }}>
-              Fabrica tu idea en el primer laboratorio municipal gratuito del país
-            </h2>
-            <p className="lp-sub lp-rise mt-4 max-w-[52ch]" style={{ ["--i" as string]: 2 }}>
-              Fabricación digital e impresión 3D para emprendedores, estudiantes y vecinos. Pasa por las máquinas:
-            </p>
+            <div className="lp-texto lp-texto--ancho">
+              <p className="lp-eyebrow lp-rise">Innovación · Lab881</p>
+              <h2 id="lab-title" className="lp-heading lp-rise mt-2 max-w-[22ch]" style={{ ["--i" as string]: 1 }}>
+                Fabrica tu idea en el primer laboratorio municipal gratuito del país
+              </h2>
+              <p className="lp-sub lp-rise mt-4 max-w-[52ch]" style={{ ["--i" as string]: 2 }}>
+                Fabricación digital e impresión 3D para emprendedores, estudiantes y vecinos. Pasa por las máquinas:
+              </p>
+            </div>
             <div className="mt-10 md:mt-14">
               <LabScroll />
             </div>
             <dl className="mt-4 grid gap-4 md:grid-cols-3">
               {LAB_FACTS.map((f) => (
-                <div key={f.label} className="rounded-[8px] bg-[var(--mist)] p-5 md:p-6">
+                <div key={f.label} className="lp-dato rounded-[8px] bg-[var(--mist)] p-5 md:p-6">
                   <dt className="text-[16px] font-medium">{f.label}</dt>
                   <dd className="mt-1 text-[14px] leading-[1.5] text-slate">{f.value}</dd>
                 </div>
@@ -149,12 +153,14 @@ export default function Landing() {
 
         {/* ------------------------------------------------------------ qué hay en el Hub */}
         <section id="hub" aria-labelledby="hub-title" className="lp-wrap lp-section" data-reveal>
-          <h2 id="hub-title" className="lp-heading lp-rise">
-            Qué hay en el Hub
-          </h2>
-          <p className="lp-sub lp-rise mt-3 max-w-[56ch]" style={{ ["--i" as string]: 1 }}>
-            Un espacio municipal y gratuito desde 2018, con tres áreas: Emprendimiento, Innovación y Empleo. Lunes a jueves de 8:30 a 18:00, viernes hasta las 17:00.
-          </p>
+          <div className="lp-texto lp-texto--ancho">
+            <h2 id="hub-title" className="lp-heading lp-rise">
+              Qué hay en el Hub
+            </h2>
+            <p className="lp-sub lp-rise mt-3 max-w-[56ch]" style={{ ["--i" as string]: 1 }}>
+              Un espacio municipal y gratuito desde 2018, con tres áreas: Emprendimiento, Innovación y Empleo. Lunes a jueves de 8:30 a 18:00, viernes hasta las 17:00.
+            </p>
+          </div>
           <ul className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {HUB.map((c, i) => (
               <li key={c.title} className="lp-rise flex" style={{ ["--i" as string]: (i % 3) + 1 }}>
@@ -174,7 +180,7 @@ export default function Landing() {
 
         {/* ------------------------------------------------------------ cowork textil */}
         <section id="textil" aria-labelledby="textil-title" className="lp-wrap lp-section grid gap-10 md:grid-cols-2 md:items-center md:gap-16" data-reveal>
-          <div>
+          <div className="lp-texto lp-texto--alto">
             <p className="lp-eyebrow lp-rise">Emprendimiento · Cowork textil</p>
             <h2 id="textil-title" className="lp-heading lp-rise mt-2" style={{ ["--i" as string]: 1 }}>
               Aprende el oficio textil, con máquinas del Hub
@@ -199,19 +205,21 @@ export default function Landing() {
 
         {/* ------------------------------------------------------------ cómo funciona */}
         <section id="como" aria-labelledby="como-title" className="lp-wrap lp-section" data-reveal>
-          <h2 id="como-title" className="lp-heading lp-rise">
-            AforoON para cada uno
-          </h2>
-          <p className="lp-sub lp-rise mt-3 max-w-[52ch]" style={{ ["--i" as string]: 1 }}>
-            Hoy cada visita al Hub empieza con un formulario. Con AforoON, la puerta te reconoce.
-          </p>
+          <div className="lp-texto lp-texto--ancho">
+            <h2 id="como-title" className="lp-heading lp-rise">
+              AforoON para cada uno
+            </h2>
+            <p className="lp-sub lp-rise mt-3 max-w-[52ch]" style={{ ["--i" as string]: 1 }}>
+              Hoy cada visita al Hub empieza con un formulario. Con AforoON, la puerta te reconoce.
+            </p>
+          </div>
           <div className="lp-rise mt-10" style={{ ["--i" as string]: 2 }}>
             <RoleTabs />
           </div>
         </section>
 
         {/* ------------------------------------------------------------ la carrera de puertas */}
-        <section aria-labelledby="race-title" className="bg-[var(--mist)]" style={{ ["--surface" as string]: "var(--white)" }}>
+        <section aria-labelledby="race-title" className="lp-banda bg-[var(--mist)]" style={{ ["--surface" as string]: "var(--white)" }}>
           <div className="lp-wrap lp-section" data-reveal>
             <h2 id="race-title" className="lp-heading lp-rise">
               Prueba las dos puertas
@@ -245,11 +253,11 @@ export default function Landing() {
         </section>
 
         {/* ------------------------------------------------------------ preguntas */}
-        <section id="preguntas" aria-labelledby="faq-title" className="lp-wrap lp-section grid gap-8 md:grid-cols-[1fr_2fr] md:gap-16" data-reveal>
+        <section id="preguntas" aria-labelledby="faq-title" className="lp-faq lp-wrap lp-section grid gap-8 md:grid-cols-[1fr_2fr] md:gap-16" data-reveal>
           <h2 id="faq-title" className="lp-heading lp-rise">
             Preguntas
           </h2>
-          <dl className="lp-rise" style={{ ["--i" as string]: 1 }}>
+          <dl className="lp-texto lp-rise" style={{ ["--i" as string]: 1 }}>
             {FAQ.map((f) => (
               <div key={f.q} className="rule-row rule-row--lg grid gap-1 md:grid-cols-2 md:gap-8">
                 <dt className="text-[18px]">{f.q}</dt>

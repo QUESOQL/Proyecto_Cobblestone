@@ -160,7 +160,7 @@ const ETIQUETA: Record<string, { etiqueta: string; pill: Tono }> = {
   no_enrolado: { etiqueta: "Sin credencial", pill: "warning" },
   sin_reserva: { etiqueta: "Sin reserva", pill: "negative" },
   sin_capacitacion: { etiqueta: "Sin capacitación", pill: "negative" },
-  atrasado: { etiqueta: "Atrasado", pill: "negative" },
+  atrasado: { etiqueta: "Con retraso", pill: "negative" },
 };
 
 export function panelReal(s: PanelServidor, horaDe: (iso: string) => number): PanelDatos {
